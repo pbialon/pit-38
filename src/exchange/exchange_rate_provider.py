@@ -21,6 +21,9 @@ class ExchangeRatesProvider:
         if currency not in self._rates:
             self._rates[currency] = self._fetch_rates(currency)
 
+        if day not in self._rates[currency]:
+            raise ValueError("No rate for {} on {}".format(currency, day))
+
         return self._rates[currency][day]
 
     def _fetch_rates(self, currency) -> Dict[pendulum.Date, float]:
