@@ -9,7 +9,7 @@ class Calendar:
         self.holidays = self._get_holidays()
 
     def is_out_of_range(self, day: pendulum.DateTime):
-        return day < pendulum.datetime(YEAR, 1, 1)
+        return day < pendulum.date(YEAR, 1, 1)
 
     def is_workday(self, day: pendulum.DateTime):
         return not self._is_weekend(day) and not self._is_holiday(day)

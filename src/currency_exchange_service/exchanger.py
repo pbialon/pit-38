@@ -26,4 +26,4 @@ class Exchanger:
         if self.calendar.is_out_of_range(day):
             raise ValueError("Date {} is out of range".format(day))
 
-        return day.date()
+        return day
