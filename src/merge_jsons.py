@@ -29,10 +29,13 @@ def merge_stock_transactions():
     stock_transactions = merge_stock_transactions_files(files)
     save(stock_transactions, "stock_transactions.json")
 
+
 def merge_crypto_transactions():
-    files = ["resources/raw/crypto/{}.json".format(crypto) for crypto in ["ada", "bch", "btc", "doge", "eth", "ltc", "xlm"]]
+    files = ["resources/raw/crypto/{}.json".format(crypto) for crypto in
+             ["ada", "bch", "btc", "doge", "eth", "ltc", "xlm"]]
     crypto_transactions = merge_crypto_transactions_files(files)
     save(crypto_transactions, "resources/crypto_transactions.json")
+
 
 if __name__ == "__main__":
     merge_stock_transactions()
