@@ -14,7 +14,7 @@ class ExchangeRatesProvider:
         self.end_date = end_date
         self._rates = {}
 
-    def get_rate(self, currency, day) -> float:
+    def get_rate(self, currency: str, day: pendulum.Date) -> float:
         if currency not in self._rates:
             self._rates[currency] = self._fetch_rates(currency)
 
@@ -23,10 +23,10 @@ class ExchangeRatesProvider:
 
         return self._rates[currency][day]
 
-    def _prepare_url(self, currency, start_date, end_date):
+    def _prepare_url(self, currency: str, start_date: pendulum.Date, end_date: pendulum.Date) -> str:
         return self.NBP_API_URL.format(currency=currency, start_date=start_date, end_date=end_date)
 
-    def _fetch_rates(self, currency) -> Dict[pendulum.Date, float]:
+    def _fetch_rates(self, currency: str) -> Dict[pendulum.Date, float]:
         api_url = self._prepare_url(currency, self.start_date.to_date_string(), self.end_date.to_date_string())
         response = requests.get(api_url)
         response.raise_for_status()
