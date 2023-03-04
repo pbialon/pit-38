@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import pendulum
 
-from src.exchange.exchange_rates_provider import ExchangeRatesProvider
+from src.currency_exchange_service.exchange_rates_provider import ExchangeRatesProvider
 
 
 class TestExchangeRatesProvider(TestCase):

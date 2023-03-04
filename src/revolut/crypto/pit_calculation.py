@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 from typing import List, Tuple
 
-from exchange.exchanger import Exchanger
+from currency_exchange_service.exchanger import Exchanger
 from revolut.crypto.exchange import CryptocurrencyExchange, ExchangeBuilder
 from revolut.crypto.invalid_currency_exception import InvalidCurrencyException
 from utils import InvalidYearException

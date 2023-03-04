@@ -1,6 +1,6 @@
 import pendulum
 
-from exchange.exchanger import Exchanger
+from currency_exchange_service.exchanger import Exchanger
 from revolut.crypto.invalid_currency_exception import InvalidCurrencyException
 from utils import InvalidYearException, YEAR
 

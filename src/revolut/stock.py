@@ -3,7 +3,7 @@ import pendulum
 from typing import List
 
 from src.utils import YEAR, InvalidYearException
-from src.exchange.exchanger import Exchanger
+from src.currency_exchange_service.exchanger import Exchanger
 
 STOCK_TRADES_FILENAME = "/Users/pbialon/workbench/pit/resources/stock_transactions.json"
 

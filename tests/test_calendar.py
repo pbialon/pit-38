@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import pendulum
 
-from src.calendar_manager.calendar import Calendar
+from src.calendar_service.calendar import Calendar
 
 
 class TestCalendar(TestCase):

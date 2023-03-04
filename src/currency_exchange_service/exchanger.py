@@ -1,8 +1,8 @@
 import pendulum
 
-from calendar_manager.calendar import Calendar
-from exchange.currencies import Currency
-from exchange.exchange_rates_provider import ExchangeRatesProvider
+from calendar_service.calendar import Calendar
+from currency_exchange_service.currencies import Currency
+from currency_exchange_service.exchange_rates_provider import ExchangeRatesProvider
 
 EXCHANGE_RATES_FILENAME = "/Users/pbialon/workbench/pit/resources/exchange_rates.csv"
 
