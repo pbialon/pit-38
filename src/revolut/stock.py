@@ -1,7 +1,7 @@
 import json
 import pendulum
 
-from exchange.exchanger import Exchanger
+from src.exchange.exchanger import Exchanger
 from typing import List
 
 STOCK_TRADES_FILENAME = "/Users/pbialon/workbench/pit/resources/stock_transactions.json"

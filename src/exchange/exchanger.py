@@ -1,5 +1,5 @@
 import pendulum
-from calendar_manager.holidays import LIST_OF_HOLIDAYS
+from src.calendar_manager.holidays_provider import get_holidays
 
 EXCHANGE_RATEST_FILENAME = "/Users/pbialon/workbench/pit/resources/exchange_rates.csv"
 
@@ -38,6 +38,6 @@ class Exchanger:
         if date.format("E") in ("6", "7"):
             # Saturday or Sunday
             return False
-        if date in LIST_OF_HOLIDAYS:
+        if date in get_holidays():
             return False
         return True
