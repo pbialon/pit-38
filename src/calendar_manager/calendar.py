@@ -12,12 +12,12 @@ class Calendar:
         return day < pendulum.datetime(YEAR, 1, 1)
 
     def is_workday(self, day: pendulum.DateTime):
-        return not self.is_weekend(day) and not self.is_holiday(day)
+        return not self._is_weekend(day) and not self._is_holiday(day)
 
-    def is_holiday(self, day: pendulum.DateTime):
+    def _is_holiday(self, day: pendulum.DateTime):
         return day in self.holidays
 
-    def is_weekend(self, day: pendulum.DateTime):
+    def _is_weekend(self, day: pendulum.DateTime):
         # Saturday or Sunday
         return day.format("E") in ("6", "7")
 

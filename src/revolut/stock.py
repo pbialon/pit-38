@@ -7,6 +7,7 @@ from src.exchange.exchanger import Exchanger
 
 STOCK_TRADES_FILENAME = "/Users/pbialon/workbench/pit/resources/stock_transactions.json"
 
+
 class CustodyFee:
     TYPE = "CUSTODY_FEES"
 
@@ -25,14 +26,14 @@ class StockTrade:
     TYPE = "TRADE"
 
     def __init__(
-        self,
-        date: pendulum.DateTime,
-        amount_in_dollars: float,
-        amount_in_pln: float,
-        quantity: float,
-        fee: float,
-        company: str,
-        action: str,
+            self,
+            date: pendulum.DateTime,
+            amount_in_dollars: float,
+            amount_in_pln: float,
+            quantity: float,
+            fee: float,
+            company: str,
+            action: str,
     ):
         self.date = date
         self.amount_in_dollars = amount_in_dollars
@@ -53,7 +54,7 @@ class Dividend:
     TYPE = "DIVIDENDS"
 
     def __init__(
-        self, date: pendulum.DateTime, amount_in_dollars: float, amount_in_pln: float
+            self, date: pendulum.DateTime, amount_in_dollars: float, amount_in_pln: float
     ):
         self.date = date
         self.amount_in_dollars = amount_in_dollars
@@ -74,8 +75,8 @@ class TransactionBuilder:
         commissions = 0
         try:
             commissions = (
-                transaction_data["commission"]["instrumentCurrencyValue"]["amount"]
-                / 100
+                    transaction_data["commission"]["instrumentCurrencyValue"]["amount"]
+                    / 100
             )
         except:
             pass
@@ -83,7 +84,7 @@ class TransactionBuilder:
         return fees + commissions
 
     def _get_datetime_from_timestamp(
-        self, transaction_data: dict, key: str = "completedAt"
+            self, transaction_data: dict, key: str = "completedAt"
     ) -> pendulum.DateTime:
         datetime = pendulum.from_timestamp(
             transaction_data[key] / 1000, tz="Europe/Warsaw"
