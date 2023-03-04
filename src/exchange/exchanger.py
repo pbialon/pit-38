@@ -1,27 +1,21 @@
 import pendulum
 
 from calendar_manager.calendar import Calendar
+from exchange.currencies import Currency
+from exchange.exchange_rates_provider import ExchangeRatesProvider
 
 EXCHANGE_RATES_FILENAME = "/Users/pbialon/workbench/pit/resources/exchange_rates.csv"
 
 
 class Exchanger:
-    def __init__(self, calendar: Calendar):
-        self.exchange_rates = self._read_dollar_exchange_rates_from_file(EXCHANGE_RATES_FILENAME)
+    def __init__(self, exchange_rates_provider: ExchangeRatesProvider, calendar: Calendar):
+        self.exchange_rates_provider = exchange_rates_provider
         self.calendar = calendar
 
     def exchange(self, date: pendulum.DateTime, amount: float) -> float:
         exchange_day = self.get_day_one(date)
-        return round(amount * self.exchange_rates[exchange_day], 2)
-
-    def _read_dollar_exchange_rates_from_file(self, filename: str):
-        exchange_rates = {}
-        with open(filename, "r") as f:
-            for line in f:
-                line = line.split(";")
-                day, rate = pendulum.parse(line[0]).date(), float(line[2].replace(",", "."))
-                exchange_rates[day] = rate
-        return exchange_rates
+        rate = self.exchange_rates_provider.get_rate(Currency.DOLLAR, exchange_day)
+        return round(amount * rate, 2)
 
     def get_day_one(self, day: pendulum.DateTime) -> pendulum.Date:
         day = day.subtract(days=1)
