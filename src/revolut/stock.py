@@ -1,19 +1,17 @@
 import json
 import pendulum
-
-from src.exchange.exchanger import Exchanger
 from typing import List
 
-STOCK_TRADES_FILENAME = "/Users/pbialon/workbench/pit/resources/stock_transactions.json"
-
 from src.utils import YEAR, InvalidYearException
+from src.exchange.exchanger import Exchanger
 
+STOCK_TRADES_FILENAME = "/Users/pbialon/workbench/pit/resources/stock_transactions.json"
 
 class CustodyFee:
     TYPE = "CUSTODY_FEES"
 
     def __init__(
-        self, amount_in_dollars: float, amount_in_pln: float, date: pendulum.DateTime
+            self, amount_in_dollars: float, amount_in_pln: float, date: pendulum.DateTime
     ):
         self.amount_in_dollars = amount_in_dollars
         self.amount_in_pln = amount_in_pln
@@ -246,9 +244,8 @@ def taxes():
     stock_transactions, custody_fees, dividends = prepare_data()
     total_revenue, total_cost, total_income = 0, 0, 0
     for company, transactions in group_stock_trade_by_company(
-        stock_transactions
+            stock_transactions
     ).items():
-
         print(f"{company}:")
         calc = TaxCalculatorPerCompany(company)
         cost, income = calc.calculate_taxes_for_company(transactions)
@@ -271,4 +268,4 @@ def taxes():
 
 if __name__ == "__main__":
     taxes()
-    #Printer().print_dividends(prepare_data()[-1])
+    # Printer().print_dividends(prepare_data()[-1])
