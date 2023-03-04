@@ -22,5 +22,5 @@ class Calendar:
         return day.format("E") in ("6", "7")
 
     def _get_holidays(self, year: int = YEAR) -> list:
-        dates = holidays.Poland(years=year).values()
-        return [pendulum.parse(str(date)) for date in dates]
+        dates = holidays.Poland(years=year).keys()
+        return [pendulum.parse(str(date)).date() for date in dates]
