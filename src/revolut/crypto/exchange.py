@@ -1,29 +1,20 @@
-from collections import defaultdict
-from src.exchange.exchanger import Exchanger
-import pendulum, json
-from typing import List, Tuple
+import pendulum
 
-from src.utils import YEAR, InvalidYearException
-
-CRYPTO_TRADES_FILENAME = "/Users/pbialon/workbench/pit/resources/crypto_transactions.json"
-
-
-class InvalidCurrencyException(Exception):
-    pass
+from exchange.exchanger import Exchanger
+from revolut.crypto.invalid_currency_exception import InvalidCurrencyException
+from utils import InvalidYearException, YEAR
 
 
 class CryptocurrencyExchange:
     TYPE = "EXCHANGE"
 
-    def __init__(
-            self,
-            currency: str,
-            amount_in_dollars: float,
-            amount_in_pln: float,
-            quantity: float,
-            action: str,
-            date: pendulum.DateTime,
-    ):
+    def __init__(self,
+                 currency: str,
+                 amount_in_dollars: float,
+                 amount_in_pln: float,
+                 quantity: float,
+                 action: str,
+                 date: pendulum.DateTime):
         self.currency = currency
         self.amount_in_dollars = amount_in_dollars
         self.amount_in_pln = amount_in_pln
@@ -32,7 +23,8 @@ class CryptocurrencyExchange:
         self.date = date
 
     def __str__(self):
-        return f"{self.date.format('DD.MM.YYYY')}: {self.action} {self.quantity} {self.currency} => {self.amount_in_pln} zł"
+        return f"{self.date.format('DD.MM.YYYY')}: {self.action} {self.quantity} {self.currency} " \
+               f"=> {self.amount_in_pln} zł"
 
 
 class ExchangeBuilder:
@@ -43,9 +35,9 @@ class ExchangeBuilder:
     def __init__(self, exchanger: Exchanger):
         self.exchanger = exchanger
 
-    def _get_datetime_from_timestamp(
-            self, transaction_data: dict, key: str = "completedDate"
-    ) -> pendulum.DateTime:
+    def _get_datetime_from_timestamp(self,
+                                     transaction_data: dict,
+                                     key: str = "completedDate") -> pendulum.DateTime:
         datetime = pendulum.from_timestamp(
             transaction_data[key] / 1000, tz="Europe/Warsaw"
         )
@@ -98,61 +90,3 @@ class ExchangeBuilder:
         if transaction_data["currency"] in ("PLN", "USD"):
             return self._handle_sell(transaction_data, date)
         return self._handle_buy(transaction_data, date)
-
-
-def read_revolut_data_from_file(filename: str) -> list:
-    with open(filename, "r") as file:
-        data = json.load(file)
-    return data["items"]
-
-
-def prepare_data() -> List[CryptocurrencyExchange]:
-    exchanger = Exchanger()
-    transactions = read_revolut_data_from_file(CRYPTO_TRADES_FILENAME)
-    crypto_transactions = defaultdict(list)
-    builder = ExchangeBuilder(exchanger)
-    for transaction in transactions:
-        if transaction.get("type") == CryptocurrencyExchange.TYPE:
-            try:
-                ct = builder.build_crypto(transaction)
-            except InvalidCurrencyException as e:
-                print(e)
-                continue
-            except InvalidYearException:
-                continue
-
-            if not ct:
-                continue
-            crypto_transactions[ct.currency].append(ct)
-    return crypto_transactions
-
-
-def calculate_income_and_cost(desired_currency: str = "") -> Tuple[float, float]:
-    transactions = prepare_data()
-    income = 0
-    cost = 0
-    for currency, transactions in transactions.items():
-        if desired_currency and currency != desired_currency:
-            continue
-        for transaction in transactions:
-            if transaction.amount_in_pln < 0:
-                cost += transaction.amount_in_pln
-            else:
-                income += transaction.amount_in_pln
-    return income, cost
-
-
-def print_transactions():
-    transactions = prepare_data()
-    for currency, transactions in transactions.items():
-        print(f"{currency}:")
-        for transaction in transactions:
-            print(f"\t{transaction}")
-
-
-if __name__ == "__main__":
-    # print_transactions()
-    for currency in ("BTC", "ETH", "LTC", "XLM", "DOGE", "ADA", "BCH", ""):
-        income, cost = calculate_income_and_cost(currency)
-        currency = currency or "TOTAL"
-        print(f"{currency}: income: {income} cost: {cost}")
