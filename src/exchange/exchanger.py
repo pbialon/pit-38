@@ -1,8 +1,7 @@
-from collections import defaultdict
 import pendulum
 from calendar_manager.holidays import LIST_OF_HOLIDAYS
 
-EXCHANGE_RATEST_FILENAME="/Users/pbialon/workbench/pit/resources/exchange_rates.csv"
+EXCHANGE_RATEST_FILENAME = "/Users/pbialon/workbench/pit/resources/exchange_rates.csv"
 
 
 class Exchanger:
@@ -25,7 +24,7 @@ class Exchanger:
     @staticmethod
     def get_day_one(date: pendulum.DateTime) -> pendulum.Date:
         date = date.subtract(days=1)
-        
+
         while not Exchanger.is_workday(date):
             date = date.subtract(days=1)
 
@@ -33,7 +32,7 @@ class Exchanger:
             raise ValueError("Date is before 2021-01-01")
 
         return date.date()
-    
+
     @staticmethod
     def is_workday(date: pendulum.DateTime):
         if date.format("E") in ("6", "7"):
