@@ -23,14 +23,20 @@ class ExchangeRatesProvider:
 
         return self._rates[currency][day]
 
+    def _fetch_rates(self, currency: str) -> Dict[pendulum.Date, float]:
+        api_url = self._prepare_url(currency, self.start_date.to_date_string(), self.end_date.to_date_string())
+        payload = self._fetch_payload(api_url)
+        return self._parse(payload)
+
     def _prepare_url(self, currency: str, start_date: pendulum.Date, end_date: pendulum.Date) -> str:
         return self.NBP_API_URL.format(currency=currency, start_date=start_date, end_date=end_date)
 
-    def _fetch_rates(self, currency: str) -> Dict[pendulum.Date, float]:
-        api_url = self._prepare_url(currency, self.start_date.to_date_string(), self.end_date.to_date_string())
+    def _fetch_payload(self, api_url: str) -> Dict[str, any]:
         response = requests.get(api_url)
         response.raise_for_status()
-        payload = json.loads(response.text)
+        return json.loads(response.text)
+
+    def _parse(self, payload: Dict[str, any]) -> Dict[pendulum.Date, float]:
         return {
             pendulum.parse(rate["effectiveDate"]).date(): rate["mid"]
             for rate in payload["rates"]
