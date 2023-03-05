@@ -17,7 +17,7 @@ class YearlyProfitCalculator:
         return self._sum_transactions_per_year(transactions, Action.BUY)
 
     def _sum_transactions_per_year(self, transactions: List[Transaction], transaction_type: Action) -> Dict[int, float]:
-        transactions_sum_per_year = defaultdict(list)
+        transactions_sum_per_year = defaultdict(int)
         for transaction in transactions:
             if transaction.action != transaction_type:
                 continue
