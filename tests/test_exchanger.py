@@ -3,6 +3,7 @@ from unittest import TestCase
 import pendulum
 
 from calendar_service.calendar import Calendar
+from currency_exchange_service.currencies import FiatValue, Currency
 from currency_exchange_service.exchanger import Exchanger
 
 
@@ -28,4 +29,5 @@ class TestExchanger(TestCase):
                 return 4.0
 
         exchanger = Exchanger(ExchangeRateProviderStub(), Calendar())
-        self.assertEqual(exchanger.exchange(pendulum.date(2022, 1, 4), 100), 400)
+        amount = FiatValue(100, Currency.DOLLAR)
+        self.assertEqual(exchanger.exchange(pendulum.date(2022, 1, 4), amount), 400)
