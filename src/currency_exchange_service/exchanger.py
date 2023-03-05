@@ -6,16 +6,18 @@ from currency_exchange_service.exchange_rates_provider import ExchangeRatesProvi
 
 
 class Exchanger:
+    BASE_CURRENCY = Currency.ZLOTY
+
     def __init__(self, exchange_rates_provider: ExchangeRatesProvider, calendar: Calendar):
         self.exchange_rates_provider = exchange_rates_provider
         self.calendar = calendar
-        # TODO: dependency injection
-        self.base_currency = Currency.ZLOTY
 
-    def exchange(self, date: pendulum.DateTime, fiat_value: FiatValue) -> float:
+    def exchange(self, date: pendulum.DateTime, fiat_value: FiatValue) -> FiatValue:
         exchange_day = self.get_day_one(date)
         rate = self.exchange_rates_provider.get_rate(fiat_value.currency, exchange_day)
-        return round(fiat_value.amount * rate, 2)
+
+        amount_in_base_currency = round(fiat_value.amount * rate, 2)
+        return FiatValue(amount_in_base_currency, self.BASE_CURRENCY)
 
     def get_day_one(self, day: pendulum.DateTime) -> pendulum.Date:
         day = day.subtract(days=1)

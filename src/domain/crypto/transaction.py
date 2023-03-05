@@ -2,6 +2,8 @@ import enum
 
 import pendulum
 
+from currency_exchange_service.currencies import FiatValue
+
 
 class Action(enum.Enum):
     BUY = "BUY"
@@ -9,15 +11,6 @@ class Action(enum.Enum):
 
     def __str__(self):
         return self.value
-
-
-class FiatValue:
-    def __init__(self, amount: float, currency: str):
-        self.amount = amount
-        self.currency = currency
-
-    def __str__(self):
-        return f"{self.amount} {self.currency}"
 
 
 class CryptoValue:

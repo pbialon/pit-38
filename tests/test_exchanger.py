@@ -30,4 +30,6 @@ class TestExchanger(TestCase):
 
         exchanger = Exchanger(ExchangeRateProviderStub(), Calendar())
         amount = FiatValue(100, Currency.DOLLAR)
-        self.assertEqual(exchanger.exchange(pendulum.date(2022, 1, 4), amount), 400)
+        amount_in_pln = exchanger.exchange(pendulum.date(2022, 1, 4), amount)
+        self.assertEqual(amount_in_pln.currency, Currency.ZLOTY)
+        self.assertEqual(amount_in_pln.amount, 400)

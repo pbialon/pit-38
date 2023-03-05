@@ -23,7 +23,7 @@ class TaxCalculator:
             if transaction.action == Transaction.Action.BUY:
                 continue
             transaction_value_in_base_currency = self.exchanger.exchange(
-                transaction.fiat_value.amount, transaction.fiat_value.currency, self.base_currency)
+                transaction.fiat_value, transaction.fiat_value, self.base_currency)
 
             income_per_year[transaction.date.year] += transaction.crypto_value.value
 
