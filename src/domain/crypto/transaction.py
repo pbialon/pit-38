@@ -12,6 +12,9 @@ class Action(enum.Enum):
     def __str__(self):
         return self.value
 
+    def __eq__(self, other):
+        return self.value == other.value
+
 
 class CryptoValue:
     def __init__(self, amount: float, currency: str):
@@ -20,6 +23,9 @@ class CryptoValue:
 
     def __str__(self):
         return f"{self.amount} {self.currency}"
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
 
 
 class Transaction:
@@ -38,3 +44,9 @@ class Transaction:
             return f"[{self.date.to_date_string()}]: {self.fiat_value} => {self.crypto_value}"
         # Action.SELL
         return f"[{self.date.to_date_string()}]: {self.action} {self.crypto_value} => {self.fiat_value}"
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
