@@ -1,5 +1,3 @@
-import pendulum
-
 YEAR = 2022
 
 

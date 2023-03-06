@@ -1,2 +1,0 @@
-class InvalidCurrencyException(Exception):
-    pass
