@@ -1,8 +1,8 @@
 import pendulum
 
-from calendar_service.calendar import Calendar
-from currency_exchange_service.currencies import Currency, FiatValue
-from currency_exchange_service.exchange_rates_provider import ExchangeRatesProvider
+from domain.calendar_service.calendar import Calendar
+from domain.currency_exchange_service.currencies import Currency, FiatValue
+from domain.currency_exchange_service.exchange_rates_provider import ExchangeRatesProvider
 
 
 class Exchanger:

@@ -1,7 +1,7 @@
 import pendulum
 import holidays
 
-from src.utils import YEAR
+from utils import YEAR
 
 
 class Calendar:

@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import pendulum
 
-from currency_exchange_service.currencies import FiatValue
+from domain.currency_exchange_service.currencies import FiatValue
 from domain.crypto.profit_calculator import YearlyProfitCalculator
 from domain.crypto.tax import TaxCalculator
 from domain.crypto.transaction import CryptoValue, Transaction, Action

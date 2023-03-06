@@ -2,7 +2,7 @@ import csv
 
 import pendulum
 
-from currency_exchange_service.currencies import FiatValue, CurrencyBuilder
+from domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
 from domain.crypto.transaction import Transaction, CryptoValue, Action
 
 

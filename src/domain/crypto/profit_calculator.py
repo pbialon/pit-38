@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List, Dict
 
-from currency_exchange_service.exchanger import Exchanger
+from domain.currency_exchange_service.exchanger import Exchanger
 from domain.crypto.transaction import Transaction, Action
 
 

@@ -2,7 +2,7 @@ import enum
 
 import pendulum
 
-from currency_exchange_service.currencies import FiatValue
+from domain.currency_exchange_service.currencies import FiatValue
 
 
 class Action(enum.Enum):

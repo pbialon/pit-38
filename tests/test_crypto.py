@@ -3,7 +3,7 @@ from unittest import TestCase
 import pendulum
 import pathlib
 
-from currency_exchange_service.currencies import FiatValue, Currency
+from domain.currency_exchange_service.currencies import FiatValue, Currency
 from data_sources.revolut.crypto import TsvReader, TsvParser
 from domain.crypto.transaction import Transaction, CryptoValue, Action
 
