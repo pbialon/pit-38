@@ -39,10 +39,17 @@ class TsvParser:
 
     @staticmethod
     def date(row: dict) -> pendulum.DateTime:
+        raw_datetime = TsvParser._clean_up_datetime(row['Completed Date'])
+        return pendulum.parse(raw_datetime)
+
+    @staticmethod
+    def _clean_up_datetime(raw_datetime: str) -> str:
         # add 0 in front of hour if needed
-        if len(row['Completed Date'].split(' ')[1]) == 7:
-            row['Completed Date'] = row['Completed Date'][:11] + '0' + row['Completed Date'][11:]
-        return pendulum.parse(row['Completed Date'])
+        date, time = raw_datetime.split(' ')
+        hours, minutes, seconds = time.split(':')
+        if len(hours) == 1:
+            return f"{date} 0{hours}:{minutes}:{seconds}"
+        return raw_datetime
 
 
 class TsvReader:

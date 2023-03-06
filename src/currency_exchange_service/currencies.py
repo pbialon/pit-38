@@ -1,6 +1,8 @@
 import enum
 
-from revolut.crypto.invalid_currency_exception import InvalidCurrencyException
+
+class InvalidCurrencyException(Exception):
+    pass
 
 
 class Currency(enum.Enum):
