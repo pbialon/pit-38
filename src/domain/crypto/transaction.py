@@ -41,7 +41,7 @@ class Transaction:
 
     def __str__(self):
         if self.action == Action.BUY:
-            return f"[{self.date.to_date_string()}]: {self.fiat_value} => {self.crypto_value}"
+            return f"[{self.date.to_date_string()}]: {self.fiat_value} => {self.action} {self.crypto_value}"
         # Action.SELL
         return f"[{self.date.to_date_string()}]: {self.action} {self.crypto_value} => {self.fiat_value}"
 

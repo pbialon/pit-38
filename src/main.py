@@ -29,7 +29,7 @@ def crypto(tax_year: int, transactions_data_filepath: str):
     tax_calculator = setup_tax_calculator(tax_year_start, tax_year_end)
     transactions = setup_input_data(transactions_data_filepath)
     tax_data = tax_calculator.calculate_tax_per_year(transactions, tax_year)
-    print(tax_data, end="\n\n")
+    print(tax_data, end='\n\n')
 
 
 def previous_year():

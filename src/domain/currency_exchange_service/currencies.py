@@ -29,9 +29,40 @@ class CurrencyBuilder:
 
 
 class FiatValue:
-    def __init__(self, amount: float, currency: Currency):
+    def __init__(self, amount: float = 0, currency: Currency = Currency.ZLOTY):
         self.amount = amount
         self.currency = currency
+
+    def __add__(self, other):
+        if self.currency != other.currency:
+            raise InvalidCurrencyException("Cannot add different currencies")
+        new_amount = round(self.amount + other.amount, 2)
+        return FiatValue(new_amount, self.currency)
+
+    def __sub__(self, other):
+        return self.__add__(other * -1)
+
+    def __mul__(self, other):
+        if isinstance(other, int) or isinstance(other, float):
+            new_amount = round(self.amount * other, 2)
+            return FiatValue(new_amount, self.currency)
+        raise InvalidCurrencyException("Cannot multiply by non-numeric value")
+
+    def __gt__(self, other):
+        if self.currency != other.currency:
+            raise InvalidCurrencyException("Cannot compare different currencies")
+        return self.amount > other.amount
+
+    def __lt__(self, other):
+        if self.currency != other.currency:
+            raise InvalidCurrencyException("Cannot compare different currencies")
+        return self.amount < other.amount
+
+    def __ge__(self, other):
+        return not self.__lt__(other)
+
+    def __le__(self, other):
+        return not self.__gt__(other)
 
     def __str__(self):
         return f"{self.amount} {self.currency}"

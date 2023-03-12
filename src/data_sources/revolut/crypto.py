@@ -1,4 +1,5 @@
 import csv
+from typing import List
 
 import pendulum
 
@@ -67,7 +68,8 @@ class CsvReader:
         self.path = path
         self.tsv_parser = tsv_parser
 
-    def read(self):
+    def read(self) -> List[Transaction]:
+        transactions = []
         with open(self.path, 'r') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=',')
             for row in reader:
@@ -75,4 +77,5 @@ class CsvReader:
                 if not transaction:
                     continue
 
-                yield transaction
+                transactions.append(transaction)
+        return transactions
