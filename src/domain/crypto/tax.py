@@ -34,11 +34,13 @@ class TaxCalculator:
         self.yearly_calculator = yearly_calculator
         self.tax_rate = tax_rate
 
-    def calculate_tax_per_year(self, transactions: List[Transaction], tax_year: int) -> TaxYearResult:
+    def calculate_tax_per_year(self, transactions: List[Transaction], tax_year: int,
+                               deductable_loss: int = -1) -> TaxYearResult:
         income = self.yearly_calculator.income_per_year(transactions)
         cost = self.yearly_calculator.cost_per_year(transactions)
 
-        loss: FiatValue = self.deductable_loss_from_previous_years(income, cost, tax_year)
+        loss: FiatValue = self.deductable_loss_from_previous_years(
+            income, cost, tax_year) if deductable_loss == -1 else FiatValue(deductable_loss)
         profit_in_tax_year: FiatValue = income[tax_year] - cost[tax_year]
         if loss > FiatValue(0):
             profit_in_tax_year -= loss
