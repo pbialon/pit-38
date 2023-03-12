@@ -5,10 +5,13 @@ import pendulum
 from domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
 from domain.crypto.transaction import Transaction, CryptoValue, Action
 
-
+class State:
+    COMPLETED = "COMPLETED"
 class TsvParser:
     @staticmethod
     def parse(row: dict) -> Transaction:
+        if not TsvParser._is_completed(row):
+            return None
         return Transaction(
             crypto_value=TsvParser.crypto_value(row),
             fiat_value=TsvParser.fiat_value(row),
@@ -43,6 +46,10 @@ class TsvParser:
         return pendulum.parse(raw_datetime)
 
     @staticmethod
+    def _is_completed(row: dict) -> bool:
+        return row['State'] == State.COMPLETED
+
+    @staticmethod
     def _clean_up_datetime(raw_datetime: str) -> str:
         # add 0 in front of hour if needed
         date, time = raw_datetime.split(' ')
@@ -61,5 +68,8 @@ class TsvReader:
         with open(self.path, 'r') as csvfile:
             reader = csv.DictReader(csvfile, delimiter='\t')
             for row in reader:
-                # TODO: handle not completed transactions
-                yield self.tsv_parser.parse(row)
+                transaction = self.tsv_parser.parse(row)
+                if not transaction:
+                    continue
+
+                yield transaction
