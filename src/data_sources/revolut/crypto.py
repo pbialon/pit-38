@@ -10,16 +10,16 @@ class State:
     COMPLETED = "COMPLETED"
 
 
-class TsvParser:
+class CsvParser:
     @staticmethod
     def parse(row: dict) -> Transaction:
-        if not TsvParser._is_completed(row):
+        if not CsvParser._is_completed(row):
             return None
         return Transaction(
-            crypto_value=TsvParser.crypto_value(row),
-            fiat_value=TsvParser.fiat_value(row),
-            action=TsvParser.action(row),
-            date=TsvParser.date(row)
+            crypto_value=CsvParser.crypto_value(row),
+            fiat_value=CsvParser.fiat_value(row),
+            action=CsvParser.action(row),
+            date=CsvParser.date(row)
         )
 
     @staticmethod
@@ -45,7 +45,7 @@ class TsvParser:
 
     @staticmethod
     def date(row: dict) -> pendulum.DateTime:
-        raw_datetime = TsvParser._clean_up_datetime(row['Completed Date'])
+        raw_datetime = CsvParser._clean_up_datetime(row['Completed Date'])
         return pendulum.parse(raw_datetime)
 
     @staticmethod
@@ -62,14 +62,14 @@ class TsvParser:
         return raw_datetime
 
 
-class TsvReader:
-    def __init__(self, path: str, tsv_parser: TsvParser):
+class CsvReader:
+    def __init__(self, path: str, tsv_parser: CsvParser):
         self.path = path
         self.tsv_parser = tsv_parser
 
     def read(self):
         with open(self.path, 'r') as csvfile:
-            reader = csv.DictReader(csvfile, delimiter='\t')
+            reader = csv.DictReader(csvfile, delimiter=',')
             for row in reader:
                 transaction = self.tsv_parser.parse(row)
                 if not transaction:

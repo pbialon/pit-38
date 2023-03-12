@@ -4,15 +4,15 @@ import pendulum
 import pathlib
 
 from domain.currency_exchange_service.currencies import FiatValue, Currency
-from data_sources.revolut.crypto import TsvReader, TsvParser
+from data_sources.revolut.crypto import CsvReader, CsvParser
 from domain.crypto.transaction import Transaction, CryptoValue, Action
 
 
 class TestTsvReader(TestCase):
     def test_read(self):
-        filepath = pathlib.Path(__file__).parent.absolute() / "resources" / "example_export.tsv"
+        filepath = pathlib.Path(__file__).parent.absolute() / "resources" / "example_export.csv"
 
-        reader = TsvReader(filepath, TsvParser)
+        reader = CsvReader(filepath, CsvParser)
         transactions = list(reader.read())
         expected = [
             Transaction(
