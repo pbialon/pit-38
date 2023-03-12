@@ -80,13 +80,13 @@ class TestTaxCalculator(TestCase):
             self._buy(self._crypto(1), self._fiat(100), date="2021-01-01"),
             self._sell(self._crypto(1), self._fiat(200), date="2021-01-02"),
         ]
-        tax_2019 = tax_calculator.calculate_tax_per_year(transactions, 2019)
+        tax_2019 = tax_calculator.calculate_tax_per_year(transactions, 2019).tax
         self.assertEqual(19, tax_2019)
 
-        tax_2020 = tax_calculator.calculate_tax_per_year(transactions, 2020)
+        tax_2020 = tax_calculator.calculate_tax_per_year(transactions, 2020).tax
         self.assertEqual(19, tax_2020)
 
-        tax_2021 = tax_calculator.calculate_tax_per_year(transactions, 2021)
+        tax_2021 = tax_calculator.calculate_tax_per_year(transactions, 2021).tax
         self.assertEqual(19, tax_2021)
 
     def test_calculate_tax_per_year_hodl(self):
@@ -98,13 +98,13 @@ class TestTaxCalculator(TestCase):
             self._sell(self._crypto(3), self._fiat(1000), date="2021-01-02"),
         ]
 
-        tax_2019 = tax_calculator.calculate_tax_per_year(transactions, 2019)
+        tax_2019 = tax_calculator.calculate_tax_per_year(transactions, 2019).tax
         self.assertEqual(0, tax_2019)
 
-        tax_2020 = tax_calculator.calculate_tax_per_year(transactions, 2020)
+        tax_2020 = tax_calculator.calculate_tax_per_year(transactions, 2020).tax
         self.assertEqual(0, tax_2020)
 
-        tax_2021 = tax_calculator.calculate_tax_per_year(transactions, 2021)
+        tax_2021 = tax_calculator.calculate_tax_per_year(transactions, 2021).tax
         self.assertEqual(700 * 0.19, tax_2021)
 
     def test_calculate_tax_per_year_losses(self):
@@ -118,12 +118,12 @@ class TestTaxCalculator(TestCase):
             self._sell(self._crypto(1), self._fiat(500), date="2021-01-02"),
         ]
 
-        tax_2019 = tax_calculator.calculate_tax_per_year(transactions, 2019)
+        tax_2019 = tax_calculator.calculate_tax_per_year(transactions, 2019).tax
         self.assertEqual(0, tax_2019)
 
-        tax_2020 = tax_calculator.calculate_tax_per_year(transactions, 2020)
+        tax_2020 = tax_calculator.calculate_tax_per_year(transactions, 2020).tax
         self.assertEqual(0, tax_2020)
 
-        tax_2021 = tax_calculator.calculate_tax_per_year(transactions, 2021)
+        tax_2021 = tax_calculator.calculate_tax_per_year(transactions, 2021).tax
         # 300 losses from previous years deducted
         self.assertEqual(19, tax_2021)

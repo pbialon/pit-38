@@ -30,8 +30,8 @@ def crypto(tax_year: int, transactions_data_filepath: str):
     tax_year_end = pendulum.date(tax_year, 12, 31)
     tax_calculator = setup_tax_calculator(tax_year_start, tax_year_end)
     transactions = setup_input_data(transactions_data_filepath)
-    tax = tax_calculator.calculate_tax_per_year(transactions, tax_year)
-    print(f"Tax for {tax_year}: {tax} ZŁ")
+    tax_data = tax_calculator.calculate_tax_per_year(transactions, tax_year)
+    print(tax_data, end="\n\n")
 
 
 def previous_year():
