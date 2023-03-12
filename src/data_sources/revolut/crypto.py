@@ -5,8 +5,11 @@ import pendulum
 from domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
 from domain.crypto.transaction import Transaction, CryptoValue, Action
 
+
 class State:
     COMPLETED = "COMPLETED"
+
+
 class TsvParser:
     @staticmethod
     def parse(row: dict) -> Transaction:
