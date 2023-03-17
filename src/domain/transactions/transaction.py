@@ -7,20 +7,20 @@ from domain.transactions.asset import AssetValue
 
 class Transaction:
     def __init__(self,
-                 asset_value: AssetValue,
+                 asset: AssetValue,
                  fiat_value: FiatValue,
                  action: Action,
                  date: pendulum.DateTime):
         self.fiat_value = fiat_value
-        self.asset_value = asset_value
+        self.asset = asset
         self.action = action
         self.date = date
 
     def __str__(self):
         if self.action == Action.BUY:
-            return f"[{self.date.to_date_string()}]: {self.fiat_value} => {self.action} {self.asset_value}"
+            return f"[{self.date.to_date_string()}]: {self.fiat_value} => {self.action} {self.asset}"
         # Action.SELL
-        return f"[{self.date.to_date_string()}]: {self.action} {self.asset_value} => {self.fiat_value}"
+        return f"[{self.date.to_date_string()}]: {self.action} {self.asset} => {self.fiat_value}"
 
     def __repr__(self):
         return self.__str__()
