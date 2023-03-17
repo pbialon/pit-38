@@ -15,26 +15,26 @@ def group_stock_trade_by_company(stock_transactions: List[Transaction]) -> Dict[
     return grouped_transactions
 
 
-class PerCompanyProfitCalculator:
+class PerStockProfitCalculator:
     EPSILON = 0.00000001
 
     def __init__(self, company: str):
         self.company = company
 
-    def calculate_profit_for_company(self, transactions: List[Transaction]) -> (FiatValue, FiatValue):
+    def calculate_profit(self, transactions: List[Transaction]) -> (FiatValue, FiatValue):
         transactions.sort(key=lambda t: t.date)
         queue = Queue()
         cost, income = 0, 0
 
-        logger.debug(f"Calculating profit for company: {self.company}")
-        logger.debug(f"Number of transactions: {len(transactions)}")
+        logger.info(f"Calculating cost and income for company stock: {self.company}")
+        logger.info(f"Number of transactions: {len(transactions)}")
 
         for transaction in transactions:
             if transaction.action == Action.BUY:
                 queue.append(transaction, transaction.asset.amount)
                 continue
 
-            add_cost, add_income = self._handle_sell(transaction, queue)
+            add_cost, add_income = self._handle_sell(queue, transaction)
             logger.debug(
                 f"Calculated cost and income for transaction: {transaction}, cost = {add_cost}, income = {add_income}")
             cost += add_cost
@@ -42,7 +42,7 @@ class PerCompanyProfitCalculator:
 
         return cost, income
 
-    def _handle_sell(self, transaction: Transaction, fifo_queue: Queue) -> (FiatValue, FiatValue):
+    def _handle_sell(self, fifo_queue: Queue, transaction: Transaction) -> (FiatValue, FiatValue):
         quantity = transaction.asset.amount
         cost, income = FiatValue(0), FiatValue(0)
 
