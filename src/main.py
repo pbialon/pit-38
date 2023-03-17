@@ -2,7 +2,8 @@ from typing import List
 import pendulum
 import click
 
-from data_sources.revolut.crypto import CsvReader, CsvParser
+from data_sources.revolut.crypto import CryptoCsvParser
+from data_sources.revolut.csv_reader import TransactionsCsvReader
 from domain.calendar_service.calendar import Calendar
 from domain.crypto.profit_calculator import YearlyProfitCalculator
 from domain.crypto.tax import TaxCalculator
@@ -20,7 +21,7 @@ def setup_tax_calculator(start_date: pendulum.Date, end_date: pendulum.Date) -> 
 
 
 def setup_input_data(filepath: str) -> List[Transaction]:
-    return CsvReader(filepath, CsvParser).read()
+    return TransactionsCsvReader(filepath, CryptoCsvParser).read()
 
 
 def crypto(tax_year: int, transactions_data_filepath: str, deductable_loss: int):

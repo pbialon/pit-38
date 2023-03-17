@@ -1,28 +1,26 @@
-import csv
-from typing import List
-
 import pendulum
 from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
 from domain.transactions import Transaction, AssetValue, Action
+from data_sources.revolut.csv_reader import CsvParser
 
 
 class State:
     COMPLETED = "COMPLETED"
 
 
-class CsvParser:
+class CryptoCsvParser(CsvParser):
     @staticmethod
     def parse(row: dict) -> Transaction:
-        if not CsvParser._is_completed(row):
+        if not CryptoCsvParser._is_completed(row):
             logger.debug(f'Skipping transaction: {row} (not completed)')
             return None
         transaction = Transaction(
-            asset=CsvParser.crypto_value(row),
-            fiat_value=CsvParser.fiat_value(row),
-            action=CsvParser.action(row),
-            date=CsvParser.date(row)
+            asset=CryptoCsvParser.crypto_value(row),
+            fiat_value=CryptoCsvParser.fiat_value(row),
+            action=CryptoCsvParser.action(row),
+            date=CryptoCsvParser.date(row)
         )
         logger.debug(f'Parsed transaction: {transaction}')
         return transaction
@@ -50,7 +48,7 @@ class CsvParser:
 
     @staticmethod
     def date(row: dict) -> pendulum.DateTime:
-        raw_datetime = CsvParser._clean_up_datetime(row['Completed Date'])
+        raw_datetime = CryptoCsvParser._clean_up_datetime(row['Completed Date'])
         return pendulum.parse(raw_datetime)
 
     @staticmethod
@@ -65,23 +63,3 @@ class CsvParser:
         if len(hours) == 1:
             return f"{date} 0{hours}:{minutes}:{seconds}"
         return raw_datetime
-
-
-class CsvReader:
-    def __init__(self, path: str, csv_parser: CsvParser):
-        self.path = path
-        self.csv_parser = csv_parser
-
-    def read(self) -> List[Transaction]:
-        transactions = []
-        logger.info(f"Reading transactions from {self.path}...")
-        with open(self.path, 'r') as csvfile:
-            reader = csv.DictReader(csvfile, delimiter=',')
-            for row in reader:
-                transaction = self.csv_parser.parse(row)
-                if not transaction:
-                    continue
-
-                transactions.append(transaction)
-        logger.info(f"Parsed {len(transactions)} transactions")
-        return transactions

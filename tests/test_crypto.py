@@ -3,16 +3,19 @@ from unittest import TestCase
 import pendulum
 import pathlib
 
+from data_sources.revolut.csv_reader import TransactionsCsvReader
 from domain.currency_exchange_service.currencies import FiatValue, Currency
-from data_sources.revolut.crypto import CsvReader, CsvParser
+from data_sources.revolut.crypto import CryptoCsvParser
 from domain.transactions import Transaction, AssetValue, Action
+
+
 
 
 class TestTsvReader(TestCase):
     def test_read(self):
         filepath = pathlib.Path(__file__).parent.absolute() / "resources" / "example_export.csv"
 
-        reader = CsvReader(filepath, CsvParser)
+        reader = TransactionsCsvReader(filepath, CryptoCsvParser)
         transactions = list(reader.read())
         expected = [
             Transaction(
