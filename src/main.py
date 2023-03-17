@@ -6,7 +6,7 @@ from data_sources.revolut.crypto import CsvReader, CsvParser
 from domain.calendar_service.calendar import Calendar
 from domain.crypto.profit_calculator import YearlyProfitCalculator
 from domain.crypto.tax import TaxCalculator
-from domain.crypto.transaction import Transaction
+from domain.transactions import Transaction
 from domain.currency_exchange_service.exchange_rates_provider import ExchangeRatesProvider
 from domain.currency_exchange_service.exchanger import Exchanger
 

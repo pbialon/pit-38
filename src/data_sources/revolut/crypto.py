@@ -5,7 +5,7 @@ import pendulum
 from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
-from domain.crypto.transaction import Transaction, CryptoValue, Action
+from domain.transactions import Transaction, AssetValue, Action
 
 
 class State:
@@ -28,10 +28,10 @@ class CsvParser:
         return transaction
 
     @staticmethod
-    def crypto_value(row: dict) -> CryptoValue:
+    def crypto_value(row: dict) -> AssetValue:
         currency = row['Currency']
         amount = abs(float(row['Amount']))
-        return CryptoValue(amount, currency)
+        return AssetValue(amount, currency)
 
     @staticmethod
     def fiat_value(row: dict) -> FiatValue:

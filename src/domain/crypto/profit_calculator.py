@@ -4,7 +4,7 @@ from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
-from domain.crypto.transaction import Transaction, Action
+from domain.transactions import Transaction, Action
 
 
 class YearlyProfitCalculator:

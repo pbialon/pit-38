@@ -5,7 +5,7 @@ import pendulum
 from domain.currency_exchange_service.currencies import FiatValue, Currency
 from domain.crypto.profit_calculator import YearlyProfitCalculator
 from domain.crypto.tax import TaxCalculator
-from domain.crypto.transaction import CryptoValue, Transaction, Action
+from domain.transactions import AssetValue, Transaction, Action
 
 
 class StubExchanger:
@@ -61,7 +61,7 @@ class TestTaxCalculatorDeductions(TestCase):
 class TestTaxCalculator(TestCase):
 
     def _btc(self, amount):
-        return CryptoValue(amount, "BTC")
+        return AssetValue(amount, "BTC")
 
     def _euro(self, amount):
         return FiatValue(amount, Currency.EURO)
