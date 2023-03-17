@@ -3,6 +3,7 @@ from typing import List, Dict
 from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
+from domain.currency_exchange_service.exchanger import Exchanger
 from domain.transactions import Transaction, Action
 from domain.stock.queue import Queue
 
@@ -18,13 +19,14 @@ def group_stock_trade_by_company(stock_transactions: List[Transaction]) -> Dict[
 class PerStockProfitCalculator:
     EPSILON = 0.00000001
 
-    def __init__(self, company: str):
+    def __init__(self, exchanger: Exchanger, company: str):
+        self.exchanger = exchanger
         self.company = company
 
     def calculate_profit(self, transactions: List[Transaction]) -> (FiatValue, FiatValue):
         transactions.sort(key=lambda t: t.date)
         queue = Queue()
-        cost, income = 0, 0
+        cost, income = FiatValue(0), FiatValue(0)
 
         logger.info(f"Calculating cost and income for company stock: {self.company}")
         logger.info(f"Number of transactions: {len(transactions)}")
@@ -51,13 +53,14 @@ class PerStockProfitCalculator:
             oldest_transaction_quantity = fifo_queue.head_quantity()
 
             if oldest_transaction_quantity > quantity:
-                cost += oldest_transaction.fiat_value * quantity
-                income += transaction.fiat_value * quantity
                 fifo_queue.reduce_quantity_head(quantity)
             else:
-                cost += oldest_transaction.fiat_value * oldest_transaction_quantity
-                income += transaction.fiat_value * oldest_transaction_quantity
                 fifo_queue.pop_head()
+
+            q = min(quantity, oldest_transaction_quantity)
+            cost += self.exchanger.exchange(oldest_transaction.date, oldest_transaction.fiat_value) * q
+            income += self.exchanger.exchange(transaction.date, transaction.fiat_value) * q
+
             quantity -= oldest_transaction_quantity
 
         return cost, income

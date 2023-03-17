@@ -2,7 +2,7 @@ from typing import List
 from loguru import logger
 
 from domain.transactions import Transaction
-from domain.stock.tax_calculator import group_stock_trade_by_company
+from domain.stock.profit_calculator import group_stock_trade_by_company
 
 
 class Printer:
