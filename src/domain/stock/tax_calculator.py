@@ -4,6 +4,7 @@ from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.transactions import Transaction, Action
+from domain.stock.queue import Queue
 
 
 def group_stock_trade_by_company(stock_transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
@@ -12,28 +13,6 @@ def group_stock_trade_by_company(stock_transactions: List[Transaction]) -> Dict[
         company_name = transaction.asset.asset_name
         grouped_transactions[company_name].append(transaction)
     return grouped_transactions
-
-
-class Queue:
-    def __init__(self):
-        self._queue: List[(Transaction, float)] = []
-
-    def append(self, item: Transaction, quantity: float):
-        self._queue.append((item, quantity))
-
-    def head_quantity(self) -> float:
-        return self._queue[0][1]
-
-    def head_item(self):
-        return self._queue[0][0]
-
-    def pop_head(self):
-        return self._queue.pop(0)
-
-    def reduce_quantity_head(self, quantity: float):
-        item = self._queue[0][0]
-        new_quantity = self._queue[0][1] - quantity
-        self._queue[0] = (item, new_quantity)
 
 
 class PerCompanyProfitCalculator:
