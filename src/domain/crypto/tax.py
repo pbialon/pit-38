@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Dict
+from typing import List
 
 from domain.crypto.profit_calculator import YearlyProfitCalculator
 from domain.crypto.transaction import Transaction
