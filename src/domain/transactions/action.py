@@ -10,3 +10,4 @@ class Action(enum.Enum):
 
     def __eq__(self, other):
         return self.value == other.value
+

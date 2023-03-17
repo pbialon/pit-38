@@ -19,7 +19,7 @@ class CsvParser:
             logger.debug(f'Skipping transaction: {row} (not completed)')
             return None
         transaction = Transaction(
-            crypto_value=CsvParser.crypto_value(row),
+            asset_value=CsvParser.crypto_value(row),
             fiat_value=CsvParser.fiat_value(row),
             action=CsvParser.action(row),
             date=CsvParser.date(row)

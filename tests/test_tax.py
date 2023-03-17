@@ -68,11 +68,11 @@ class TestTaxCalculator(TestCase):
 
     def _buy(self, crypto, fiat, date):
         parsed_date = pendulum.parse(date)
-        return Transaction(date=parsed_date, crypto_value=crypto, fiat_value=fiat, action=Action.BUY)
+        return Transaction(date=parsed_date, asset_value=crypto, fiat_value=fiat, action=Action.BUY)
 
     def _sell(self, crypto, fiat, date):
         parsed_date = pendulum.parse(date)
-        return Transaction(date=parsed_date, crypto_value=crypto, fiat_value=fiat, action=Action.SELL)
+        return Transaction(date=parsed_date, asset_value=crypto, fiat_value=fiat, action=Action.SELL)
 
     def test_calculate_tax_per_year_sell_after_buy(self):
         tax_calculator = TaxCalculator(yearly_profit_calculator)
