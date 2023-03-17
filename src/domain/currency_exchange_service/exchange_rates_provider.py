@@ -1,5 +1,6 @@
 import json
 from typing import Dict
+from loguru import logger
 
 import pendulum
 import requests as requests
@@ -25,6 +26,7 @@ class ExchangeRatesProvider:
 
     def _fetch_rates(self, currency: str) -> Dict[pendulum.Date, float]:
         api_url = self._prepare_url(currency, self.start_date.to_date_string(), self.end_date.to_date_string())
+        logger.debug("Querying NBP API: {}", api_url)
         payload = self._fetch_payload(api_url)
         return self._parse(payload)
 

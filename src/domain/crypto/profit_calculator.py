@@ -1,5 +1,6 @@
 from collections import defaultdict
-from typing import List, Dict
+from typing import List
+from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
@@ -12,10 +13,14 @@ class YearlyProfitCalculator:
         self.exchanger = exchanger
 
     def income_per_year(self, transactions: List[Transaction]) -> defaultdict[int, FiatValue]:
-        return self._sum_transactions_per_year(transactions, Action.SELL)
+        income = self._sum_transactions_per_year(transactions, Action.SELL)
+        logger.info(f"Calculated income per year: {dict(income)}")
+        return income
 
     def cost_per_year(self, transactions: List[Transaction]) -> defaultdict[int, FiatValue]:
-        return self._sum_transactions_per_year(transactions, Action.BUY)
+        cost = self._sum_transactions_per_year(transactions, Action.BUY)
+        logger.info(f"Calculated cost per year: {dict(cost)}")
+        return cost
 
     def _sum_transactions_per_year(self, transactions: List[Transaction], transaction_type: Action) \
             -> defaultdict[int, FiatValue]:

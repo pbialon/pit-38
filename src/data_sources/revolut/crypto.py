@@ -2,6 +2,7 @@ import csv
 from typing import List
 
 import pendulum
+from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
 from domain.crypto.transaction import Transaction, CryptoValue, Action
@@ -15,13 +16,16 @@ class CsvParser:
     @staticmethod
     def parse(row: dict) -> Transaction:
         if not CsvParser._is_completed(row):
+            logger.debug(f'Skipping transaction: {row} (not completed)')
             return None
-        return Transaction(
+        transaction = Transaction(
             crypto_value=CsvParser.crypto_value(row),
             fiat_value=CsvParser.fiat_value(row),
             action=CsvParser.action(row),
             date=CsvParser.date(row)
         )
+        logger.debug(f'Parsed transaction: {transaction}')
+        return transaction
 
     @staticmethod
     def crypto_value(row: dict) -> CryptoValue:
@@ -70,6 +74,7 @@ class CsvReader:
 
     def read(self) -> List[Transaction]:
         transactions = []
+        logger.info(f"Reading transactions from {self.path}...")
         with open(self.path, 'r') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=',')
             for row in reader:
@@ -78,4 +83,5 @@ class CsvReader:
                     continue
 
                 transactions.append(transaction)
+        logger.info(f"Parsed {len(transactions)} transactions")
         return transactions

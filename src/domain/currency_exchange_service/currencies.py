@@ -35,7 +35,7 @@ class FiatValue:
 
     def __add__(self, other):
         if self.currency != other.currency:
-            raise InvalidCurrencyException("Cannot add different currencies")
+            raise InvalidCurrencyException(f"Cannot add different currencies: {self.currency} and {other.currency}")
         new_amount = round(self.amount + other.amount, 2)
         return FiatValue(new_amount, self.currency)
 
@@ -65,6 +65,9 @@ class FiatValue:
         return not self.__gt__(other)
 
     def __str__(self):
+        return f"{self.amount} {self.currency}"
+
+    def __repr__(self):
         return f"{self.amount} {self.currency}"
 
     def __eq__(self, other):

@@ -16,6 +16,7 @@ class Calendar:
         years = range(self.start_year, year + 1)
         self.holidays = self._get_holidays(years)
 
+
     def is_out_of_range(self, day: pendulum.DateTime):
         return day < pendulum.date(self.start_year, 1, 1)
 

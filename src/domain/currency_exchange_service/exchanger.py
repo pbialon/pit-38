@@ -1,5 +1,7 @@
 import pendulum
 
+from loguru import logger
+
 from domain.calendar_service.calendar import Calendar
 from domain.currency_exchange_service.currencies import Currency, FiatValue
 from domain.currency_exchange_service.exchange_rates_provider import ExchangeRatesProvider
@@ -22,6 +24,7 @@ class Exchanger:
         return FiatValue(amount_in_base_currency, self.BASE_CURRENCY)
 
     def get_day_one(self, day: pendulum.DateTime) -> pendulum.Date:
+        base_day = day
         day = day.subtract(days=1)
 
         while not self.calendar.is_workday(day):
@@ -29,5 +32,7 @@ class Exchanger:
 
         if self.calendar.is_out_of_range(day):
             raise ValueError("Date {} is out of range".format(day))
+
+        logger.debug("Exchange day for {} -> {}".format(base_day, day))
 
         return day
