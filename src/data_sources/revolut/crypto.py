@@ -68,9 +68,9 @@ class CsvParser:
 
 
 class CsvReader:
-    def __init__(self, path: str, tsv_parser: CsvParser):
+    def __init__(self, path: str, csv_parser: CsvParser):
         self.path = path
-        self.tsv_parser = tsv_parser
+        self.csv_parser = csv_parser
 
     def read(self) -> List[Transaction]:
         transactions = []
@@ -78,7 +78,7 @@ class CsvReader:
         with open(self.path, 'r') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=',')
             for row in reader:
-                transaction = self.tsv_parser.parse(row)
+                transaction = self.csv_parser.parse(row)
                 if not transaction:
                     continue
 
