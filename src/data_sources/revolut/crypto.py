@@ -1,3 +1,5 @@
+from typing import Dict
+
 import pendulum
 from loguru import logger
 
@@ -12,7 +14,7 @@ class State:
 
 class CryptoCsvParser(CsvParser):
     @staticmethod
-    def parse(row: dict) -> Transaction:
+    def parse(row: Dict) -> Transaction:
         if not CryptoCsvParser._is_completed(row):
             logger.debug(f'Skipping transaction: {row} (not completed)')
             return None

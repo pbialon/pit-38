@@ -1,5 +1,5 @@
 import csv
-from typing import List
+from typing import List, Dict
 
 from loguru import logger
 
@@ -8,7 +8,7 @@ from domain.transactions import Transaction
 
 class CsvParser:
     @staticmethod
-    def parse(row):
+    def parse(row: Dict) -> Transaction:
         raise NotImplementedError
 
 

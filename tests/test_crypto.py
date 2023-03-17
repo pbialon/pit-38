@@ -9,9 +9,7 @@ from data_sources.revolut.crypto import CryptoCsvParser
 from domain.transactions import Transaction, AssetValue, Action
 
 
-
-
-class TestTsvReader(TestCase):
+class TestCsvReader(TestCase):
     def test_read(self):
         filepath = pathlib.Path(__file__).parent.absolute() / "resources" / "example_export.csv"
 
