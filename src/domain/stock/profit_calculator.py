@@ -16,7 +16,7 @@ def group_stock_trade_by_company(stock_transactions: List[Transaction]) -> Dict[
     return grouped_transactions
 
 
-class PerStockProfitCalculator:
+class YearlyPerStockProfitCalculator:
     EPSILON = 0.00000001
 
     def __init__(self, exchanger: Exchanger, company: str):
@@ -26,7 +26,8 @@ class PerStockProfitCalculator:
     def calculate_profit(self, transactions: List[Transaction]) -> (FiatValue, FiatValue):
         transactions.sort(key=lambda t: t.date)
         queue = Queue()
-        cost, income = FiatValue(0), FiatValue(0)
+        cost = defaultdict(lambda: FiatValue(0))
+        income = defaultdict(lambda: FiatValue(0))
 
         logger.info(f"Calculating cost and income for company stock: {self.company}")
         logger.info(f"Number of transactions: {len(transactions)}")
@@ -39,8 +40,9 @@ class PerStockProfitCalculator:
             add_cost, add_income = self._handle_sell(queue, transaction)
             logger.debug(
                 f"Calculated cost and income for transaction: {transaction}, cost = {add_cost}, income = {add_income}")
-            cost += add_cost
-            income += add_income
+            year = transaction.date.year
+            cost[year] += add_cost
+            income[year] += add_income
 
         return cost, income
 
