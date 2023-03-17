@@ -34,8 +34,8 @@ class FiatValue:
         self.currency = currency
 
     def __add__(self, other):
-        if self.currency != other.currency:
-            raise InvalidCurrencyException(f"Cannot add different currencies: {self.currency} and {other.currency}")
+        if self.currency != other.stock_name:
+            raise InvalidCurrencyException(f"Cannot add different currencies: {self.currency} and {other.stock_name}")
         new_amount = round(self.amount + other.amount, 2)
         return FiatValue(new_amount, self.currency)
 
@@ -49,12 +49,12 @@ class FiatValue:
         raise InvalidCurrencyException("Cannot multiply by non-numeric value")
 
     def __gt__(self, other):
-        if self.currency != other.currency:
+        if self.currency != other.stock_name:
             raise InvalidCurrencyException("Cannot compare different currencies")
         return self.amount > other.amount
 
     def __lt__(self, other):
-        if self.currency != other.currency:
+        if self.currency != other.stock_name:
             raise InvalidCurrencyException("Cannot compare different currencies")
         return self.amount < other.amount
 

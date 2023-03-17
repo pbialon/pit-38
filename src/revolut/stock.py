@@ -214,7 +214,7 @@ class TaxCalculatorPerCompany:
         fifo_queue: List[StockTrade] = []
         cost, income = 0, 0
         for transaction in transactions:
-            # print(transaction)
+            # print(transactions)
             if transaction.action == "BUY":
                 fifo_queue.append((transaction, transaction.quantity))
                 continue
