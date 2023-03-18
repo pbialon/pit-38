@@ -74,7 +74,7 @@ def stocks(tax_year: int, filepath: str):
     grouped_transactions = stock_setup.group_transactions_by_stock(transactions)
     for company, transactions in grouped_transactions.items():
         profit_calculator = stock_setup.setup_profit_calculator()
-        print(profit_calculator.calculate_profit(transactions))
+        result = profit_calculator.calculate_profit(transactions)
 
 
 if __name__ == "__main__":

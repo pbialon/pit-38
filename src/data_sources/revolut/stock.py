@@ -8,6 +8,7 @@ from data_sources.revolut.csv_reader import CsvParser
 from domain.currency_exchange_service.currencies import CurrencyBuilder, FiatValue
 from domain.stock.custody_fee import CustodyFee
 from domain.stock.dividend import Dividend
+from domain.stock.stock_split import StockSplit
 from domain.transactions import Transaction, AssetValue
 
 
@@ -16,6 +17,7 @@ class OperationType(enum.Enum):
     SELL = "SELL"
     DIVIDEND = "DIVIDEND"
     CUSTODY_FEE = "CUSTODY FEE"
+    STOCK_SPLIT = "STOCK SPLIT"
 
     def __str__(self):
         return self.value
@@ -27,6 +29,7 @@ class StockCsvParser(CsvParser):
         "SELL - MARKET": OperationType.SELL,
         "DIVIDEND": OperationType.DIVIDEND,
         "CUSTODY FEE": OperationType.CUSTODY_FEE,
+        "STOCK SPLIT": OperationType.STOCK_SPLIT,
     }
 
     @classmethod
@@ -53,6 +56,16 @@ class StockCsvParser(CsvParser):
             fiat_value=cls._fiat_value(row),
             action=cls._operation_type(row),
             date=cls._date(row),
+        )
+
+    @classmethod
+    def _parse_stock_split(cls, row: Dict) -> StockSplit:
+        date = cls._date(row)
+        stock = cls._stock(row)
+        return StockSplit(
+            date=date,
+            stock=stock,
+            ratio=cls._ratio(date, stock)
         )
 
     @classmethod
@@ -99,3 +112,8 @@ class StockCsvParser(CsvParser):
     @classmethod
     def _operation_type(cls, row: dict) -> OperationType:
         return cls.OPERATIONS.get(row['Type'])
+
+    @classmethod
+    def _ratio(cls, date: pendulum.Date, stock: str) -> float:
+        return input(f"Enter split ratio for stock {stock} on {date.to_date_string()} "
+                     f"(e.g. if 20 shares for 1 - 20:1 - then type 20):")
