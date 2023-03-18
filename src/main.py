@@ -4,7 +4,7 @@ import click
 
 from data_sources.revolut.crypto import CryptoCsvParser
 from data_sources.revolut.csv_reader import TransactionsCsvReader
-from domain.calendar_service.calendar import Calendar
+from domain.calendar_service.calendar import Calendar, year_start, year_end, previous_year
 from domain.crypto.profit_calculator import YearlyProfitCalculator
 from domain.crypto.tax import TaxCalculator
 from domain.transactions import Transaction
@@ -20,26 +20,30 @@ def setup_tax_calculator(start_date: pendulum.Date, end_date: pendulum.Date) -> 
     return TaxCalculator(profit_calculator)
 
 
-def setup_input_data(filepath: str) -> List[Transaction]:
+def read_crypto_transactions(filepath: str) -> List[Transaction]:
     return TransactionsCsvReader(filepath, CryptoCsvParser).read()
 
 
-def previous_year():
-    return pendulum.now().year - 1
-
 @click.command()
 @click.option('--tax-year', '-y', default=previous_year(), help='Year you want to calculate tax for')
-@click.option('--filepath', '-f', help='Path to csv file with transactions')
+@click.option('--filepath', '-f',
+              help='Path to csv file with transactions (currently only revolut csv format is supported)')
 @click.option('--deductable-loss', '-l', default=-1,
               help='Deductable loss from previous years. It overrides calculation of loss by the script',
               type=float)
 def crypto(tax_year: int, filepath: str, deductable_loss: int):
-    tax_year_start = pendulum.date(tax_year, 1, 1)
-    tax_year_end = pendulum.date(tax_year, 12, 31)
-    tax_calculator = setup_tax_calculator(tax_year_start, tax_year_end)
-    transactions = setup_input_data(filepath)
+    tax_calculator = setup_tax_calculator(year_start(tax_year), year_end(tax_year))
+    transactions = read_crypto_transactions(filepath)
     tax_data = tax_calculator.calculate_tax_per_year(transactions, tax_year, deductable_loss)
     print(tax_data, end='\n\n')
+
+
+@click.command()
+@click.option('--tax-year', '-y', default=previous_year(), help='Year you want to calculate tax for')
+@click.option('--filepath', '-f',
+              help='Path to csv file with transactions (currently only revolut csv format is supported)')
+def stocks(tax_year: int, filepath: str):
+    pass
 
 
 if __name__ == "__main__":

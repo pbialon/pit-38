@@ -8,6 +8,18 @@ def current_year():
     return pendulum.now().year
 
 
+def previous_year():
+    return pendulum.now().year - 1
+
+
+def year_start(year: int):
+    return pendulum.date(year, 1, 1)
+
+
+def year_end(year: int):
+    return pendulum.date(year, 12, 31)
+
+
 class Calendar:
     YEARS_BACK = 5
 
