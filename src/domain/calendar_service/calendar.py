@@ -20,6 +20,10 @@ def year_end(year: int):
     return pendulum.date(year, 12, 31)
 
 
+def today() -> pendulum.Date:
+    return pendulum.today()
+
+
 class Calendar:
     YEARS_BACK = 5
 
@@ -28,7 +32,7 @@ class Calendar:
         years = range(self.start_year, year + 1)
         self.holidays = self._get_holidays(years)
 
-    def is_out_of_range(self, day: pendulum.DateTime):
+    def is_out_of_range(self, day: pendulum.Date):
         return day < pendulum.date(self.start_year, 1, 1)
 
     def is_workday(self, day: pendulum.DateTime):

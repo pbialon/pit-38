@@ -17,7 +17,8 @@ class Exchanger:
     def exchange(self, date: pendulum.DateTime, fiat_value: FiatValue) -> FiatValue:
         if fiat_value.currency == self.BASE_CURRENCY:
             return fiat_value
-        exchange_day = self.get_day_one(date)
+        day = date.start_of('day')
+        exchange_day = self.get_day_one(day)
         rate = self.exchange_rates_provider.get_rate(fiat_value.currency, exchange_day)
 
         amount_in_base_currency = round(fiat_value.amount * rate, 2)

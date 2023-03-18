@@ -22,7 +22,7 @@ class CryptoCsvParser(CsvParser):
             asset=CryptoCsvParser.crypto_value(row),
             fiat_value=CryptoCsvParser.fiat_value(row),
             action=CryptoCsvParser.action(row),
-            date=CryptoCsvParser.date(row)
+            date=CryptoCsvParser.datetime(row)
         )
         logger.debug(f'Parsed transaction: {transaction}')
         return transaction
@@ -49,7 +49,7 @@ class CryptoCsvParser(CsvParser):
         return Action.BUY
 
     @classmethod
-    def date(cls, row: dict) -> pendulum.DateTime:
+    def datetime(cls, row: dict) -> pendulum.DateTime:
         raw_datetime = CryptoCsvParser._clean_up_datetime(row['Completed Date'])
         return pendulum.parse(raw_datetime)
 

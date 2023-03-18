@@ -8,6 +8,7 @@ import requests as requests
 
 class ExchangeRatesProvider:
     # todo: rates a, b, or c?
+    # todo: query for each year
     NBP_API_URL = "https://api.nbp.pl/api/exchangerates/rates/a/{currency}/{start_date}/{end_date}/?format=json"
 
     def __init__(self, start_date: pendulum.Date, end_date: pendulum.Date):
@@ -39,7 +40,9 @@ class ExchangeRatesProvider:
         return json.loads(response.text)
 
     def _parse(self, payload: Dict[str, any]) -> Dict[pendulum.Date, float]:
-        return {
+        rates = {
             pendulum.parse(rate["effectiveDate"]).date(): rate["mid"]
             for rate in payload["rates"]
         }
+        logger.debug(f"Fetched rates for {len(rates)} days", )
+        return rates
