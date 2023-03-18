@@ -1,9 +1,13 @@
 import json
+from collections import defaultdict
 from typing import Dict
 from loguru import logger
 
 import pendulum
 import requests as requests
+
+from domain.calendar_service.calendar import year_start, year_end
+from domain.currency_exchange_service.currencies import Currency
 
 
 class ExchangeRatesProvider:
@@ -11,22 +15,23 @@ class ExchangeRatesProvider:
     # todo: query for each year
     NBP_API_URL = "https://api.nbp.pl/api/exchangerates/rates/a/{currency}/{start_date}/{end_date}/?format=json"
 
-    def __init__(self, start_date: pendulum.Date, end_date: pendulum.Date):
-        self.start_date = start_date
-        self.end_date = end_date
-        self._rates = {}
+    def __init__(self, start_year: int, end_year: int):
+        self.start_year = start_year
+        self.end_year = end_year
+        self._rates = defaultdict(dict)
 
-    def get_rate(self, currency: str, day: pendulum.Date) -> float:
-        if currency not in self._rates:
-            self._rates[currency] = self._fetch_rates(currency)
+    def get_rate(self, currency: Currency, day: pendulum.Date) -> float:
+        if currency not in self._rates or day not in self._rates[currency]:
+            self._rates[currency].update(self._fetch_rates(currency, day.year))
 
         if day not in self._rates[currency]:
             raise ValueError("No rate for {} on {}".format(currency, day))
 
         return self._rates[currency][day]
 
-    def _fetch_rates(self, currency: str) -> Dict[pendulum.Date, float]:
-        api_url = self._prepare_url(currency, self.start_date.to_date_string(), self.end_date.to_date_string())
+    def _fetch_rates(self, currency: str, year: int) -> Dict[pendulum.Date, float]:
+
+        api_url = self._prepare_url(currency, year_start(year), year_end(year))
         logger.debug("Querying NBP API: {}", api_url)
         payload = self._fetch_payload(api_url)
         return self._parse(payload)

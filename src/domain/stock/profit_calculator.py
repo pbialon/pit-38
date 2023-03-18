@@ -5,7 +5,7 @@ from loguru import logger
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
 from domain.transactions import Transaction, Action
-from domain.stock.queue import Queue
+from domain.stock.queue import Queue, TransactionWithQuantity
 
 
 def group_transaction_by_company(transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
@@ -40,12 +40,13 @@ class YearlyPerStockProfitCalculator:
 
         for transaction in transactions:
             if transaction.action == Action.BUY:
-                queue.append(transaction, transaction.asset.amount)
+                queue.append(TransactionWithQuantity(transaction))
                 continue
 
             add_cost, add_income = self._handle_sell(queue, transaction)
             logger.debug(
-                f"Calculated cost and income for transaction: {transaction}, cost = {add_cost}, income = {add_income}")
+                f"Calculated cost and income for transaction: {transaction}, "
+                f"cost = {add_cost}, income = {add_income}, profit = {add_income - add_cost}")
             year = transaction.date.year
             cost[year] += add_cost
             income[year] += add_income
@@ -65,10 +66,15 @@ class YearlyPerStockProfitCalculator:
             else:
                 fifo_queue.pop_head()
 
-            q = min(quantity, oldest_transaction_quantity)
-            cost += self.exchanger.exchange(oldest_transaction.date, oldest_transaction.fiat_value) * q
-            income += self.exchanger.exchange(transaction.date, transaction.fiat_value) * q
+            ratio = self._ratio_of_transaction_to_include(oldest_transaction_quantity, quantity)
+            cost += self.exchanger.exchange(oldest_transaction.date, oldest_transaction.fiat_value) * ratio
+            income += self.exchanger.exchange(transaction.date, transaction.fiat_value) * ratio
 
             quantity -= oldest_transaction_quantity
 
         return cost, income
+
+    def _ratio_of_transaction_to_include(self, oldest_transaction_quantity: float, quantity: float) -> float:
+        if oldest_transaction_quantity > quantity:
+            return quantity / oldest_transaction_quantity
+        return 1
