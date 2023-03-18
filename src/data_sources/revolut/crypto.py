@@ -13,8 +13,8 @@ class State:
 
 
 class CryptoCsvParser(CsvParser):
-    @staticmethod
-    def parse(row: Dict) -> Transaction:
+    @classmethod
+    def parse(cls, row: Dict) -> Transaction:
         if not CryptoCsvParser._is_completed(row):
             logger.debug(f'Skipping transaction: {row} (not completed)')
             return None
@@ -27,20 +27,20 @@ class CryptoCsvParser(CsvParser):
         logger.debug(f'Parsed transaction: {transaction}')
         return transaction
 
-    @staticmethod
-    def crypto_value(row: dict) -> AssetValue:
+    @classmethod
+    def crypto_value(cls, row: dict) -> AssetValue:
         currency = row['Currency']
         amount = abs(float(row['Amount']))
         return AssetValue(amount, currency)
 
-    @staticmethod
-    def fiat_value(row: dict) -> FiatValue:
+    @classmethod
+    def fiat_value(cls, row: dict) -> FiatValue:
         currency = CurrencyBuilder.build(row['Base currency'])
         amount = abs(float(row['Fiat amount (inc. fees)']))
         return FiatValue(amount, currency)
 
-    @staticmethod
-    def action(row: dict) -> Action:
+    @classmethod
+    def action(cls, row: dict) -> Action:
         target_currency = row['Description'].split(' ')[-1]
         is_fiat_currency = target_currency in CurrencyBuilder.CURRENCIES
 
@@ -48,17 +48,17 @@ class CryptoCsvParser(CsvParser):
             return Action.SELL
         return Action.BUY
 
-    @staticmethod
-    def date(row: dict) -> pendulum.DateTime:
+    @classmethod
+    def date(cls, row: dict) -> pendulum.DateTime:
         raw_datetime = CryptoCsvParser._clean_up_datetime(row['Completed Date'])
         return pendulum.parse(raw_datetime)
 
-    @staticmethod
-    def _is_completed(row: dict) -> bool:
+    @classmethod
+    def _is_completed(cls, row: dict) -> bool:
         return row['State'] == State.COMPLETED
 
-    @staticmethod
-    def _clean_up_datetime(raw_datetime: str) -> str:
+    @classmethod
+    def _clean_up_datetime(cls, raw_datetime: str) -> str:
         # add 0 in front of hour if needed
         date, time = raw_datetime.split(' ')
         hours, minutes, seconds = time.split(':')

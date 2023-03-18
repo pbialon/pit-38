@@ -7,8 +7,8 @@ from domain.transactions import Transaction
 
 
 class CsvParser:
-    @staticmethod
-    def parse(row: Dict) -> Transaction:
+    @classmethod
+    def parse(cls, row: Dict) -> Transaction:
         raise NotImplementedError
 
 

@@ -76,7 +76,12 @@ class StockCsvParser:
     @classmethod
     def _fiat_value(cls, row: Dict) -> FiatValue:
         currency = CurrencyBuilder.build(row['Currency'])
-        amount = float(row['Fiat value'])
+        amount_row = row['Total Amount']
+        # e.g. amount_row == "-$1,003.01"
+        if amount_row.startswith("-"):
+            amount_row = amount_row[1:]
+        amount_row = amount_row[1:].replace(",", "")
+        amount = float(amount_row)
         return FiatValue(amount, currency)
 
     @classmethod

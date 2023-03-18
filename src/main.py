@@ -43,7 +43,7 @@ class StockSetup:
         exchanger = create_exchanger(self.start_date, self.end_date)
         return YearlyPerStockProfitCalculator(exchanger)
 
-    def read_transactions(self, filepath: str) -> List[Transaction]:
+    def read_operations(self, filepath: str) -> List:
         return TransactionsCsvReader(filepath, StockCsvParser).read()
 
     def group_transactions_by_stock(self, transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
@@ -71,7 +71,7 @@ def crypto(tax_year: int, filepath: str, deductable_loss: int):
               help='Path to csv file with transactions (currently only revolut csv format is supported)')
 def stocks(tax_year: int, filepath: str):
     stock_setup = StockSetup(year_start(tax_year), year_end(tax_year))
-    transactions = stock_setup.read_transactions(filepath)
+    operations = stock_setup.read_operations(filepath)
     grouped_transactions = stock_setup.group_transactions_by_stock(transactions)
     for company, transactions in grouped_transactions.items():
         profit_calculator = stock_setup.setup_profit_calculator()
@@ -79,4 +79,4 @@ def stocks(tax_year: int, filepath: str):
 
 
 if __name__ == "__main__":
-    crypto()
+    stocks()
