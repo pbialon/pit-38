@@ -4,8 +4,6 @@ from domain.currency_exchange_service.currencies import FiatValue
 
 
 class Dividend:
-    TYPE = "DIVIDENDS"
-
     def __init__(self, date: pendulum.DateTime, value: FiatValue):
         self.date = date
         self.value = value
