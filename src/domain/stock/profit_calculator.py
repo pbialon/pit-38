@@ -8,9 +8,9 @@ from domain.transactions import Transaction, Action
 from domain.stock.queue import Queue
 
 
-def group_stock_trade_by_company(stock_transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
+def group_transaction_by_company(transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
     grouped_transactions = defaultdict(list)
-    for transaction in stock_transactions:
+    for transaction in transactions:
         company_name = transaction.asset.asset_name
         grouped_transactions[company_name].append(transaction)
     return grouped_transactions
@@ -19,17 +19,23 @@ def group_stock_trade_by_company(stock_transactions: List[Transaction]) -> Dict[
 class YearlyPerStockProfitCalculator:
     EPSILON = 0.00000001
 
-    def __init__(self, exchanger: Exchanger, company: str):
+    def __init__(self, exchanger: Exchanger):
         self.exchanger = exchanger
-        self.company = company
+
+    def _get_company_name(self, transaction: List[Transaction]) -> str:
+        # check all transactions are from the same company
+        assert (t.asset.asset_name == transaction[0].asset.asset_name for t in transaction), \
+            "All transactions should be from the same company"
+        return transaction[0].asset.asset_name
 
     def calculate_profit(self, transactions: List[Transaction]) -> (FiatValue, FiatValue):
         transactions.sort(key=lambda t: t.date)
+
         queue = Queue()
         cost = defaultdict(lambda: FiatValue(0))
         income = defaultdict(lambda: FiatValue(0))
 
-        logger.info(f"Calculating cost and income for company stock: {self.company}")
+        logger.info(f"Calculating cost and income for company stock: {self._get_company_name(transactions)}")
         logger.info(f"Number of transactions: {len(transactions)}")
 
         for transaction in transactions:

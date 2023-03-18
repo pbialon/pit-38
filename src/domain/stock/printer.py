@@ -2,12 +2,12 @@ from typing import List
 from loguru import logger
 
 from domain.transactions import Transaction
-from domain.stock.profit_calculator import group_stock_trade_by_company
+from domain.stock.profit_calculator import group_transaction_by_company
 
 
 class Printer:
     def print_stock_transactions_by_company(self, stock_transactions: List[Transaction]):
-        grouped_transactions = group_stock_trade_by_company(stock_transactions)
+        grouped_transactions = group_transaction_by_company(stock_transactions)
         for company, transactions in grouped_transactions.items():
             logger.debug(f"Transactions for company: {company}")
             for transaction in transactions:
