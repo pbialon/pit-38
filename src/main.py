@@ -12,16 +12,24 @@ from domain.currency_exchange_service.exchange_rates_provider import ExchangeRat
 from domain.currency_exchange_service.exchanger import Exchanger
 
 
-def setup_tax_calculator(start_date: pendulum.Date, end_date: pendulum.Date) -> TaxCalculator:
+def create_exchanger(start_date: pendulum.Date, end_date: pendulum.Date) -> Exchanger:
     calendar = Calendar()
     rates_provider = ExchangeRatesProvider(start_date, end_date)
-    exchanger = Exchanger(rates_provider, calendar)
-    profit_calculator = YearlyProfitCalculator(exchanger)
-    return TaxCalculator(profit_calculator)
+    return Exchanger(rates_provider, calendar)
 
 
-def read_crypto_transactions(filepath: str) -> List[Transaction]:
-    return TransactionsCsvReader(filepath, CryptoCsvParser).read()
+class CryptoSetup:
+    def __init__(self, start_date: pendulum.Date, end_date: pendulum.Date):
+        self.start_date = start_date
+        self.end_date = end_date
+
+    def setup_tax_calculator(self) -> TaxCalculator:
+        exchanger = create_exchanger(self.start_date, self.end_date)
+        profit_calculator = YearlyProfitCalculator(exchanger)
+        return TaxCalculator(profit_calculator)
+
+    def read_transactions(self, filepath: str) -> List[Transaction]:
+        return TransactionsCsvReader(filepath, CryptoCsvParser).read()
 
 
 @click.command()
@@ -32,8 +40,9 @@ def read_crypto_transactions(filepath: str) -> List[Transaction]:
               help='Deductable loss from previous years. It overrides calculation of loss by the script',
               type=float)
 def crypto(tax_year: int, filepath: str, deductable_loss: int):
-    tax_calculator = setup_tax_calculator(year_start(tax_year), year_end(tax_year))
-    transactions = read_crypto_transactions(filepath)
+    crypto_setup = CryptoSetup(year_start(tax_year), year_end(tax_year))
+    tax_calculator = crypto_setup.setup_tax_calculator()
+    transactions = crypto_setup.read_transactions(filepath)
     tax_data = tax_calculator.calculate_tax_per_year(transactions, tax_year, deductable_loss)
     print(tax_data, end='\n\n')
 
