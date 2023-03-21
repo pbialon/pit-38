@@ -2,6 +2,7 @@ from typing import List, Dict
 import click
 
 from data_sources.revolut.csv_reader import TransactionsCsvReader
+from data_sources.revolut.stock.operation_csv_parser import OperationStockCsvParser
 from data_sources.revolut.stock.transaction_csv_parser import TransactionStockCsvParser
 from domain.calendar_service.calendar import previous_year
 from domain.stock.profit_calculator import YearlyPerStockProfitCalculator, group_transaction_by_company
@@ -22,7 +23,7 @@ class StockSetup:
 
     @classmethod
     def read_operations(cls, filepath: str) -> List:
-        return OperationsCsvReader(filepath, StockOperationCsvParser).read()
+        return TransactionsCsvReader(filepath, OperationStockCsvParser).read()
 
     @classmethod
     def group_transactions_by_stock(cls, transactions: List[Transaction]) -> Dict[str, List[Transaction]]:

@@ -1,15 +1,10 @@
 import csv
-from typing import List, Dict
+from typing import List
 
 from loguru import logger
 
+from data_sources.revolut.csv_parser import CsvParser
 from domain.transactions import Transaction
-
-
-class CsvParser:
-    @classmethod
-    def parse(cls, row: Dict) -> Transaction:
-        raise NotImplementedError
 
 
 class TransactionsCsvReader:
