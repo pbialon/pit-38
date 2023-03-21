@@ -35,3 +35,7 @@ def crypto(tax_year: int, filepath: str, deductable_loss: int):
     transactions = CryptoSetup.read_transactions(filepath)
     tax_data = tax_calculator.calculate_tax_per_year(transactions, tax_year, deductable_loss)
     print(tax_data, end='\n\n')
+
+
+if __name__ == "__main__":
+    crypto()
