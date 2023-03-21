@@ -1,5 +1,7 @@
 from collections import defaultdict
 from typing import List, Dict
+
+import pendulum
 from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
@@ -18,6 +20,20 @@ def group_transaction_by_company(transactions: List[Transaction]) -> Dict[str, L
     return grouped_transactions
 
 
+class StockSplitHandler:
+    @classmethod
+    def multiplier_for_date(cls, stock_splits: List[StockSplit], date: pendulum.DateTime) -> float:
+        assert sorted(stock_splits) == stock_splits, "It should be sorted"
+
+        multiplier = 1
+        for stock_split in reversed(stock_splits):
+            if stock_split.date > date:
+                multiplier *= stock_split.ratio
+        if multiplier > 1:
+            logger.debug(f"Stock split multiplier for {date} is {multiplier}")
+        return multiplier
+
+
 class YearlyPerStockProfitCalculator:
     EPSILON = 0.00000001
 
@@ -30,8 +46,32 @@ class YearlyPerStockProfitCalculator:
             "All transactions should be from the same company"
         return transaction[0].asset.asset_name
 
-    def calculate_profit(self, transactions: List[Transaction], stock_splits: List[StockSplit]) -> (FiatValue, FiatValue):
+    def _stock_splits_into_transactions(self,
+                                        stock_splits: List[StockSplit],
+                                        transactions: List[Transaction]) -> List[Transaction]:
+        stock_splits.sort(key=lambda s: s.date)
         transactions.sort(key=lambda t: t.date)
+
+        new_transactions = []
+        for transaction in transactions:
+            multiplier = StockSplitHandler.multiplier_for_date(stock_splits, transaction.date)
+            new_transactions.append(Transaction(
+                transaction.asset * multiplier,
+                transaction.fiat_value,
+                transaction.action,
+                transaction.date,
+            ))
+
+        return new_transactions
+
+    def calculate_profit(self,
+                         transactions: List[Transaction],
+                         stock_splits: List[StockSplit]) -> (FiatValue, FiatValue):
+        transactions.sort(key=lambda t: t.date)
+        if stock_splits:
+            logger.info(f"Handling {len(stock_splits)} stock splits")
+            transactions = self._stock_splits_into_transactions(stock_splits, transactions)
+            logger.debug(f"Transactions after handling stock splits: {transactions}")
 
         queue = Queue()
         cost = defaultdict(lambda: FiatValue(0))

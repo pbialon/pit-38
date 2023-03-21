@@ -46,7 +46,7 @@ class FiatValue:
         if isinstance(other, int) or isinstance(other, float):
             new_amount = round(self.amount * other, 2)
             return FiatValue(new_amount, self.currency)
-        raise InvalidCurrencyException("Cannot multiply by non-numeric value")
+        raise Exception("Cannot multiply by non-numeric value")
 
     def __gt__(self, other):
         if self.currency != other.currency:

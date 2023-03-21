@@ -54,6 +54,7 @@ class OperationStockCsvParser(StockCsvParser):
         )
 
     @classmethod
-    def _ratio(cls, date: pendulum.Date, stock: str) -> float:
-        return input(f"Enter split ratio for stock {stock} on {date.to_date_string()} "
-                     f"(e.g. if 20 shares for 1 - 20:1 - then type 20):")
+    def _ratio(cls, date: pendulum.Date, stock: str) -> int:
+        split_ratio = input(f"Enter split ratio for stock {stock} on {date.to_date_string()} "
+                            f"(e.g. if 20 shares for 1 - 20:1 - then type 20):")
+        return int(split_ratio)

@@ -9,3 +9,9 @@ class AssetValue:
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
+
+    def __mul__(self, other):
+        if isinstance(other, int) or isinstance(other, float):
+            new_amount = self.amount * other
+            return AssetValue(new_amount, self.asset_name)
+        raise Exception("Cannot multiply by non-numeric value")
