@@ -27,3 +27,13 @@ class Transaction:
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
+
+    def __mul__(self, other):
+        if isinstance(other, int) or isinstance(other, float):
+            return Transaction(
+                self.asset * other,
+                self.fiat_value * other,
+                self.action,
+                self.date,
+            )
+        raise Exception("Cannot multiply by non-numeric value")

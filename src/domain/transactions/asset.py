@@ -15,3 +15,11 @@ class AssetValue:
             new_amount = self.amount * other
             return AssetValue(new_amount, self.asset_name)
         raise Exception("Cannot multiply by non-numeric value")
+
+    def __sub__(self, other):
+        if isinstance(other, AssetValue):
+            if other.asset_name != self.asset_name:
+                raise Exception("Cannot subtract different assets")
+            new_amount = self.amount - other.amount
+            return AssetValue(new_amount, self.asset_name)
+        raise Exception("Cannot subtract non-asset value")

@@ -6,10 +6,9 @@ from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
-from domain.stock.operation import Operation
 from domain.stock.stock_split import StockSplit
 from domain.transactions import Transaction, Action
-from domain.stock.queue import Queue, TransactionWithQuantity
+from domain.stock.queue import Queue
 
 
 def group_transaction_by_company(transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
@@ -84,7 +83,7 @@ class YearlyPerStockProfitCalculator:
 
         for transaction in transactions:
             if transaction.action == Action.BUY:
-                queue.append(TransactionWithQuantity(transaction))
+                queue.append(transaction)
                 continue
 
             transaction_cost = self._calculate_cost_for_sell(queue, transaction)
@@ -104,22 +103,25 @@ class YearlyPerStockProfitCalculator:
 
         return cost, income
 
-    def _calculate_cost_for_sell(self, fifo_queue: Queue, transaction: Transaction) -> FiatValue:
-        quantity = transaction.asset.amount
+    def _calculate_cost_for_sell(self, buy_queue: Queue, transaction: Transaction) -> FiatValue:
+        stock_amount_to_account = transaction.asset.amount
         cost = FiatValue(0)
 
-        while quantity > self.EPSILON:
-            oldest_transaction = fifo_queue.head_item()
-            oldest_transaction_quantity = fifo_queue.head_quantity()
+        while stock_amount_to_account > self.EPSILON:
+            oldest_buy = buy_queue.head()
+            oldest_buy_stock_amount = oldest_buy.asset.amount
 
-            if oldest_transaction_quantity > quantity:
-                fifo_queue.reduce_quantity_head(quantity)
+            if oldest_buy_stock_amount <= stock_amount_to_account + self.EPSILON:
+                cost += self.exchanger.exchange(oldest_buy.date, oldest_buy.fiat_value)
+                stock_amount_to_account -= oldest_buy_stock_amount
+                buy_queue.pop_head()
             else:
-                fifo_queue.pop_head()
-
-            ratio = self._ratio_of_transaction_to_include(oldest_transaction_quantity, quantity)
-            cost += self.exchanger.exchange(oldest_transaction.date, oldest_transaction.fiat_value) * ratio
-            quantity -= oldest_transaction_quantity
+                ratio_of_oldest_buy_to_include = stock_amount_to_account / oldest_buy_stock_amount
+                cost += self.exchanger.exchange(
+                    transaction.date, oldest_buy.fiat_value) * ratio_of_oldest_buy_to_include
+                stock_amount_to_account = 0
+                new_head = buy_queue.head() * (1 - ratio_of_oldest_buy_to_include)
+                buy_queue.replace_head(new_head)
 
         return cost
 
