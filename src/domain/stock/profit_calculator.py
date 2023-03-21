@@ -87,19 +87,26 @@ class YearlyPerStockProfitCalculator:
                 queue.append(TransactionWithQuantity(transaction))
                 continue
 
-            add_cost, add_income = self._handle_sell(queue, transaction)
+            transaction_cost = self._calculate_cost_for_sell(queue, transaction)
+            transaction_income = self.exchanger.exchange(transaction.date, transaction.fiat_value)
+            transaction_profit = transaction_income - transaction_cost
             logger.debug(
                 f"Calculated cost and income for transaction: {transaction}, "
-                f"cost = {add_cost}, income = {add_income}, profit = {add_income - add_cost}")
+                f"cost = {transaction_cost}, income = {transaction_income}, profit = {transaction_profit}")
             year = transaction.date.year
-            cost[year] += add_cost
-            income[year] += add_income
+            cost[year] += transaction_cost
+            income[year] += transaction_income
+
+        for year in cost.keys():
+            profit = income[year] - cost[year]
+            logger.info(f"Year: {year} for {self._get_company_name(transactions)}, "
+                        f"cost: {cost[year]}, income: {income[year]}, profit: {profit}")
 
         return cost, income
 
-    def _handle_sell(self, fifo_queue: Queue, transaction: Transaction) -> (FiatValue, FiatValue):
+    def _calculate_cost_for_sell(self, fifo_queue: Queue, transaction: Transaction) -> FiatValue:
         quantity = transaction.asset.amount
-        cost, income = FiatValue(0), FiatValue(0)
+        cost = FiatValue(0)
 
         while quantity > self.EPSILON:
             oldest_transaction = fifo_queue.head_item()
@@ -112,11 +119,9 @@ class YearlyPerStockProfitCalculator:
 
             ratio = self._ratio_of_transaction_to_include(oldest_transaction_quantity, quantity)
             cost += self.exchanger.exchange(oldest_transaction.date, oldest_transaction.fiat_value) * ratio
-            income += self.exchanger.exchange(transaction.date, transaction.fiat_value) * ratio
-
             quantity -= oldest_transaction_quantity
 
-        return cost, income
+        return cost
 
     def _ratio_of_transaction_to_include(self, oldest_transaction_quantity: float, quantity: float) -> float:
         if oldest_transaction_quantity > quantity:
