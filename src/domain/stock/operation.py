@@ -1,2 +1,2 @@
 class Operation:
-    pass
+    type = None

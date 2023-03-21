@@ -5,6 +5,7 @@ from loguru import logger
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
 from domain.stock.operation import Operation
+from domain.stock.stock_split import StockSplit
 from domain.transactions import Transaction, Action
 from domain.stock.queue import Queue, TransactionWithQuantity
 
@@ -29,7 +30,7 @@ class YearlyPerStockProfitCalculator:
             "All transactions should be from the same company"
         return transaction[0].asset.asset_name
 
-    def calculate_profit(self, transactions: List[Transaction], operations: List[Operation]) -> (FiatValue, FiatValue):
+    def calculate_profit(self, transactions: List[Transaction], stock_splits: List[StockSplit]) -> (FiatValue, FiatValue):
         transactions.sort(key=lambda t: t.date)
 
         queue = Queue()
@@ -38,6 +39,8 @@ class YearlyPerStockProfitCalculator:
 
         logger.info(f"Calculating cost and income for company stock: {self._get_company_name(transactions)}")
         logger.info(f"Number of transactions: {len(transactions)}")
+        if stock_splits:
+            logger.info(f"Stock splits: {stock_splits}")
 
         for transaction in transactions:
             if transaction.action == Action.BUY:
