@@ -4,6 +4,7 @@ from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
+from domain.stock.operation import Operation
 from domain.transactions import Transaction, Action
 from domain.stock.queue import Queue, TransactionWithQuantity
 
@@ -28,7 +29,7 @@ class YearlyPerStockProfitCalculator:
             "All transactions should be from the same company"
         return transaction[0].asset.asset_name
 
-    def calculate_profit(self, transactions: List[Transaction]) -> (FiatValue, FiatValue):
+    def calculate_profit(self, transactions: List[Transaction], operations: List[Operation]) -> (FiatValue, FiatValue):
         transactions.sort(key=lambda t: t.date)
 
         queue = Queue()
