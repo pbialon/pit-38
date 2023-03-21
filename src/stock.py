@@ -3,6 +3,7 @@ import click
 
 from data_sources.revolut.csv_reader import TransactionsCsvReader
 from data_sources.revolut.stock.operation_csv_parser import OperationStockCsvParser
+from data_sources.revolut.stock.operations_csv_reader import OperationsCsvReader
 from data_sources.revolut.stock.transaction_csv_parser import TransactionStockCsvParser
 from domain.calendar_service.calendar import previous_year
 from domain.stock.profit_calculator import YearlyPerStockProfitCalculator, group_transaction_by_company
@@ -23,7 +24,7 @@ class StockSetup:
 
     @classmethod
     def read_operations(cls, filepath: str) -> List:
-        return TransactionsCsvReader(filepath, OperationStockCsvParser).read()
+        return OperationsCsvReader(filepath, OperationStockCsvParser).read()
 
     @classmethod
     def group_transactions_by_stock(cls, transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
@@ -37,6 +38,7 @@ class StockSetup:
 def stocks(tax_year: int, filepath: str):
     stock_setup = StockSetup()
     transactions = stock_setup.read_transactions(filepath)
+    operations = stock_setup.read_operations(filepath)
     grouped_transactions = stock_setup.group_transactions_by_stock(transactions)
     for company, transactions in grouped_transactions.items():
         profit_calculator = stock_setup.setup_profit_calculator()
