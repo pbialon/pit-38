@@ -14,9 +14,7 @@ class ExchangeRatesProvider:
     # todo: rates a, b, or c?
     NBP_API_URL = "https://api.nbp.pl/api/exchangerates/rates/a/{currency}/{start_date}/{end_date}/?format=json"
 
-    def __init__(self, start_year: int, end_year: int):
-        self.start_year = start_year
-        self.end_year = end_year
+    def __init__(self):
         self._rates = defaultdict(dict)
 
     def get_rate(self, currency: Currency, day: pendulum.Date) -> float:
