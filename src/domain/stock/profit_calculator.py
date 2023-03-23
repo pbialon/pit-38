@@ -153,6 +153,11 @@ class YearlyProfitCalculator:
                 cost_by_year[year] += cost[year]
                 income_by_year[year] += income[year]
 
+        for dividend in dividends:
+            profit = self.exchanger.exchange(dividend.date, dividend.value)
+            logger.debug(f"Processing dividend {dividend}, profit: {profit}")
+            income_by_year[dividend.date.year] += profit
+
         for year in cost_by_year.keys():
             logger.info(f"Year: {year}, cost: {cost_by_year[year]}, income: {income_by_year[year]}")
 
