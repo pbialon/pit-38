@@ -7,6 +7,7 @@ from loguru import logger
 from data_sources.revolut.stock.operation import OperationType
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
+from domain.stock.custody_fee import CustodyFee
 from domain.stock.dividend import Dividend
 from domain.stock.operation import Operation
 from domain.stock.stock_split import StockSplit
@@ -143,7 +144,8 @@ class YearlyProfitCalculator:
             self,
             transactions: List[Transaction],
             stock_splits: List[StockSplit],
-            dividends: List[Dividend]) -> (FiatValue, FiatValue):
+            dividends: List[Dividend],
+            custody_fees: List[CustodyFee]) -> (FiatValue, FiatValue):
 
         cost_by_year = defaultdict(lambda: FiatValue(0))
         income_by_year = defaultdict(lambda: FiatValue(0))
@@ -157,6 +159,11 @@ class YearlyProfitCalculator:
             profit = self.exchanger.exchange(dividend.date, dividend.value)
             logger.debug(f"Processing dividend {dividend}, profit: {profit}")
             income_by_year[dividend.date.year] += profit
+
+        for custody_fees in custody_fees:
+            cost = self.exchanger.exchange(custody_fees.date, custody_fees.value)
+            logger.debug(f"Processing custody fees {custody_fees}, cost: {cost}")
+            cost_by_year[custody_fees.date.year] += cost
 
         for year in cost_by_year.keys():
             logger.info(f"Year: {year}, cost: {cost_by_year[year]}, income: {income_by_year[year]}")

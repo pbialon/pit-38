@@ -73,7 +73,7 @@ def stocks(tax_year: int, filepath: str):
     stock_splits = stock_setup.filter_stock_splits(operations)
 
     profit_calculator = stock_setup.setup_profit_calculator()
-    profit_calculator.calculate_cumulative_cost_and_income(transactions, stock_splits, dividends)
+    profit_calculator.calculate_cumulative_cost_and_income(transactions, stock_splits, dividends, custody_fees)
 
 
 if __name__ == "__main__":
