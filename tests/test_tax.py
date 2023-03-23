@@ -21,40 +21,40 @@ def zl(amount):
 
 
 class TestTaxCalculatorDeductions(TestCase):
-    def test_deductable_loss_from_previous_years_no_loss_no_profit(self):
+    def test_deductible_loss_from_previous_years_no_loss_no_profit(self):
         tax_calculator = TaxCalculator()
         income = {2019: zl(100), 2020: zl(100), 2021: zl(200)}
         cost = {2019: zl(100), 2020: zl(100), 2021: zl(200)}
-        tax = tax_calculator.deductable_loss_from_previous_years(income, cost, 2021)
+        tax = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
         self.assertEqual(zl(0), tax)
 
-    def test_deductable_loss_from_previous_years_profit_only(self):
+    def test_deductible_loss_from_previous_years_profit_only(self):
         tax_calculator = TaxCalculator()
         income = {2019: zl(200), 2020: zl(200), 2021: zl(200)}
         cost = {2019: zl(100), 2020: zl(100), 2021: zl(100)}
-        tax = tax_calculator.deductable_loss_from_previous_years(income, cost, 2021)
+        tax = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
         self.assertEqual(zl(0), tax)
 
-    def test_deductable_loss_from_previous_years_loss_only(self):
+    def test_deductible_loss_from_previous_years_loss_only(self):
         tax_calculator = TaxCalculator()
         income = {2019: zl(100), 2020: zl(100), 2021: zl(100)}
         cost = {2019: zl(200), 2020: zl(200), 2021: zl(200)}
-        tax = tax_calculator.deductable_loss_from_previous_years(income, cost, 2021)
+        tax = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
         self.assertEqual(zl(200), tax)
 
-    def test_deductable_loss_from_previous_years_loss_and_profit(self):
+    def test_deductible_loss_from_previous_years_loss_and_profit(self):
         tax_calculator = TaxCalculator()
         income = {2019: zl(100), 2020: zl(150), 2021: zl(200)}
         cost = {2019: zl(200), 2020: zl(100), 2021: zl(100)}
-        tax = tax_calculator.deductable_loss_from_previous_years(income, cost, 2021)
+        tax = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
         self.assertEqual(zl(50), tax)
 
-    def test_deductable_loss_from_previous_years_deducted_some_in_previous_year(self):
+    def test_deductible_loss_from_previous_years_deducted_some_in_previous_year(self):
         tax_calculator = TaxCalculator()
         # deducted 100 loss from 2018 in 2019
         income = {2018: zl(100), 2019: zl(400), 2020: zl(100), 2021: zl(200)}
         cost = {2018: zl(200), 2019: zl(200), 2020: zl(200), 2021: zl(100)}
-        tax = tax_calculator.deductable_loss_from_previous_years(income, cost, 2021)
+        tax = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
         self.assertEqual(zl(100), tax)
 
 

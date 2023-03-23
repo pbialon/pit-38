@@ -65,10 +65,10 @@ class StockSetup:
 @click.option('--tax-year', '-y', default=previous_year(), help='Year you want to calculate tax for')
 @click.option('--filepath', '-f',
               help='Path to csv file with transactions (currently only revolut csv format is supported)')
-@click.option('--deductable-loss', '-l', default=-1,
-              help='Deductable loss from previous years. It overrides calculation of loss by the script',
+@click.option('--deductible-loss', '-l', default=-1,
+              help='Deductible loss from previous years. It overrides calculation of loss by the script',
               type=float)
-def stocks(tax_year: int, filepath: str, deductable_loss: float):
+def stocks(tax_year: int, filepath: str, deductible_loss: float):
     stock_setup = StockSetup()
     transactions = stock_setup.read_transactions(filepath)
     operations = stock_setup.read_operations(filepath)
@@ -81,7 +81,7 @@ def stocks(tax_year: int, filepath: str, deductable_loss: float):
 
     tax_calculator = TaxCalculator()
     tax_data = tax_calculator.calculate_tax_per_year(
-        income_per_year, cost_per_year, tax_year, deductable_loss)
+        income_per_year, cost_per_year, tax_year, deductible_loss)
     print(tax_data, end='\n\n')
 
 

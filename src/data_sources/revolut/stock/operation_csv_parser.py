@@ -6,8 +6,8 @@ from data_sources.revolut.stock.csv_parser import StockCsvParser
 from data_sources.revolut.stock.operation import OperationType
 from domain.stock.custody_fee import CustodyFee
 from domain.stock.dividend import Dividend
+from domain.stock.operation import Operation
 from domain.stock.stock_split import StockSplit
-from domain.transactions import Transaction
 
 
 class OperationStockCsvParser(StockCsvParser):
@@ -18,7 +18,7 @@ class OperationStockCsvParser(StockCsvParser):
     }
 
     @classmethod
-    def parse(cls, row: Dict) -> Transaction:
+    def parse(cls, row: Dict) -> Operation:
         operation_type = cls._operation_type(row)
         if operation_type not in cls.OPERATIONS_HANDLED:
             return None
@@ -30,14 +30,14 @@ class OperationStockCsvParser(StockCsvParser):
             return OperationStockCsvParser._parse_stock_split(row)
 
     @classmethod
-    def _parse_custody_fee(cls, row: Dict) -> Transaction:
+    def _parse_custody_fee(cls, row: Dict) -> CustodyFee:
         return CustodyFee(
             date=cls._date(row),
             value=cls._fiat_value(row)
         )
 
     @classmethod
-    def _parse_dividend(cls, row: Dict) -> Transaction:
+    def _parse_dividend(cls, row: Dict) -> Dividend:
         return Dividend(
             date=cls._date(row),
             value=cls._fiat_value(row)

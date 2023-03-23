@@ -4,6 +4,7 @@ from typing import List
 from loguru import logger
 
 from data_sources.revolut.csv_parser import CsvParser
+from domain.stock.operation import Operation
 
 
 class OperationsCsvReader:
@@ -11,7 +12,7 @@ class OperationsCsvReader:
         self.path = path
         self.csv_parser = csv_parser
 
-    def read(self) -> List:
+    def read(self) -> List[Operation]:
         operations = []
         logger.info(f"Reading operations from {self.path}...")
         with open(self.path, 'r') as csvfile:

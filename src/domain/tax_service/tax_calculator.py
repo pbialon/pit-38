@@ -13,11 +13,11 @@ class TaxCalculator:
                                income_per_year: Dict[int, FiatValue],
                                cost_per_year: Dict[int, FiatValue],
                                tax_year: int,
-                               deductable_loss: float = -1) -> TaxYearResult:
+                               deductible_loss: float = -1) -> TaxYearResult:
 
-        loss: FiatValue = self.deductable_loss_from_previous_years(
+        loss: FiatValue = self.deductible_loss_from_previous_years(
             income_per_year, cost_per_year, tax_year
-        ) if deductable_loss == -1 else FiatValue(deductable_loss)
+        ) if deductible_loss == -1 else FiatValue(deductible_loss)
 
         profit_in_tax_year: FiatValue = income_per_year[tax_year] - cost_per_year[tax_year]
         if loss > FiatValue(0):
@@ -33,7 +33,7 @@ class TaxCalculator:
             tax
         )
 
-    def deductable_loss_from_previous_years(self,
+    def deductible_loss_from_previous_years(self,
                                             income: defaultdict[int, FiatValue],
                                             cost: defaultdict[int, FiatValue],
                                             tax_year: int) -> FiatValue:
