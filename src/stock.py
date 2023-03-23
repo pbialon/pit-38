@@ -14,6 +14,7 @@ from domain.stock.operation import Operation
 from domain.stock.profit_calculator import YearlyPerStockProfitCalculator, group_transaction_by_company, \
     YearlyProfitCalculator
 from domain.stock.stock_split import StockSplit
+from domain.tax_service.tax_calculator import TaxCalculator
 from domain.transactions import Transaction
 from exchanger import create_exchanger
 
@@ -65,6 +66,7 @@ class StockSetup:
 @click.option('--filepath', '-f',
               help='Path to csv file with transactions (currently only revolut csv format is supported)')
 def stocks(tax_year: int, filepath: str):
+    #todo: deductable loss
     stock_setup = StockSetup()
     transactions = stock_setup.read_transactions(filepath)
     operations = stock_setup.read_operations(filepath)
@@ -73,7 +75,12 @@ def stocks(tax_year: int, filepath: str):
     stock_splits = stock_setup.filter_stock_splits(operations)
 
     profit_calculator = stock_setup.setup_profit_calculator()
-    profit_calculator.calculate_cumulative_cost_and_income(transactions, stock_splits, dividends, custody_fees)
+    cost_per_year, income_per_year = profit_calculator.calculate_cumulative_cost_and_income(transactions, stock_splits, dividends, custody_fees)
+
+    tax_calculator = TaxCalculator()
+    tax_data = tax_calculator.calculate_tax_per_year(
+        income_per_year, cost_per_year, tax_year, -1)
+    print(tax_data, end='\n\n')
 
 
 if __name__ == "__main__":

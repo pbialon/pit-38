@@ -168,6 +168,8 @@ class YearlyProfitCalculator:
         for year in cost_by_year.keys():
             logger.info(f"Year: {year}, cost: {cost_by_year[year]}, income: {income_by_year[year]}")
 
+        return cost_by_year, income_by_year
+
     def _group_transaction_by_stock(self, transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
         grouped_transactions = defaultdict(list)
         for transaction in transactions:
