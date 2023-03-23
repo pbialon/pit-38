@@ -4,8 +4,11 @@ from typing import List, Dict
 import pendulum
 from loguru import logger
 
+from data_sources.revolut.stock.operation import OperationType
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
+from domain.stock.dividend import Dividend
+from domain.stock.operation import Operation
 from domain.stock.stock_split import StockSplit
 from domain.transactions import Transaction, Action
 from domain.stock.queue import Queue
@@ -63,9 +66,9 @@ class YearlyPerStockProfitCalculator:
 
         return new_transactions
 
-    def calculate_profit(self,
-                         transactions: List[Transaction],
-                         stock_splits: List[StockSplit]) -> (FiatValue, FiatValue):
+    def calculate_cost_and_income(self,
+                                  transactions: List[Transaction],
+                                  stock_splits: List[StockSplit]) -> (FiatValue, FiatValue):
         transactions.sort(key=lambda t: t.date)
         if stock_splits:
             logger.info(f"Handling {len(stock_splits)} stock splits")
@@ -129,3 +132,39 @@ class YearlyPerStockProfitCalculator:
         if oldest_transaction_quantity > quantity:
             return quantity / oldest_transaction_quantity
         return 1
+
+
+class YearlyProfitCalculator:
+    def __init__(self, exchanger, per_stock_calculator: YearlyPerStockProfitCalculator):
+        self.exchanger = exchanger
+        self.per_stock_calculator = per_stock_calculator
+
+    def calculate_cumulative_cost_and_income(
+            self,
+            transactions: List[Transaction],
+            stock_splits: List[StockSplit],
+            dividends: List[Dividend]) -> (FiatValue, FiatValue):
+
+        cost_by_year = defaultdict(lambda: FiatValue(0))
+        income_by_year = defaultdict(lambda: FiatValue(0))
+        for company, transactions in self._group_transaction_by_stock(transactions).items():
+            cost, income = self.per_stock_calculator.calculate_cost_and_income(transactions, stock_splits)
+            for year in cost.keys():
+                cost_by_year[year] += cost[year]
+                income_by_year[year] += income[year]
+
+        for year in cost_by_year.keys():
+            logger.info(f"Year: {year}, cost: {cost_by_year[year]}, income: {income_by_year[year]}")
+
+    def _group_transaction_by_stock(self, transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
+        grouped_transactions = defaultdict(list)
+        for transaction in transactions:
+            company_name = transaction.asset.asset_name
+            grouped_transactions[company_name].append(transaction)
+        return grouped_transactions
+
+    def _group_stock_split_by_stock(self, stock_splits: List[StockSplit]) -> Dict[str, List[StockSplit]]:
+        stock_splits_by_stock = defaultdict(list)
+        for stock_split in stock_splits:
+            stock_splits_by_stock[stock_split.stock].append(stock_split)
+        return stock_splits_by_stock

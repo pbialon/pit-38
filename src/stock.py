@@ -11,7 +11,8 @@ from domain.calendar_service.calendar import previous_year
 from domain.stock.custody_fee import CustodyFee
 from domain.stock.dividend import Dividend
 from domain.stock.operation import Operation
-from domain.stock.profit_calculator import YearlyPerStockProfitCalculator, group_transaction_by_company
+from domain.stock.profit_calculator import YearlyPerStockProfitCalculator, group_transaction_by_company, \
+    YearlyProfitCalculator
 from domain.stock.stock_split import StockSplit
 from domain.transactions import Transaction
 from exchanger import create_exchanger
@@ -20,9 +21,10 @@ from exchanger import create_exchanger
 class StockSetup:
 
     @classmethod
-    def setup_profit_calculator(cls) -> YearlyPerStockProfitCalculator:
+    def setup_profit_calculator(cls) -> YearlyProfitCalculator:
         exchanger = create_exchanger()
-        return YearlyPerStockProfitCalculator(exchanger)
+        per_stock_calculator = YearlyPerStockProfitCalculator(exchanger)
+        return YearlyProfitCalculator(exchanger, per_stock_calculator)
 
     @classmethod
     def read_transactions(cls, filepath: str) -> List:
@@ -50,6 +52,10 @@ class StockSetup:
         return [operation for operation in operations if operation.type == OperationType.DIVIDEND]
 
     @classmethod
+    def filter_stock_splits(cls, operations: List[Operation]) -> List[StockSplit]:
+        return [operation for operation in operations if operation.type == OperationType.STOCK_SPLIT]
+
+    @classmethod
     def filter_custody_fees(cls, operations: List[Operation]) -> List[CustodyFee]:
         return [operation for operation in operations if operation.type == OperationType.CUSTODY_FEE]
 
@@ -64,12 +70,10 @@ def stocks(tax_year: int, filepath: str):
     operations = stock_setup.read_operations(filepath)
     custody_fees = stock_setup.filter_custody_fees(operations)
     dividends = stock_setup.filter_dividends(operations)
-    stock_splits = stock_setup.filter_stock_splits_and_group_by_stock(operations)
-    grouped_transactions = stock_setup.group_transactions_by_stock(transactions)
-    for company, transactions in grouped_transactions.items():
-        profit_calculator = stock_setup.setup_profit_calculator()
-        stock_splits_for_company = stock_splits.get(company)
-        profit_calculator.calculate_profit(transactions, stock_splits_for_company)
+    stock_splits = stock_setup.filter_stock_splits(operations)
+
+    profit_calculator = stock_setup.setup_profit_calculator()
+    profit_calculator.calculate_cumulative_cost_and_income(transactions, stock_splits, dividends)
 
 
 if __name__ == "__main__":
