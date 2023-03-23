@@ -4,7 +4,7 @@ import pendulum
 
 from domain.currency_exchange_service.currencies import FiatValue, Currency
 from domain.crypto.profit_calculator import YearlyProfitCalculator
-from domain.crypto.tax import TaxCalculator
+from domain.tax_service.tax_calculator import TaxCalculator
 from domain.transactions import AssetValue, Transaction, Action
 
 

@@ -6,7 +6,7 @@ from data_sources.revolut.crypto import CryptoCsvParser
 from data_sources.revolut.csv_reader import TransactionsCsvReader
 from domain.calendar_service.calendar import previous_year
 from domain.crypto.profit_calculator import YearlyProfitCalculator
-from domain.crypto.tax import TaxCalculator
+from domain.tax_service.tax_calculator import TaxCalculator
 from domain.transactions import Transaction
 from exchanger import create_exchanger
 
