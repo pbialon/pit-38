@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List
+from typing import List, Dict
 
 from domain.crypto.profit_calculator import YearlyProfitCalculator
 from domain.transactions import Transaction
@@ -30,23 +30,32 @@ class TaxYearResult:
 
 
 class TaxCalculator:
-    def __init__(self, yearly_calculator: YearlyProfitCalculator, tax_rate: float = 0.19):
-        self.yearly_calculator = yearly_calculator
+    def __init__(self, tax_rate: float = 0.19):
         self.tax_rate = tax_rate
 
-    def calculate_tax_per_year(self, transactions: List[Transaction], tax_year: int,
+    def calculate_tax_per_year(self,
+                               income_per_year: Dict[int, FiatValue],
+                               cost_per_year: Dict[int, FiatValue],
+                               tax_year: int,
                                deductable_loss: int = -1) -> TaxYearResult:
-        income = self.yearly_calculator.income_per_year(transactions)
-        cost = self.yearly_calculator.cost_per_year(transactions)
 
         loss: FiatValue = self.deductable_loss_from_previous_years(
-            income, cost, tax_year) if deductable_loss == -1 else FiatValue(deductable_loss)
-        profit_in_tax_year: FiatValue = income[tax_year] - cost[tax_year]
+            income_per_year, cost_per_year, tax_year
+        ) if deductable_loss == -1 else FiatValue(deductable_loss)
+
+        profit_in_tax_year: FiatValue = income_per_year[tax_year] - cost_per_year[tax_year]
         if loss > FiatValue(0):
             profit_in_tax_year -= loss
 
         tax = profit_in_tax_year * self.tax_rate if profit_in_tax_year > FiatValue(0) else FiatValue(0)
-        return TaxYearResult(tax_year, income[tax_year], cost[tax_year], loss, profit_in_tax_year, tax)
+        return TaxYearResult(
+            tax_year,
+            income_per_year[tax_year],
+            cost_per_year[tax_year],
+            loss,
+            profit_in_tax_year,
+            tax
+        )
 
     def deductable_loss_from_previous_years(self,
                                             income: defaultdict[int, FiatValue],

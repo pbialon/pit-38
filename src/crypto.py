@@ -13,10 +13,9 @@ from exchanger import create_exchanger
 
 class CryptoSetup:
     @classmethod
-    def setup_tax_calculator(cls) -> TaxCalculator:
+    def setup_yearly_profit_calculator(cls) -> YearlyProfitCalculator:
         exchanger = create_exchanger()
-        profit_calculator = YearlyProfitCalculator(exchanger)
-        return TaxCalculator(profit_calculator)
+        return YearlyProfitCalculator(exchanger)
 
     @classmethod
     def read_transactions(cls, filepath: str) -> List[Transaction]:
@@ -31,9 +30,13 @@ class CryptoSetup:
               help='Deductable loss from previous years. It overrides calculation of loss by the script',
               type=float)
 def crypto(tax_year: int, filepath: str, deductable_loss: int):
-    tax_calculator = CryptoSetup.setup_tax_calculator()
+    profit_calculator = CryptoSetup.setup_yearly_profit_calculator()
     transactions = CryptoSetup.read_transactions(filepath)
-    tax_data = tax_calculator.calculate_tax_per_year(transactions, tax_year, deductable_loss)
+    cost_per_year = profit_calculator.cost_per_year(transactions)
+    income_per_year = profit_calculator.income_per_year(transactions)
+    tax_calculator = TaxCalculator()
+    tax_data = tax_calculator.calculate_tax_per_year(
+        income_per_year, cost_per_year, tax_year, deductable_loss)
     print(tax_data, end='\n\n')
 
 
