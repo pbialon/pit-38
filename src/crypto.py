@@ -29,7 +29,7 @@ class CryptoSetup:
 @click.option('--deductable-loss', '-l', default=-1,
               help='Deductable loss from previous years. It overrides calculation of loss by the script',
               type=float)
-def crypto(tax_year: int, filepath: str, deductable_loss: int):
+def crypto(tax_year: int, filepath: str, deductable_loss: float):
     profit_calculator = CryptoSetup.setup_yearly_profit_calculator()
     transactions = CryptoSetup.read_transactions(filepath)
     cost_per_year = profit_calculator.cost_per_year(transactions)

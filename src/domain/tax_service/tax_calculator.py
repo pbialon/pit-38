@@ -13,7 +13,7 @@ class TaxCalculator:
                                income_per_year: Dict[int, FiatValue],
                                cost_per_year: Dict[int, FiatValue],
                                tax_year: int,
-                               deductable_loss: int = -1) -> TaxYearResult:
+                               deductable_loss: float = -1) -> TaxYearResult:
 
         loss: FiatValue = self.deductable_loss_from_previous_years(
             income_per_year, cost_per_year, tax_year
