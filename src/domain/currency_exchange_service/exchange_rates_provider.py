@@ -11,7 +11,6 @@ from domain.currency_exchange_service.currencies import Currency
 
 
 class ExchangeRatesProvider:
-    # todo: rates a, b, or c?
     NBP_API_URL = "https://api.nbp.pl/api/exchangerates/rates/a/{currency}/{start_date}/{end_date}/?format=json"
 
     def __init__(self):
