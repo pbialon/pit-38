@@ -18,7 +18,7 @@ class Queue:
     def head(self) -> Transaction:
         return self._queue[0]
 
-    def pop_head(self):
+    def pop_head(self) -> Transaction:
         return self._queue.pop(0)
 
     def replace_head(self, new_item: Transaction):

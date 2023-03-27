@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, List
 
 import pendulum
 import holidays
@@ -35,17 +35,16 @@ class Calendar:
     def is_out_of_range(self, day: pendulum.Date):
         return day < pendulum.date(self.start_year, 1, 1)
 
-    def is_workday(self, day: pendulum.DateTime):
+    def is_workday(self, day: pendulum.DateTime) -> bool:
         return not self._is_weekend(day) and not self._is_holiday(day)
 
-    def _is_holiday(self, day: pendulum.DateTime):
+    def _is_holiday(self, day: pendulum.DateTime) -> bool:
         return day in self.holidays
 
-    def _is_weekend(self, day: pendulum.DateTime):
+    def _is_weekend(self, day: pendulum.DateTime) -> bool:
         # Saturday or Sunday
-        day.weekday()
         return day.format("E") in ("6", "7")
 
-    def _get_holidays(self, years: Iterable[int]) -> list:
+    def _get_holidays(self, years: Iterable[int]) -> List[pendulum.Date]:
         dates = holidays.Poland(years=years).keys()
         return [pendulum.parse(str(date)).date() for date in dates]
