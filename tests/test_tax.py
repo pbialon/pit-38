@@ -25,47 +25,46 @@ class TestTaxCalculatorDeductions(TestCase):
         tax_calculator = TaxCalculator()
         income = {2019: zl(100), 2020: zl(100), 2021: zl(200)}
         cost = {2019: zl(100), 2020: zl(100), 2021: zl(200)}
-        tax = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
-        self.assertEqual(zl(0), tax)
+        loss = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
+        self.assertEqual(zl(0), loss)
 
     def test_deductible_loss_from_previous_years_profit_only(self):
         tax_calculator = TaxCalculator()
         income = {2019: zl(200), 2020: zl(200), 2021: zl(200)}
         cost = {2019: zl(100), 2020: zl(100), 2021: zl(100)}
-        tax = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
-        self.assertEqual(zl(0), tax)
+        loss = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
+        self.assertEqual(zl(0), loss)
 
     def test_deductible_loss_from_previous_years_loss_only(self):
         tax_calculator = TaxCalculator()
         income = {2019: zl(100), 2020: zl(100), 2021: zl(100)}
         cost = {2019: zl(200), 2020: zl(200), 2021: zl(200)}
-        tax = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
-        self.assertEqual(zl(200), tax)
+        loss = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
+        self.assertEqual(zl(200), loss)
 
     def test_deductible_loss_from_previous_years_loss_and_profit(self):
         tax_calculator = TaxCalculator()
         income = {2019: zl(100), 2020: zl(150), 2021: zl(200)}
         cost = {2019: zl(200), 2020: zl(100), 2021: zl(100)}
-        tax = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
-        self.assertEqual(zl(50), tax)
+        loss = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
+        self.assertEqual(zl(50), loss)
 
     def test_deductible_loss_from_previous_years_deducted_some_in_previous_year(self):
         tax_calculator = TaxCalculator()
         # deducted 100 loss from 2018 in 2019
         income = {2018: zl(100), 2019: zl(400), 2020: zl(100), 2021: zl(200)}
         cost = {2018: zl(200), 2019: zl(200), 2020: zl(200), 2021: zl(100)}
-        tax = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
-        self.assertEqual(zl(100), tax)
+        loss = tax_calculator.deductible_loss_from_previous_years(income, cost, 2021)
+        self.assertEqual(zl(100), loss)
 
 
 class TestTaxCalculator(TestCase):
-    # TODO: remove transaction list (we need only income and cost)
 
     def _btc(self, amount):
         return AssetValue(amount, "BTC")
 
-    def _euro(self, amount):
-        return FiatValue(amount, Currency.EURO)
+    def _pln(self, amount):
+        return FiatValue(amount, Currency.ZLOTY)
 
     def _buy(self, crypto, fiat, date):
         parsed_date = pendulum.parse(date)
@@ -77,65 +76,46 @@ class TestTaxCalculator(TestCase):
 
     def test_calculate_tax_per_year_sell_after_buy(self):
         tax_calculator = TaxCalculator()
-        transactions = [
-            self._buy(self._btc(1), self._euro(100), date="2019-01-01"),
-            self._sell(self._btc(1), self._euro(200), date="2019-01-02"),
-            self._buy(self._btc(1), self._euro(100), date="2020-01-01"),
-            self._sell(self._btc(1), self._euro(200), date="2020-01-02"),
-            self._buy(self._btc(1), self._euro(100), date="2021-01-01"),
-            self._sell(self._btc(1), self._euro(200), date="2021-01-02"),
-        ]
-        income = yearly_profit_calculator.income_per_year(transactions)
-        cost = yearly_profit_calculator.cost_per_year(transactions)
 
-        tax_2019 = tax_calculator.calculate_tax_per_year(income, cost, 2019).tax
-        self.assertEqual(zl(19), tax_2019)
+        income = {2019: zl(200), 2020: zl(200), 2021: zl(200)}
+        cost = {2019: zl(100), 2020: zl(100), 2021: zl(100)}
 
-        tax_2020 = tax_calculator.calculate_tax_per_year(income, cost, 2020).tax
-        self.assertEqual(zl(19), tax_2020)
+        base_for_tax_2019 = tax_calculator.calculate_tax_per_year(income, cost, 2019).base_for_tax
+        self.assertEqual(zl(100), base_for_tax_2019)
 
-        tax_2021 = tax_calculator.calculate_tax_per_year(income, cost, 2021).tax
-        self.assertEqual(zl(19), tax_2021)
+        base_for_tax_2020 = tax_calculator.calculate_tax_per_year(income, cost, 2020).base_for_tax
+        self.assertEqual(zl(100), base_for_tax_2020)
+
+        base_for_tax_2021 = tax_calculator.calculate_tax_per_year(income, cost, 2021).base_for_tax
+        self.assertEqual(zl(100), base_for_tax_2021)
 
     def test_calculate_tax_per_year_hodl(self):
         tax_calculator = TaxCalculator()
-        transactions = [
-            self._buy(self._btc(1), self._euro(100), date="2019-01-01"),
-            self._buy(self._btc(1), self._euro(100), date="2020-01-01"),
-            self._buy(self._btc(1), self._euro(100), date="2021-01-01"),
-            self._sell(self._btc(3), self._euro(1000), date="2021-01-02"),
-        ]
-        income = yearly_profit_calculator.income_per_year(transactions)
-        cost = yearly_profit_calculator.cost_per_year(transactions)
 
-        tax_2019 = tax_calculator.calculate_tax_per_year(income, cost, 2019).tax
-        self.assertEqual(zl(0), tax_2019)
+        income = {2019: zl(0), 2020: zl(0), 2021: zl(1000)}
+        cost = {2019: zl(100), 2020: zl(100), 2021: zl(100)}
 
-        tax_2020 = tax_calculator.calculate_tax_per_year(income, cost, 2020).tax
-        self.assertEqual(zl(0), tax_2020)
+        base_for_tax_2019 = tax_calculator.calculate_tax_per_year(income, cost, 2019).base_for_tax
+        self.assertEqual(zl(-100), base_for_tax_2019)
 
-        tax_2021 = tax_calculator.calculate_tax_per_year(income, cost, 2021).tax
-        self.assertEqual(zl(700 * 0.19), tax_2021)
+        base_for_tax_2020 = tax_calculator.calculate_tax_per_year(income, cost, 2020).base_for_tax
+        self.assertEqual(zl(-200), base_for_tax_2020)
+
+        base_for_tax_2021 = tax_calculator.calculate_tax_per_year(income, cost, 2021).base_for_tax
+        self.assertEqual(zl(700), base_for_tax_2021)
 
     def test_calculate_tax_per_year_losses(self):
         tax_calculator = TaxCalculator()
-        transactions = [
-            self._buy(self._btc(1), self._euro(200), date="2019-01-01"),
-            self._sell(self._btc(1), self._euro(50), date="2019-01-02"),
-            self._buy(self._btc(1), self._euro(200), date="2020-01-01"),
-            self._sell(self._btc(1), self._euro(50), date="2020-01-02"),
-            self._buy(self._btc(1), self._euro(100), date="2021-01-01"),
-            self._sell(self._btc(1), self._euro(500), date="2021-01-02"),
-        ]
-        income = yearly_profit_calculator.income_per_year(transactions)
-        cost = yearly_profit_calculator.cost_per_year(transactions)
 
-        tax_2019 = tax_calculator.calculate_tax_per_year(income, cost, 2019).tax
-        self.assertEqual(zl(0), tax_2019)
+        income = {2019: zl(50), 2020: zl(50), 2021: zl(500)}
+        cost = {2019: zl(200), 2020: zl(200), 2021: zl(100)}
 
-        tax_2020 = tax_calculator.calculate_tax_per_year(income, cost, 2020).tax
-        self.assertEqual(zl(0), tax_2020)
+        base_for_tax_2019 = tax_calculator.calculate_tax_per_year(income, cost, 2019).base_for_tax
+        self.assertEqual(zl(-150), base_for_tax_2019)
 
-        tax_2021 = tax_calculator.calculate_tax_per_year(income, cost, 2021).tax
+        base_for_tax_2020 = tax_calculator.calculate_tax_per_year(income, cost, 2020).base_for_tax
+        self.assertEqual(zl(-300), base_for_tax_2020)
+
+        base_for_tax_2021 = tax_calculator.calculate_tax_per_year(income, cost, 2021).base_for_tax
         # 300 losses from previous years deducted
-        self.assertEqual(zl(19), tax_2021)
+        self.assertEqual(zl(100), base_for_tax_2021)
