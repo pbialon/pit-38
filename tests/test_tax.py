@@ -1,19 +1,7 @@
 from unittest import TestCase
 
-import pendulum
-
 from domain.currency_exchange_service.currencies import FiatValue, Currency
-from domain.crypto.profit_calculator import YearlyProfitCalculator
 from domain.tax_service.tax_calculator import TaxCalculator
-from domain.transactions import AssetValue, Transaction, Action
-
-
-class StubExchanger:
-    def exchange(self, date: pendulum.DateTime, fiat_value: FiatValue) -> FiatValue:
-        return FiatValue(fiat_value.amount, Currency.ZLOTY)
-
-
-yearly_profit_calculator = YearlyProfitCalculator(StubExchanger())
 
 
 def zl(amount):
@@ -59,21 +47,6 @@ class TestTaxCalculatorDeductions(TestCase):
 
 
 class TestTaxCalculator(TestCase):
-
-    def _btc(self, amount):
-        return AssetValue(amount, "BTC")
-
-    def _pln(self, amount):
-        return FiatValue(amount, Currency.ZLOTY)
-
-    def _buy(self, crypto, fiat, date):
-        parsed_date = pendulum.parse(date)
-        return Transaction(date=parsed_date, asset=crypto, fiat_value=fiat, action=Action.BUY)
-
-    def _sell(self, crypto, fiat, date):
-        parsed_date = pendulum.parse(date)
-        return Transaction(date=parsed_date, asset=crypto, fiat_value=fiat, action=Action.SELL)
-
     def test_calculate_tax_per_year_sell_after_buy(self):
         tax_calculator = TaxCalculator()
 

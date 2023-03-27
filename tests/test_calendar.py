@@ -11,3 +11,4 @@ class TestCalendar(TestCase):
         self.assertTrue(calendar.is_workday(pendulum.date(2022, 1, 3)))
         self.assertFalse(calendar.is_workday(pendulum.date(2022, 1, 2)))
         self.assertFalse(calendar.is_workday(pendulum.date(2022, 11, 1)))
+
