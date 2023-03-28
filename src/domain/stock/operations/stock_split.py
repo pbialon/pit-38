@@ -15,5 +15,8 @@ class StockSplit(Operation):
     def __str__(self):
         return f"[{self.date.to_date_string()}] Stock {self.stock} split in ratio {self.ratio}:1"
 
+    def __gt__(self, other):
+        return self.date > other.date
+
     def __repr__(self):
         return self.__str__()
