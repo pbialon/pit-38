@@ -4,13 +4,11 @@ from typing import List, Dict
 import pendulum
 from loguru import logger
 
-from data_sources.revolut.stock.operation import OperationType
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
-from domain.stock.custody_fee import CustodyFee
-from domain.stock.dividend import Dividend
-from domain.stock.operation import Operation
-from domain.stock.stock_split import StockSplit
+from domain.stock.operations.custody_fee import CustodyFee
+from domain.stock.operations.dividend import Dividend
+from domain.stock.operations.stock_split import StockSplit
 from domain.transactions import Transaction, Action
 from domain.stock.queue import Queue
 

@@ -4,10 +4,10 @@ import pendulum
 
 from data_sources.revolut.stock.csv_parser import StockCsvParser
 from data_sources.revolut.stock.operation import OperationType
-from domain.stock.custody_fee import CustodyFee
-from domain.stock.dividend import Dividend
-from domain.stock.operation import Operation
-from domain.stock.stock_split import StockSplit
+from domain.stock.operations.custody_fee import CustodyFee
+from domain.stock.operations.dividend import Dividend
+from domain.stock.operations.operation import Operation
+from domain.stock.operations.stock_split import StockSplit
 
 
 class OperationStockCsvParser(StockCsvParser):

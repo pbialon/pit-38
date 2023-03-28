@@ -1,7 +1,7 @@
 import pendulum
 
 from data_sources.revolut.stock.operation import OperationType
-from domain.stock.operation import Operation
+from domain.stock.operations.operation import Operation
 
 
 class StockSplit(Operation):

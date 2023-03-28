@@ -8,12 +8,12 @@ from data_sources.revolut.stock.operation_csv_parser import OperationStockCsvPar
 from data_sources.revolut.stock.operations_csv_reader import OperationsCsvReader
 from data_sources.revolut.stock.transaction_csv_parser import TransactionStockCsvParser
 from domain.calendar_service.calendar import previous_year
-from domain.stock.custody_fee import CustodyFee
-from domain.stock.dividend import Dividend
-from domain.stock.operation import Operation
+from domain.stock.operations.custody_fee import CustodyFee
+from domain.stock.operations.dividend import Dividend
+from domain.stock.operations.operation import Operation
 from domain.stock.profit_calculator import YearlyPerStockProfitCalculator, group_transaction_by_company, \
     YearlyProfitCalculator
-from domain.stock.stock_split import StockSplit
+from domain.stock.operations.stock_split import StockSplit
 from domain.tax_service.tax_calculator import TaxCalculator
 from domain.transactions import Transaction
 from exchanger import create_exchanger

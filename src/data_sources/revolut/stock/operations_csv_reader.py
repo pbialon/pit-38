@@ -4,7 +4,7 @@ from typing import List
 from loguru import logger
 
 from data_sources.revolut.csv_parser import CsvParser
-from domain.stock.operation import Operation
+from domain.stock.operations.operation import Operation
 
 
 class OperationsCsvReader:
