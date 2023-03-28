@@ -1,7 +1,6 @@
 from collections import defaultdict
 from typing import List, Dict
 
-import pendulum
 from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
@@ -9,30 +8,9 @@ from domain.currency_exchange_service.exchanger import Exchanger
 from domain.stock.operations.custody_fee import CustodyFee
 from domain.stock.operations.dividend import Dividend
 from domain.stock.operations.stock_split import StockSplit
+from domain.stock.stock_split_handler import StockSplitHandler
 from domain.transactions import Transaction, Action
 from domain.stock.queue import Queue
-
-
-def group_transaction_by_company(transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
-    grouped_transactions = defaultdict(list)
-    for transaction in transactions:
-        company_name = transaction.asset.asset_name
-        grouped_transactions[company_name].append(transaction)
-    return grouped_transactions
-
-
-class StockSplitHandler:
-    @classmethod
-    def multiplier_for_date(cls, stock_splits: List[StockSplit], date: pendulum.DateTime) -> float:
-        assert sorted(stock_splits) == stock_splits, "It should be sorted"
-
-        multiplier = 1
-        for stock_split in reversed(stock_splits):
-            if stock_split.date > date:
-                multiplier *= stock_split.ratio
-        if multiplier > 1:
-            logger.debug(f"Stock split multiplier for {date} is {multiplier}")
-        return multiplier
 
 
 class YearlyPerStockProfitCalculator:

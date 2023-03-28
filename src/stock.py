@@ -11,8 +11,7 @@ from domain.calendar_service.calendar import previous_year
 from domain.stock.operations.custody_fee import CustodyFee
 from domain.stock.operations.dividend import Dividend
 from domain.stock.operations.operation import Operation
-from domain.stock.profit_calculator import YearlyPerStockProfitCalculator, group_transaction_by_company, \
-    YearlyProfitCalculator
+from domain.stock.profit_calculator import YearlyPerStockProfitCalculator, YearlyProfitCalculator
 from domain.stock.operations.stock_split import StockSplit
 from domain.tax_service.tax_calculator import TaxCalculator
 from domain.transactions import Transaction
@@ -37,7 +36,11 @@ class StockSetup:
 
     @classmethod
     def group_transactions_by_stock(cls, transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
-        return group_transaction_by_company(transactions)
+        grouped_transactions = defaultdict(list)
+        for transaction in transactions:
+            company_name = transaction.asset.asset_name
+            grouped_transactions[company_name].append(transaction)
+        return grouped_transactions
 
     @classmethod
     def filter_stock_splits_and_group_by_stock(cls, operations: List[Operation]) -> Dict[str, List[StockSplit]]:
