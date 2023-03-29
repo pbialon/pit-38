@@ -11,20 +11,20 @@ from domain.calendar_service.calendar import previous_year
 from domain.stock.operations.custody_fee import CustodyFee
 from domain.stock.operations.dividend import Dividend
 from domain.stock.operations.operation import Operation
-from domain.stock.profit_calculator import YearlyPerStockProfitCalculator, YearlyProfitCalculator
+from domain.stock.profit.per_stock_calculator import PerStockProfitCalculator
+from domain.stock.profit.profit_calculator import ProfitCalculator
 from domain.stock.operations.stock_split import StockSplit
 from domain.tax_service.tax_calculator import TaxCalculator
-from domain.transactions import Transaction
 from exchanger import create_exchanger
 
 
 class StockSetup:
 
     @classmethod
-    def setup_profit_calculator(cls) -> YearlyProfitCalculator:
+    def setup_profit_calculator(cls) -> ProfitCalculator:
         exchanger = create_exchanger()
-        per_stock_calculator = YearlyPerStockProfitCalculator(exchanger)
-        return YearlyProfitCalculator(exchanger, per_stock_calculator)
+        per_stock_calculator = PerStockProfitCalculator(exchanger)
+        return ProfitCalculator(exchanger, per_stock_calculator)
 
     @classmethod
     def read_transactions(cls, filepath: str) -> List:

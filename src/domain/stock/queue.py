@@ -1,9 +1,6 @@
 import copy
 from typing import List
 
-from loguru import logger
-
-from domain.currency_exchange_service.currencies import FiatValue
 from domain.transactions import Transaction
 
 
