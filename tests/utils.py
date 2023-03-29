@@ -8,6 +8,10 @@ def btc(amount: float) -> AssetValue:
     return AssetValue(amount, "BTC")
 
 
+def apple(amount: float) -> AssetValue:
+    return AssetValue(amount, "AAPL")
+
+
 def usd(amount: float) -> FiatValue:
     return FiatValue(amount, Currency.DOLLAR)
 
@@ -16,18 +20,22 @@ def zl(amount: float) -> FiatValue:
     return FiatValue(amount, Currency.ZLOTY)
 
 
-def buy(crypto, fiat: FiatValue, datetime_str: str) -> Transaction:
-    parsed_datetime = pendulum.parse(datetime_str)
-    return Transaction(date=parsed_datetime, asset=crypto, fiat_value=fiat, action=Action.BUY)
+def buy(asset: AssetValue, fiat: FiatValue, datetime_str: str) -> Transaction:
+    parsed_datetime = datetime(datetime_str)
+    return Transaction(date=parsed_datetime, asset=asset, fiat_value=fiat, action=Action.BUY)
 
 
-def sell(crypto, fiat: FiatValue, datetime_str: str) -> Transaction:
-    parsed_datetime = pendulum.parse(datetime_str)
-    return Transaction(date=parsed_datetime, asset=crypto, fiat_value=fiat, action=Action.SELL)
+def sell(asset: AssetValue, fiat: FiatValue, datetime_str: str) -> Transaction:
+    parsed_datetime = datetime(datetime_str)
+    return Transaction(date=parsed_datetime, asset=asset, fiat_value=fiat, action=Action.SELL)
 
 
 def date(date_str: str):
     return pendulum.parse(date_str).date()
+
+
+def datetime(datetime_str: str):
+    return pendulum.parse(datetime_str)
 
 
 class StubExchanger:

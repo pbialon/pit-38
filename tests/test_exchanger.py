@@ -31,12 +31,10 @@ class TestExchanger(TestCase):
 
     def test_exchange(self):
         exchanger = Exchanger(ExchangeRateProviderStub(), Calendar())
-        amount = usd(100)
-        amount_in_pln = exchanger.exchange(pendulum.date(2022, 1, 4), amount)
+        amount_in_pln = exchanger.exchange(date("2022-01-04"), usd(100))
         self.assertEqual(amount_in_pln, zl(400))
 
     def test_exchange_the_same_currency(self):
         exchanger = Exchanger(ExchangeRateProviderStub(), Calendar())
-        amount = zl(100)
-        amount_in_pln = exchanger.exchange(pendulum.date(2022, 1, 4), amount)
+        amount_in_pln = exchanger.exchange(date("2022-01-04"), zl(100))
         self.assertEqual(amount_in_pln, zl(100))

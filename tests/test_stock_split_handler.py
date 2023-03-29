@@ -1,77 +1,59 @@
 from unittest import TestCase
 
-import pendulum
 
 from domain.stock.operations.stock_split import StockSplit
 from domain.stock.profit.stock_split_handler import StockSplitHandler
-from domain.transactions import AssetValue, Transaction, Action
-from tests.utils import usd
+from tests.utils import usd, datetime, buy, apple, sell
 
 
 class TestStockSplitHandler(TestCase):
+    STOCK_SPLITS = [
+        StockSplit(date=datetime("2020-01-01 11:00"), stock="AAPL", ratio=10),
+        StockSplit(date=datetime("2021-01-01 11:00"), stock="AAPL", ratio=10),
+        StockSplit(date=datetime("2022-01-01 11:00"), stock="AAPL", ratio=10),
+    ]
+
     def test_multiplier_for_date(self):
-        stock_splits = [
-            StockSplit(date=pendulum.datetime(2020, 1, 1), stock="AAPL", ratio=10),
-            StockSplit(date=pendulum.datetime(2021, 1, 1), stock="AAPL", ratio=10),
-            StockSplit(date=pendulum.datetime(2022, 1, 1), stock="AAPL", ratio=10),
-        ]
+        self.assertEqual(
+            StockSplitHandler.multiplier_for_date(self.STOCK_SPLITS, datetime("2019-01-01 12:00")), 1000
+        )
 
         self.assertEqual(
-            StockSplitHandler.multiplier_for_date(stock_splits, pendulum.datetime(2019, 1, 1)), 1000
+            StockSplitHandler.multiplier_for_date(self.STOCK_SPLITS, datetime("2020-01-01 10:00")), 1000
         )
         self.assertEqual(
-            StockSplitHandler.multiplier_for_date(stock_splits, pendulum.datetime(2020, 1, 1)), 100
+            StockSplitHandler.multiplier_for_date(self.STOCK_SPLITS, datetime("2020-01-01 12:00")), 100
+        )
+
+        self.assertEqual(
+            StockSplitHandler.multiplier_for_date(self.STOCK_SPLITS, datetime("2021-01-01 10:00")), 100
         )
         self.assertEqual(
-            StockSplitHandler.multiplier_for_date(stock_splits, pendulum.datetime(2021, 1, 1)), 10
+            StockSplitHandler.multiplier_for_date(self.STOCK_SPLITS, datetime("2021-01-01 12:00")), 10
+        )
+
+        self.assertEqual(
+            StockSplitHandler.multiplier_for_date(self.STOCK_SPLITS, datetime("2022-01-01 10:00")), 10
         )
         self.assertEqual(
-            StockSplitHandler.multiplier_for_date(stock_splits, pendulum.datetime(2022, 1, 1)), 1
+            StockSplitHandler.multiplier_for_date(self.STOCK_SPLITS, datetime("2022-01-01 12:00")), 1
         )
 
     def test_incorporate_stock_splits_into_transactions(self):
-        stock_splits = [
-            StockSplit(date=pendulum.datetime(2020, 1, 1), stock="AAPL", ratio=10),
-            StockSplit(date=pendulum.datetime(2021, 1, 1), stock="AAPL", ratio=10),
-            StockSplit(date=pendulum.datetime(2022, 1, 1), stock="AAPL", ratio=10),
-        ]
-
         transactions = [
-            Transaction(date=pendulum.datetime(2019, 1, 1),
-                        action=Action.BUY,
-                        asset=AssetValue(1, "AAPL"),
-                        fiat_value=usd(100)),
-            Transaction(date=pendulum.datetime(2020, 1, 1),
-                        action=Action.BUY,
-                        asset=AssetValue(10, "AAPL"),
-                        fiat_value=usd(100)),
-            Transaction(date=pendulum.datetime(2021, 1, 1),
-                        action=Action.SELL,
-                        asset=AssetValue(100, "AAPL"),
-                        fiat_value=usd(100)),
-            Transaction(date=pendulum.datetime(2022, 1, 1),
-                        action=Action.SELL,
-                        asset=AssetValue(1000, "AAPL"),
-                        fiat_value=usd(100)),
+            buy(apple(1), usd(100), "2019-01-01 12:00"),
+            buy(apple(10), usd(100), "2020-01-01 12:00"),
+            sell(apple(100), usd(100), "2021-01-01 12:00"),
+            sell(apple(1000), usd(100), "2022-01-01 12:00"),
         ]
 
-        new_transactions = StockSplitHandler.incorporate_stock_splits_into_transactions(transactions, stock_splits)
+        new_transactions = StockSplitHandler.incorporate_stock_splits_into_transactions(
+            transactions, self.STOCK_SPLITS)
+
         expected_transactions = [
-            Transaction(date=pendulum.datetime(2019, 1, 1),
-                        action=Action.BUY,
-                        asset=AssetValue(1000, "AAPL"),
-                        fiat_value=usd(100)),
-            Transaction(date=pendulum.datetime(2020, 1, 1),
-                        action=Action.BUY,
-                        asset=AssetValue(1000, "AAPL"),
-                        fiat_value=usd(100)),
-            Transaction(date=pendulum.datetime(2021, 1, 1),
-                        action=Action.SELL,
-                        asset=AssetValue(1000, "AAPL"),
-                        fiat_value=usd(100)),
-            Transaction(date=pendulum.datetime(2022, 1, 1),
-                        action=Action.SELL,
-                        asset=AssetValue(1000, "AAPL"),
-                        fiat_value=usd(100)),
+            buy(apple(1000), usd(100), "2019-01-01 12:00"),
+            buy(apple(1000), usd(100), "2020-01-01 12:00"),
+            sell(apple(1000), usd(100), "2021-01-01 12:00"),
+            sell(apple(1000), usd(100), "2022-01-01 12:00"),
         ]
         self.assertListEqual(new_transactions, expected_transactions)
