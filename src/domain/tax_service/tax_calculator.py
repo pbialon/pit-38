@@ -14,10 +14,10 @@ class TaxCalculator:
                                tax_year: int,
                                deductible_loss: float = -1) -> TaxYearResult:
 
-        loss: FiatValue = self.deductible_loss_from_previous_years(
+        loss = self.deductible_loss_from_previous_years(
             profit_per_year, tax_year) if deductible_loss == -1 else FiatValue(deductible_loss)
 
-        profit_in_tax_year: FiatValue = profit_per_year.get_profit(tax_year)
+        profit_in_tax_year = profit_per_year.get_profit(tax_year)
         if loss > FiatValue(0):
             profit_in_tax_year -= loss
 
