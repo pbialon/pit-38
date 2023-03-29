@@ -31,14 +31,19 @@ class StockSplitHandler:
         new_transactions = []
         for transaction in transactions:
             multiplier = cls.multiplier_for_date(stock_splits, transaction.date)
-            new_transactions.append(Transaction(
-                transaction.asset * multiplier,
-                transaction.fiat_value,
-                transaction.action,
-                transaction.date,
-            ))
+            adjusted_transaction = cls._adjust_transaction(transaction, multiplier)
+            new_transactions.append(adjusted_transaction)
         logger.debug(f"Transactions after handling stock splits: {new_transactions}")
         return new_transactions
+
+    @classmethod
+    def _adjust_transaction(cls, transaction: Transaction, multiplier: float) -> Transaction:
+        return Transaction(
+            transaction.asset * multiplier,
+            transaction.fiat_value,
+            transaction.action,
+            transaction.date,
+        )
 
     @classmethod
     def _sort_by_date(cls, transactions: List[Transaction], stock_splits: List[StockSplit]) \

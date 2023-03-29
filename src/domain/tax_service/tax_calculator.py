@@ -34,7 +34,6 @@ class TaxCalculator:
         zero = FiatValue(0)
         return profit_in_tax_year * self.tax_rate if profit_in_tax_year > zero else zero
 
-
     def deductible_loss_from_previous_years(self,
                                             profit_per_year: ProfitPerYear,
                                             tax_year: int) -> FiatValue:
