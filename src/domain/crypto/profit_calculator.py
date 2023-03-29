@@ -13,20 +13,12 @@ class YearlyProfitCalculator:
     def __init__(self, exchanger: Exchanger):
         self.exchanger = exchanger
 
-    def income_per_year(self, transactions: List[Transaction]) -> defaultdict[int, FiatValue]:
-        income = self._sum_transactions_per_year(transactions, Action.SELL)
-        logger.info(f"Calculated income per year: {dict(income)}")
-        return income
-
-    def cost_per_year(self, transactions: List[Transaction]) -> defaultdict[int, FiatValue]:
-        cost = self._sum_transactions_per_year(transactions, Action.BUY)
-        logger.info(f"Calculated cost per year: {dict(cost)}")
-        return cost
-
     def profit_per_year(self, transactions: List[Transaction]) -> ProfitPerYear:
-        income = self.income_per_year(transactions)
-        cost = self.cost_per_year(transactions)
-        return ProfitPerYear(income, cost)
+        income = self._sum_transactions_per_year(transactions, Action.SELL)
+        cost = self._sum_transactions_per_year(transactions, Action.BUY)
+        profit = ProfitPerYear(income, cost)
+        logger.info(f"Calculated profit per year: {profit}")
+        return profit
 
     def _sum_transactions_per_year(self, transactions: List[Transaction], transaction_type: Action) \
             -> defaultdict[int, FiatValue]:
