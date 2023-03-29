@@ -4,6 +4,7 @@ import pendulum
 from loguru import logger
 
 from domain.stock.operations.stock_split import StockSplit
+from domain.transactions import Transaction
 
 
 class StockSplitHandler:
@@ -20,3 +21,28 @@ class StockSplitHandler:
         if multiplier > 1:
             logger.debug(f"Stock split multiplier for {date} is {multiplier}")
         return multiplier
+
+    @classmethod
+    def incorporate_stock_splits_into_transactions(cls,
+                                                   transactions: List[Transaction],
+                                                   stock_splits: List[StockSplit]) -> List[Transaction]:
+        sort_by_date = lambda x: x.date
+
+        stock_splits.sort(key=sort_by_date)
+        transactions.sort(key=sort_by_date)
+
+        assert set(split.stock for split in stock_splits) == \
+               set(transaction.asset.asset_name for transaction in transactions), \
+            "All stock splits should be for the same stock"
+
+        new_transactions = []
+        for transaction in transactions:
+            multiplier = cls.multiplier_for_date(stock_splits, transaction.date)
+            new_transactions.append(Transaction(
+                transaction.asset * multiplier,
+                transaction.fiat_value,
+                transaction.action,
+                transaction.date,
+            ))
+
+        return new_transactions

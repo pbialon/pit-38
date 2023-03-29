@@ -47,10 +47,9 @@ class PerStockProfitCalculator:
     def calculate_cost_and_income(self,
                                   transactions: List[Transaction],
                                   stock_splits: List[StockSplit]) -> (FiatValue, FiatValue):
-        transactions.sort(key=lambda t: t.date)
         if stock_splits:
             logger.info(f"Handling {len(stock_splits)} stock splits")
-            transactions = self._stock_splits_into_transactions(stock_splits, transactions)
+            transactions = StockSplitHandler.incorporate_stock_splits_into_transactions(transactions, stock_splits)
             logger.debug(f"Transactions after handling stock splits: {transactions}")
 
         queue = Queue()
@@ -105,8 +104,3 @@ class PerStockProfitCalculator:
                 buy_queue.replace_head(new_head)
 
         return cost
-
-    def _ratio_of_transaction_to_include(self, oldest_transaction_quantity: float, quantity: float) -> float:
-        if oldest_transaction_quantity > quantity:
-            return quantity / oldest_transaction_quantity
-        return 1
