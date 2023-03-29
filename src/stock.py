@@ -1,5 +1,4 @@
-from collections import defaultdict
-from typing import List, Dict
+from typing import List
 import click
 
 from data_sources.revolut.csv_reader import TransactionsCsvReader
