@@ -37,6 +37,9 @@ class ProfitPerYear:
     def __eq__(self, other):
         return self.income == other.income and self.cost == other.cost
 
+    def __repr__(self):
+        return f"ProfitPerYear({self.__str__()})"
+
     def __str__(self):
         return "; ".join(
             f"[{year}]: +{self.income[year]} -{self.cost[year]}"
