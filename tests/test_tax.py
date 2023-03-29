@@ -1,12 +1,8 @@
 from unittest import TestCase
 
-from domain.currency_exchange_service.currencies import FiatValue, Currency
 from domain.tax_service.profit_per_year import ProfitPerYear
 from domain.tax_service.tax_calculator import TaxCalculator
-
-
-def zl(amount):
-    return FiatValue(amount, Currency.ZLOTY)
+from tests.utils import zl
 
 
 class TestTaxCalculatorDeductions(TestCase):

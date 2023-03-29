@@ -4,9 +4,9 @@ import pendulum
 import pathlib
 
 from data_sources.revolut.csv_reader import TransactionsCsvReader
-from domain.currency_exchange_service.currencies import FiatValue, Currency
 from data_sources.revolut.crypto import CryptoCsvParser
-from domain.transactions import Transaction, AssetValue, Action
+from domain.transactions import Transaction, Action
+from tests.utils import btc, zl
 
 
 class TestCsvReader(TestCase):
@@ -17,20 +17,20 @@ class TestCsvReader(TestCase):
         transactions = list(reader.read())
         expected = [
             Transaction(
-                asset=AssetValue(0.03962455, 'BTC'),
-                fiat_value=FiatValue(5000.0, Currency.ZLOTY),
+                asset=btc(0.03962455),
+                fiat_value=zl(5000.0),
                 action=Action.BUY,
                 date=pendulum.parse('2021-01-11 13:24:26')
             ),
             Transaction(
-                asset=AssetValue(0.03785017, 'BTC'),
-                fiat_value=FiatValue(5000.0, Currency.ZLOTY),
+                asset=btc(0.03785017),
+                fiat_value=zl(5000.0),
                 action=Action.BUY,
                 date=pendulum.parse('2021-01-11 23:08:00')
             ),
             Transaction(
-                asset=AssetValue(0.01, 'BTC'),
-                fiat_value=FiatValue(1304.96, Currency.ZLOTY),
+                asset=btc(0.01),
+                fiat_value=zl(1304.96),
                 action=Action.SELL,
                 date=pendulum.parse('2021-01-29 09:03:37')
             ),

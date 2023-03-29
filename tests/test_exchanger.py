@@ -5,6 +5,7 @@ import pendulum
 from domain.calendar_service.calendar import Calendar
 from domain.currency_exchange_service.currencies import FiatValue, Currency
 from domain.currency_exchange_service.exchanger import Exchanger
+from tests.utils import usd, zl
 
 
 class ExchangeRateProviderStub:
@@ -30,12 +31,12 @@ class TestExchanger(TestCase):
 
     def test_exchange(self):
         exchanger = Exchanger(ExchangeRateProviderStub(), Calendar())
-        amount = FiatValue(100, Currency.DOLLAR)
+        amount = usd(100)
         amount_in_pln = exchanger.exchange(pendulum.date(2022, 1, 4), amount)
-        self.assertEqual(amount_in_pln, FiatValue(400, Currency.ZLOTY))
+        self.assertEqual(amount_in_pln, zl(400))
 
     def test_exchange_the_same_currency(self):
         exchanger = Exchanger(ExchangeRateProviderStub(), Calendar())
-        amount = FiatValue(100, Currency.ZLOTY)
+        amount = zl(100)
         amount_in_pln = exchanger.exchange(pendulum.date(2022, 1, 4), amount)
-        self.assertEqual(amount_in_pln, FiatValue(100, Currency.ZLOTY))
+        self.assertEqual(amount_in_pln, zl(100))

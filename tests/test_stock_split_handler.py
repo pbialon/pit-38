@@ -2,10 +2,10 @@ from unittest import TestCase
 
 import pendulum
 
-from domain.currency_exchange_service.currencies import Currency, FiatValue
 from domain.stock.operations.stock_split import StockSplit
 from domain.stock.profit.stock_split_handler import StockSplitHandler
 from domain.transactions import AssetValue, Transaction, Action
+from tests.utils import usd
 
 
 class TestStockSplitHandler(TestCase):
@@ -40,19 +40,19 @@ class TestStockSplitHandler(TestCase):
             Transaction(date=pendulum.datetime(2019, 1, 1),
                         action=Action.BUY,
                         asset=AssetValue(1, "AAPL"),
-                        fiat_value=FiatValue(100, Currency.DOLLAR)),
+                        fiat_value=usd(100)),
             Transaction(date=pendulum.datetime(2020, 1, 1),
                         action=Action.BUY,
                         asset=AssetValue(10, "AAPL"),
-                        fiat_value=FiatValue(100, Currency.DOLLAR)),
+                        fiat_value=usd(100)),
             Transaction(date=pendulum.datetime(2021, 1, 1),
                         action=Action.SELL,
                         asset=AssetValue(100, "AAPL"),
-                        fiat_value=FiatValue(100, Currency.DOLLAR)),
+                        fiat_value=usd(100)),
             Transaction(date=pendulum.datetime(2022, 1, 1),
                         action=Action.SELL,
                         asset=AssetValue(1000, "AAPL"),
-                        fiat_value=FiatValue(100, Currency.DOLLAR)),
+                        fiat_value=usd(100)),
         ]
 
         new_transactions = StockSplitHandler.incorporate_stock_splits_into_transactions(transactions, stock_splits)
@@ -60,18 +60,18 @@ class TestStockSplitHandler(TestCase):
             Transaction(date=pendulum.datetime(2019, 1, 1),
                         action=Action.BUY,
                         asset=AssetValue(1000, "AAPL"),
-                        fiat_value=FiatValue(100, Currency.DOLLAR)),
+                        fiat_value=usd(100)),
             Transaction(date=pendulum.datetime(2020, 1, 1),
                         action=Action.BUY,
                         asset=AssetValue(1000, "AAPL"),
-                        fiat_value=FiatValue(100, Currency.DOLLAR)),
+                        fiat_value=usd(100)),
             Transaction(date=pendulum.datetime(2021, 1, 1),
                         action=Action.SELL,
                         asset=AssetValue(1000, "AAPL"),
-                        fiat_value=FiatValue(100, Currency.DOLLAR)),
+                        fiat_value=usd(100)),
             Transaction(date=pendulum.datetime(2022, 1, 1),
                         action=Action.SELL,
                         asset=AssetValue(1000, "AAPL"),
-                        fiat_value=FiatValue(100, Currency.DOLLAR)),
+                        fiat_value=usd(100)),
         ]
         self.assertListEqual(new_transactions, expected_transactions)
