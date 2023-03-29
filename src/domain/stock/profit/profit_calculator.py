@@ -23,10 +23,8 @@ class ProfitCalculator:
             transactions: List[Transaction],
             stock_splits: List[StockSplit],
             dividends: List[Dividend],
-            custody_fees: List[CustodyFee]) -> (FiatValue, FiatValue):
+            custody_fees: List[CustodyFee]) -> ProfitPerYear:
 
-        cost_by_year = defaultdict(lambda: FiatValue(0))
-        income_by_year = defaultdict(lambda: FiatValue(0))
         profit = ProfitPerYear()
         stock_splits_by_company = self._group_stock_split_by_stock(stock_splits)
 
@@ -46,8 +44,7 @@ class ProfitCalculator:
             profit.add_cost(custody_fees.date.year, cost)
 
         logger.info(f"Profit per year: {profit}")
-
-        return cost_by_year, income_by_year
+        return profit
 
     def _group_transaction_by_stock(self, transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
         grouped_transactions = defaultdict(list)

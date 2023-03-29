@@ -62,12 +62,12 @@ def stocks(tax_year: int, filepath: str, deductible_loss: float):
     stock_splits = stock_setup.filter_stock_splits(operations)
 
     profit_calculator = stock_setup.setup_profit_calculator()
-    cost_per_year, income_per_year = profit_calculator.calculate_cumulative_cost_and_income(
+    profit = profit_calculator.calculate_cumulative_cost_and_income(
         transactions, stock_splits, dividends, custody_fees)
 
     tax_calculator = TaxCalculator()
     tax_data = tax_calculator.calculate_tax_per_year(
-        income_per_year, cost_per_year, tax_year, deductible_loss)
+        profit.income, profit.cost, tax_year, deductible_loss)
     print(tax_data, end='\n\n')
 
 
