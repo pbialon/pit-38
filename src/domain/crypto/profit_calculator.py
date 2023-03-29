@@ -4,6 +4,7 @@ from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
+from domain.tax_service.profit_per_year import ProfitPerYear
 from domain.transactions import Transaction, Action
 
 
@@ -21,6 +22,11 @@ class YearlyProfitCalculator:
         cost = self._sum_transactions_per_year(transactions, Action.BUY)
         logger.info(f"Calculated cost per year: {dict(cost)}")
         return cost
+
+    def profit_per_year(self, transactions: List[Transaction]) -> ProfitPerYear:
+        income = self.income_per_year(transactions)
+        cost = self.cost_per_year(transactions)
+        return ProfitPerYear(income, cost)
 
     def _sum_transactions_per_year(self, transactions: List[Transaction], transaction_type: Action) \
             -> defaultdict[int, FiatValue]:

@@ -32,11 +32,9 @@ class CryptoSetup:
 def crypto(tax_year: int, filepath: str, deductible_loss: float):
     profit_calculator = CryptoSetup.setup_yearly_profit_calculator()
     transactions = CryptoSetup.read_transactions(filepath)
-    cost_per_year = profit_calculator.cost_per_year(transactions)
-    income_per_year = profit_calculator.income_per_year(transactions)
+    profit_per_year = profit_calculator.profit_per_year(transactions)
     tax_calculator = TaxCalculator()
-    tax_data = tax_calculator.calculate_tax_per_year(
-        income_per_year, cost_per_year, tax_year, deductible_loss)
+    tax_data = tax_calculator.calculate_tax_per_year(profit_per_year, tax_year, deductible_loss)
     print(tax_data, end='\n\n')
 
 

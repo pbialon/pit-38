@@ -1,11 +1,10 @@
-from collections import defaultdict
 from typing import List
 
 from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
-from domain.stock.profit.profit_per_year import ProfitPerYear
+from domain.tax_service.profit_per_year import ProfitPerYear
 from domain.stock.queue import Queue
 from domain.transactions import Transaction, Action
 

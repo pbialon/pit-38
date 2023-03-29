@@ -4,6 +4,7 @@ import pendulum
 
 from domain.crypto.profit_calculator import YearlyProfitCalculator
 from domain.currency_exchange_service.currencies import Currency, FiatValue
+from domain.tax_service.profit_per_year import ProfitPerYear
 from domain.transactions import Transaction, Action, AssetValue
 
 
@@ -33,29 +34,27 @@ class TestYearlyProfitCalculator(TestCase):
         parsed_date = pendulum.parse(date)
         return Transaction(date=parsed_date, asset=crypto, fiat_value=fiat, action=Action.SELL)
 
-    @classmethod
-    def transaction_list(cls):
-        return [
-            cls._buy(cls._btc(1), cls._usd(100), date="2019-01-01"),
-            cls._sell(cls._btc(1), cls._usd(200), date="2019-01-02"),
-            cls._buy(cls._btc(1), cls._usd(200), date="2020-01-01"),
-            cls._sell(cls._btc(1), cls._usd(300), date="2020-01-02"),
-            cls._buy(cls._btc(1), cls._usd(250), date="2021-01-01"),
-            cls._sell(cls._btc(1), cls._usd(400), date="2021-01-02"),
+    def test_profit_per_year(self):
+        transactions = [
+            self._buy(self._btc(1), self._usd(100), date="2019-01-01"),
+            self._sell(self._btc(1), self._usd(200), date="2019-01-02"),
+            self._buy(self._btc(1), self._usd(200), date="2020-01-01"),
+            self._sell(self._btc(1), self._usd(300), date="2020-01-02"),
+            self._buy(self._btc(1), self._usd(250), date="2021-01-01"),
+            self._sell(self._btc(1), self._usd(400), date="2021-01-02"),
         ]
-
-    def test_income_per_year(self):
-        transactions = self.transaction_list()
         yearly_profit_calculator = YearlyProfitCalculator(StubExchanger())
-        income_per_year = yearly_profit_calculator.income_per_year(transactions)
-        self.assertEqual(income_per_year[2019], FiatValue(800, Currency.ZLOTY))
-        self.assertEqual(income_per_year[2020], FiatValue(1200, Currency.ZLOTY))
-        self.assertEqual(income_per_year[2021], FiatValue(1600, Currency.ZLOTY))
+        profit_per_year = yearly_profit_calculator.profit_per_year(transactions)
+        expected_profit_per_year = ProfitPerYear(
+            income={
+                2019: FiatValue(800, Currency.ZLOTY),
+                2020: FiatValue(1200, Currency.ZLOTY),
+                2021: FiatValue(1600, Currency.ZLOTY)
+            }, cost={
+                2019: FiatValue(400, Currency.ZLOTY),
+                2020: FiatValue(800, Currency.ZLOTY),
+                2021: FiatValue(1000, Currency.ZLOTY)
+            }
+        )
 
-    def test_cost_per_year(self):
-        transactions = self.transaction_list()
-        yearly_profit_calculator = YearlyProfitCalculator(StubExchanger())
-        cost_per_year = yearly_profit_calculator.cost_per_year(transactions)
-        self.assertEqual(cost_per_year[2019], FiatValue(400, Currency.ZLOTY))
-        self.assertEqual(cost_per_year[2020], FiatValue(800, Currency.ZLOTY))
-        self.assertEqual(cost_per_year[2021], FiatValue(1000, Currency.ZLOTY))
+        self.assertEqual(profit_per_year, expected_profit_per_year)

@@ -4,9 +4,9 @@ from domain.currency_exchange_service.currencies import FiatValue
 
 
 class ProfitPerYear:
-    def __init__(self):
-        self.income = defaultdict(lambda: FiatValue(0))
-        self.cost = defaultdict(lambda: FiatValue(0))
+    def __init__(self, income: defaultdict[int, FiatValue] = None, cost: defaultdict[int, FiatValue] = None):
+        self.income = income if income is not None else defaultdict(FiatValue)
+        self.cost = cost if cost is not None else defaultdict(FiatValue)
 
     def add_income(self, year: int, value: FiatValue):
         self.income[year] += value
@@ -19,6 +19,9 @@ class ProfitPerYear:
 
     def get_cost(self, year: int) -> FiatValue:
         return self.cost[year]
+
+    def get_profit(self, year: int) -> FiatValue:
+        return self.income[year] - self.cost[year]
 
     def all_years(self):
         return set(self.income.keys()).union(set(self.cost.keys()))

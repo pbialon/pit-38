@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from domain.currency_exchange_service.currencies import FiatValue
-from domain.stock.profit.profit_per_year import ProfitPerYear
+from domain.tax_service.profit_per_year import ProfitPerYear
 
 
 class TestProfitPerYear(TestCase):
@@ -18,6 +18,13 @@ class TestProfitPerYear(TestCase):
         profit.add_cost(2020, FiatValue(100))
 
         self.assertEqual(profit.get_cost(2020), FiatValue(200))
+
+    def test_get_profit(self):
+        profit = ProfitPerYear()
+        profit.add_income(2020, FiatValue(100))
+        profit.add_cost(2020, FiatValue(50))
+
+        self.assertEqual(profit.get_profit(2020), FiatValue(50))
 
     def test_add(self):
         profit1 = ProfitPerYear()

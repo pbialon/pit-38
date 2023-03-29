@@ -66,8 +66,7 @@ def stocks(tax_year: int, filepath: str, deductible_loss: float):
         transactions, stock_splits, dividends, custody_fees)
 
     tax_calculator = TaxCalculator()
-    tax_data = tax_calculator.calculate_tax_per_year(
-        profit.income, profit.cost, tax_year, deductible_loss)
+    tax_data = tax_calculator.calculate_tax_per_year(profit, tax_year, deductible_loss)
     print(tax_data, end='\n\n')
 
 

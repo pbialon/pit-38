@@ -3,12 +3,11 @@ from typing import List, Dict
 
 from loguru import logger
 
-from domain.currency_exchange_service.currencies import FiatValue
 from domain.stock.operations.custody_fee import CustodyFee
 from domain.stock.operations.dividend import Dividend
 from domain.stock.operations.stock_split import StockSplit
 from domain.stock.profit.per_stock_calculator import PerStockProfitCalculator
-from domain.stock.profit.profit_per_year import ProfitPerYear
+from domain.tax_service.profit_per_year import ProfitPerYear
 from domain.stock.profit.stock_split_handler import StockSplitHandler
 from domain.transactions import Transaction
 
