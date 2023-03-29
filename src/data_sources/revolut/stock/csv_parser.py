@@ -37,8 +37,8 @@ class StockCsvParser(CsvParser):
         return row['Ticker']
 
     @classmethod
-    def _date(cls, row: dict) -> pendulum.Date:
-        return pendulum.parse(row['Date']).date()
+    def _date(cls, row: dict) -> pendulum.DateTime:
+        return pendulum.parse(row['Date'])
 
     @classmethod
     def _operation_type(cls, row: dict) -> OperationType:

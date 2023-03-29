@@ -26,7 +26,7 @@ class Exchanger:
 
     def get_day_one(self, day: pendulum.DateTime) -> pendulum.Date:
         base_day = day
-        day = day.subtract(days=1)
+        day = day.subtract(days=1).date()
 
         while not self.calendar.is_workday(day):
             day = day.subtract(days=1)
