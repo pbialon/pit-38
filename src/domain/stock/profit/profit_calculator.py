@@ -8,6 +8,7 @@ from domain.stock.operations.custody_fee import CustodyFee
 from domain.stock.operations.dividend import Dividend
 from domain.stock.operations.stock_split import StockSplit
 from domain.stock.profit.per_stock_calculator import PerStockProfitCalculator
+from domain.stock.profit.stock_split_handler import StockSplitHandler
 from domain.transactions import Transaction
 
 
@@ -26,9 +27,11 @@ class ProfitCalculator:
         cost_by_year = defaultdict(lambda: FiatValue(0))
         income_by_year = defaultdict(lambda: FiatValue(0))
         stock_splits_by_company = self._group_stock_split_by_stock(stock_splits)
+
         for company, transactions in self._group_transaction_by_stock(transactions).items():
-            cost, income = self.per_stock_calculator.calculate_cost_and_income(
+            transactions_adjusted = StockSplitHandler.incorporate_stock_splits_into_transactions(
                 transactions, stock_splits_by_company[company])
+            cost, income = self.per_stock_calculator.calculate_cost_and_income(transactions_adjusted)
             for year in cost.keys():
                 cost_by_year[year] += cost[year]
                 income_by_year[year] += income[year]

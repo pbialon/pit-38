@@ -10,10 +10,6 @@ from domain.transactions import Transaction
 class StockSplitHandler:
     @classmethod
     def multiplier_for_date(cls, stock_splits: List[StockSplit], date: pendulum.DateTime) -> float:
-        assert sorted(stock_splits) == stock_splits, "It should be sorted"
-        assert all(stock_split.stock == stock_splits[0].stock for stock_split in stock_splits), \
-            "All stock splits should be for the same stock"
-
         multiplier = 1
         for stock_split in reversed(stock_splits):
             if stock_split.date > date:
@@ -26,14 +22,11 @@ class StockSplitHandler:
     def incorporate_stock_splits_into_transactions(cls,
                                                    transactions: List[Transaction],
                                                    stock_splits: List[StockSplit]) -> List[Transaction]:
-        sort_by_date = lambda x: x.date
-
-        stock_splits.sort(key=sort_by_date)
-        transactions.sort(key=sort_by_date)
-
-        assert set(split.stock for split in stock_splits) == \
-               set(transaction.asset.asset_name for transaction in transactions), \
-            "All stock splits should be for the same stock"
+        if not stock_splits:
+            return transactions
+        logger.info(f"Handling {len(stock_splits)} stock splits")
+        cls._assert_the_same_company(transactions, stock_splits)
+        transactions, stock_splits = cls._sort_by_date(transactions, stock_splits)
 
         new_transactions = []
         for transaction in transactions:
@@ -44,5 +37,21 @@ class StockSplitHandler:
                 transaction.action,
                 transaction.date,
             ))
-
+        logger.debug(f"Transactions after handling stock splits: {new_transactions}")
         return new_transactions
+
+    @classmethod
+    def _sort_by_date(cls, transactions: List[Transaction], stock_splits: List[StockSplit]) \
+            -> (List[Transaction], List[StockSplit]):
+
+        by_date = lambda x: x.date
+        return sorted(transactions, key=by_date), sorted(stock_splits, key=by_date)
+
+    @classmethod
+    def _assert_the_same_company(cls, transactions: List[Transaction], stock_splits: List[StockSplit]):
+        assert (t.asset.asset_name == transactions[0].asset.asset_name for t in transactions), \
+            "All transactions should be from the same company"
+        assert (split.stock == stock_splits[0].stock for split in stock_splits), \
+            "All stock splits should be for the same stock"
+        assert transactions[0].asset.asset_name == stock_splits[0].stock, \
+            "All operations should be from the same company"

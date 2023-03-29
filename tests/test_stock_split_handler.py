@@ -4,7 +4,7 @@ import pendulum
 
 from domain.currency_exchange_service.currencies import Currency, FiatValue
 from domain.stock.operations.stock_split import StockSplit
-from domain.stock.stock_split_handler import StockSplitHandler
+from domain.stock.profit.stock_split_handler import StockSplitHandler
 from domain.transactions import AssetValue, Transaction, Action
 
 

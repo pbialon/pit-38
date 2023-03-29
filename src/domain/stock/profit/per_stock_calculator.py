@@ -5,9 +5,7 @@ from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
-from domain.stock.operations.stock_split import StockSplit
 from domain.stock.queue import Queue
-from domain.stock.stock_split_handler import StockSplitHandler
 from domain.transactions import Transaction, Action
 
 
@@ -23,43 +21,13 @@ class PerStockProfitCalculator:
             "All transactions should be from the same company"
         return transaction[0].asset.asset_name
 
-    def _stock_splits_into_transactions(self,
-                                        stock_splits: List[StockSplit],
-                                        transactions: List[Transaction]) -> List[Transaction]:
-        stock_splits.sort(key=lambda s: s.date)
-        transactions.sort(key=lambda t: t.date)
-
-        assert [split.stock for split in stock_splits] == [transactions[0].asset.asset_name], \
-            "All stock splits should be for the same stock"
-
-        new_transactions = []
-        for transaction in transactions:
-            multiplier = StockSplitHandler.multiplier_for_date(stock_splits, transaction.date)
-            new_transactions.append(Transaction(
-                transaction.asset * multiplier,
-                transaction.fiat_value,
-                transaction.action,
-                transaction.date,
-            ))
-
-        return new_transactions
-
-    def calculate_cost_and_income(self,
-                                  transactions: List[Transaction],
-                                  stock_splits: List[StockSplit]) -> (FiatValue, FiatValue):
-        if stock_splits:
-            logger.info(f"Handling {len(stock_splits)} stock splits")
-            transactions = StockSplitHandler.incorporate_stock_splits_into_transactions(transactions, stock_splits)
-            logger.debug(f"Transactions after handling stock splits: {transactions}")
-
+    def calculate_cost_and_income(self, transactions: List[Transaction]) -> (FiatValue, FiatValue):
         queue = Queue()
         cost = defaultdict(lambda: FiatValue(0))
         income = defaultdict(lambda: FiatValue(0))
 
         logger.info(f"Calculating cost and income for company stock: {self._get_company_name(transactions)}")
         logger.info(f"Number of transactions: {len(transactions)}")
-        if stock_splits:
-            logger.info(f"Stock splits: {stock_splits}")
 
         for transaction in transactions:
             if transaction.action == Action.BUY:
