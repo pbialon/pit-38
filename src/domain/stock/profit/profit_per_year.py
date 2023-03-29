@@ -20,13 +20,22 @@ class ProfitPerYear:
     def get_cost(self, year: int) -> FiatValue:
         return self.cost[year]
 
+    def all_years(self):
+        return set(self.income.keys()).union(set(self.cost.keys()))
+
     def __add__(self, other):
         result = ProfitPerYear()
-        years = set(self.income.keys()).union(set(other.income.keys()))
-        for year in years:
+        all_years = self.all_years().union(other.all_years())
+        for year in all_years:
             result.income[year] = self.income[year] + other.income[year]
             result.cost[year] = self.cost[year] + other.cost[year]
         return result
 
     def __eq__(self, other):
         return self.income == other.income and self.cost == other.cost
+
+    def __str__(self):
+        return "; ".join(
+            f"[{year}]: +{self.income[year]} -{self.cost[year]}"
+            for year in self.all_years()
+        )

@@ -8,6 +8,7 @@ from domain.stock.operations.custody_fee import CustodyFee
 from domain.stock.operations.dividend import Dividend
 from domain.stock.operations.stock_split import StockSplit
 from domain.stock.profit.per_stock_calculator import PerStockProfitCalculator
+from domain.stock.profit.profit_per_year import ProfitPerYear
 from domain.stock.profit.stock_split_handler import StockSplitHandler
 from domain.transactions import Transaction
 
@@ -26,28 +27,25 @@ class ProfitCalculator:
 
         cost_by_year = defaultdict(lambda: FiatValue(0))
         income_by_year = defaultdict(lambda: FiatValue(0))
+        profit = ProfitPerYear()
         stock_splits_by_company = self._group_stock_split_by_stock(stock_splits)
 
         for company, transactions in self._group_transaction_by_stock(transactions).items():
             transactions_adjusted = StockSplitHandler.incorporate_stock_splits_into_transactions(
                 transactions, stock_splits_by_company[company])
-            cost, income = self.per_stock_calculator.calculate_cost_and_income(transactions_adjusted)
-            for year in cost.keys():
-                cost_by_year[year] += cost[year]
-                income_by_year[year] += income[year]
+            profit += self.per_stock_calculator.calculate_cost_and_income(transactions_adjusted)
 
+        logger.info("Processing dividends")
         for dividend in dividends:
-            profit = self.exchanger.exchange(dividend.date, dividend.value)
-            logger.debug(f"Processing dividend {dividend}, profit: {profit}")
-            income_by_year[dividend.date.year] += profit
+            income = self.exchanger.exchange(dividend.date, dividend.value)
+            profit.add_income(dividend.date.year, income)
 
+        logger.info("Processing custody fees")
         for custody_fees in custody_fees:
             cost = self.exchanger.exchange(custody_fees.date, custody_fees.value)
-            logger.debug(f"Processing custody fees {custody_fees}, cost: {cost}")
-            cost_by_year[custody_fees.date.year] += cost
+            profit.add_cost(custody_fees.date.year, cost)
 
-        for year in cost_by_year.keys():
-            logger.info(f"Year: {year}, cost: {cost_by_year[year]}, income: {income_by_year[year]}")
+        logger.info(f"Profit per year: {profit}")
 
         return cost_by_year, income_by_year
 

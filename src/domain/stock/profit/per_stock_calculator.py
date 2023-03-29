@@ -5,6 +5,7 @@ from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.currency_exchange_service.exchanger import Exchanger
+from domain.stock.profit.profit_per_year import ProfitPerYear
 from domain.stock.queue import Queue
 from domain.transactions import Transaction, Action
 
@@ -21,10 +22,10 @@ class PerStockProfitCalculator:
             "All transactions should be from the same company"
         return transaction[0].asset.asset_name
 
-    def calculate_cost_and_income(self, transactions: List[Transaction]) -> (FiatValue, FiatValue):
+    def calculate_cost_and_income(self, transactions: List[Transaction]) -> ProfitPerYear:
         queue = Queue()
-        cost = defaultdict(lambda: FiatValue(0))
-        income = defaultdict(lambda: FiatValue(0))
+
+        profit = ProfitPerYear()
 
         logger.info(f"Calculating cost and income for company stock: {self._get_company_name(transactions)}")
         logger.info(f"Number of transactions: {len(transactions)}")
@@ -41,15 +42,10 @@ class PerStockProfitCalculator:
                 f"Calculated cost and income for transaction: {transaction}, "
                 f"cost = {transaction_cost}, income = {transaction_income}, profit = {transaction_profit}")
             year = transaction.date.year
-            cost[year] += transaction_cost
-            income[year] += transaction_income
+            profit.add_income(year, transaction_income)
+            profit.add_cost(year, transaction_cost)
 
-        for year in cost.keys():
-            profit = income[year] - cost[year]
-            logger.info(f"Year: {year} for {self._get_company_name(transactions)}, "
-                        f"cost: {cost[year]}, income: {income[year]}, profit: {profit}")
-
-        return cost, income
+        return profit
 
     def _calculate_cost_for_sell(self, buy_queue: Queue, transaction: Transaction) -> FiatValue:
         stock_amount_to_account = transaction.asset.amount
