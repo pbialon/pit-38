@@ -30,6 +30,6 @@ class YearlyProfitCalculator:
                 continue
             transaction_value_in_base_currency = self.exchanger.exchange(
                 transaction.date, transaction.fiat_value)
-            transactions_sum_per_year[transaction.date.year] += transaction_value_in_base_currency
+            transactions_sum_per_year[transaction.year()] += transaction_value_in_base_currency
 
         return transactions_sum_per_year

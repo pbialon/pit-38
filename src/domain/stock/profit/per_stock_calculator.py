@@ -41,9 +41,9 @@ class PerStockProfitCalculator:
             logger.debug(
                 f"Calculated cost and income for transaction: {transaction}, "
                 f"cost = {transaction_cost}, income = {transaction_income}, profit = {transaction_profit}")
-            year = transaction.date.year
-            profit.add_income(year, transaction_income)
-            profit.add_cost(year, transaction_cost)
+
+            profit.add_income(transaction.year(), transaction_income)
+            profit.add_cost(transaction.year(), transaction_cost)
 
         return profit
 

@@ -16,6 +16,9 @@ class Transaction:
         self.action = action
         self.date = date
 
+    def year(self) -> int:
+        return self.date.year
+
     def __str__(self):
         if self.action == Action.BUY:
             return f"[{self.date.to_date_string()}]: {self.fiat_value} => {self.action} {self.asset}"
