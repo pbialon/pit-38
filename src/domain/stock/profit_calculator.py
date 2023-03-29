@@ -31,6 +31,9 @@ class YearlyPerStockProfitCalculator:
         stock_splits.sort(key=lambda s: s.date)
         transactions.sort(key=lambda t: t.date)
 
+        assert [split.stock for split in stock_splits] == [transactions[0].asset.asset_name], \
+            "All stock splits should be for the same stock"
+
         new_transactions = []
         for transaction in transactions:
             multiplier = StockSplitHandler.multiplier_for_date(stock_splits, transaction.date)
@@ -125,8 +128,10 @@ class YearlyProfitCalculator:
 
         cost_by_year = defaultdict(lambda: FiatValue(0))
         income_by_year = defaultdict(lambda: FiatValue(0))
+        stock_splits_by_company = self._group_stock_split_by_stock(stock_splits)
         for company, transactions in self._group_transaction_by_stock(transactions).items():
-            cost, income = self.per_stock_calculator.calculate_cost_and_income(transactions, stock_splits)
+            cost, income = self.per_stock_calculator.calculate_cost_and_income(
+                transactions, stock_splits_by_company[company])
             for year in cost.keys():
                 cost_by_year[year] += cost[year]
                 income_by_year[year] += income[year]

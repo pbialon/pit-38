@@ -35,23 +35,6 @@ class StockSetup:
         return OperationsCsvReader(filepath, OperationStockCsvParser).read()
 
     @classmethod
-    def group_transactions_by_stock(cls, transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
-        grouped_transactions = defaultdict(list)
-        for transaction in transactions:
-            company_name = transaction.asset.asset_name
-            grouped_transactions[company_name].append(transaction)
-        return grouped_transactions
-
-    @classmethod
-    def filter_stock_splits_and_group_by_stock(cls, operations: List[Operation]) -> Dict[str, List[StockSplit]]:
-        stock_splits: List[StockSplit] = [operation for operation in operations if
-                                          operation.type == OperationType.STOCK_SPLIT]
-        stock_splits_by_stock: Dict[str, List[StockSplit]] = defaultdict(list)
-        for stock_split in stock_splits:
-            stock_splits_by_stock[stock_split.stock].append(stock_split)
-        return stock_splits_by_stock
-
-    @classmethod
     def filter_dividends(cls, operations: List[Operation]) -> List[Dividend]:
         return [operation for operation in operations if operation.type == OperationType.DIVIDEND]
 
@@ -80,7 +63,8 @@ def stocks(tax_year: int, filepath: str, deductible_loss: float):
     stock_splits = stock_setup.filter_stock_splits(operations)
 
     profit_calculator = stock_setup.setup_profit_calculator()
-    cost_per_year, income_per_year = profit_calculator.calculate_cumulative_cost_and_income(transactions, stock_splits, dividends, custody_fees)
+    cost_per_year, income_per_year = profit_calculator.calculate_cumulative_cost_and_income(
+        transactions, stock_splits, dividends, custody_fees)
 
     tax_calculator = TaxCalculator()
     tax_data = tax_calculator.calculate_tax_per_year(
