@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-import pendulum
-
 from domain.calendar_service.calendar import Calendar
 from tests.utils import date
 

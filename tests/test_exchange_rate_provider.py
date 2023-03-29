@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-import pendulum
-
 from domain.currency_exchange_service.currencies import Currency
 from domain.currency_exchange_service.exchange_rates_provider import ExchangeRatesProvider
 from tests.utils import date

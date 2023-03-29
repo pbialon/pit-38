@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.tax_service.profit_per_year import ProfitPerYear
 from domain.tax_service.tax_year_result import TaxYearResult

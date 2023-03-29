@@ -1,11 +1,9 @@
 from unittest import TestCase
 
-import pendulum
 import pathlib
 
 from data_sources.revolut.csv_reader import TransactionsCsvReader
 from data_sources.revolut.crypto import CryptoCsvParser
-from domain.transactions import Transaction, Action
 from tests.utils import btc, zl, buy, sell
 
 

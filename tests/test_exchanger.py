@@ -1,9 +1,6 @@
 from unittest import TestCase
 
-import pendulum
-
 from domain.calendar_service.calendar import Calendar
-from domain.currency_exchange_service.currencies import FiatValue, Currency
 from domain.currency_exchange_service.exchanger import Exchanger
 from tests.utils import usd, zl, date
 
