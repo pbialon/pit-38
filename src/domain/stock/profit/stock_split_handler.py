@@ -9,16 +9,6 @@ from domain.transactions import Transaction
 
 class StockSplitHandler:
     @classmethod
-    def multiplier_for_date(cls, stock_splits: List[StockSplit], date: pendulum.DateTime) -> float:
-        multiplier = 1
-        for stock_split in reversed(stock_splits):
-            if stock_split.date > date:
-                multiplier *= stock_split.ratio
-        if multiplier > 1:
-            logger.debug(f"Stock split multiplier for {date} is {multiplier}")
-        return multiplier
-
-    @classmethod
     def incorporate_stock_splits_into_transactions(cls,
                                                    transactions: List[Transaction],
                                                    stock_splits: List[StockSplit]) -> List[Transaction]:
@@ -35,6 +25,16 @@ class StockSplitHandler:
             new_transactions.append(adjusted_transaction)
         logger.debug(f"Transactions after handling stock splits: {new_transactions}")
         return new_transactions
+
+    @classmethod
+    def multiplier_for_date(cls, stock_splits: List[StockSplit], date: pendulum.DateTime) -> float:
+        multiplier = 1
+        for stock_split in reversed(stock_splits):
+            if stock_split.date > date:
+                multiplier *= stock_split.ratio
+        if multiplier > 1:
+            logger.debug(f"Stock split multiplier for {date} is {multiplier}")
+        return multiplier
 
     @classmethod
     def _adjust_transaction(cls, transaction: Transaction, multiplier: float) -> Transaction:

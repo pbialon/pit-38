@@ -15,12 +15,6 @@ class PerStockProfitCalculator:
     def __init__(self, exchanger: Exchanger):
         self.exchanger = exchanger
 
-    def _get_company_name(self, transaction: List[Transaction]) -> str:
-        # check all transactions are from the same company
-        assert (t.asset.asset_name == transaction[0].asset.asset_name for t in transaction), \
-            "All transactions should be from the same company"
-        return transaction[0].asset.asset_name
-
     def calculate_cost_and_income(self, transactions: List[Transaction]) -> ProfitPerYear:
         queue = Queue()
 
@@ -45,6 +39,12 @@ class PerStockProfitCalculator:
             profit.add_cost(transaction.year(), transaction_cost)
 
         return profit
+
+    def _get_company_name(self, transaction: List[Transaction]) -> str:
+        # check all transactions are from the same company
+        assert (t.asset.asset_name == transaction[0].asset.asset_name for t in transaction), \
+            "All transactions should be from the same company"
+        return transaction[0].asset.asset_name
 
     def _calculate_cost_for_sell(self, buy_queue: Queue, transaction: Transaction) -> FiatValue:
         stock_amount_to_account = transaction.asset.amount
