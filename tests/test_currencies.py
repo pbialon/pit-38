@@ -40,4 +40,4 @@ class TestFiatValue(TestCase):
         b = zl(200)
 
         with self.assertRaises(InvalidCurrencyException):
-            a > b
+            _ = a > b

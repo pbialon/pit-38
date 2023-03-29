@@ -5,7 +5,7 @@ import pendulum
 from domain.calendar_service.calendar import Calendar
 from domain.currency_exchange_service.currencies import FiatValue, Currency
 from domain.currency_exchange_service.exchanger import Exchanger
-from tests.utils import usd, zl
+from tests.utils import usd, zl, date
 
 
 class ExchangeRateProviderStub:
@@ -17,17 +17,17 @@ class TestExchanger(TestCase):
     def test_get_day_one(self):
         exchanger = Exchanger(None, Calendar())
 
-        day_one = exchanger.get_day_one(pendulum.date(2022, 1, 4))
-        self.assertEqual(day_one, pendulum.date(2022, 1, 3))
+        day_one = exchanger.get_day_one(date("2022-01-04"))
+        self.assertEqual(day_one, date("2022-01-03"))
 
-        day_one = exchanger.get_day_one(pendulum.date(2022, 1, 9))
-        self.assertEqual(day_one, pendulum.date(2022, 1, 7))
+        day_one = exchanger.get_day_one(date("2022-01-09"))
+        self.assertEqual(day_one, date("2022-01-07"))
 
-        day_one = exchanger.get_day_one(pendulum.date(2022, 1, 10))
-        self.assertEqual(day_one, pendulum.date(2022, 1, 7))
+        day_one = exchanger.get_day_one(date("2022-01-10"))
+        self.assertEqual(day_one, date("2022-01-07"))
 
-        day_one = exchanger.get_day_one(pendulum.date(2022, 1, 11))
-        self.assertEqual(day_one, pendulum.date(2022, 1, 10))
+        day_one = exchanger.get_day_one(date("2022-01-11"))
+        self.assertEqual(day_one, date("2022-01-10"))
 
     def test_exchange(self):
         exchanger = Exchanger(ExchangeRateProviderStub(), Calendar())
