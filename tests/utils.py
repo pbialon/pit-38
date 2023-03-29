@@ -17,6 +17,13 @@ def apple(amount: float) -> AssetValue:
 def amazon(amount: float) -> AssetValue:
     return AssetValue(amount, "AMZN")
 
+def meta(amount: float) -> AssetValue:
+    return AssetValue(amount, "META")
+
+
+def google(amount: float) -> AssetValue:
+    return AssetValue(amount, "GOOGL")
+
 
 def usd(amount: float) -> FiatValue:
     return FiatValue(amount, Currency.DOLLAR)

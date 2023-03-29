@@ -9,7 +9,7 @@ from tests.utils import btc, zl, buy, sell
 
 class TestCsvReader(TestCase):
     def test_read(self):
-        filepath = pathlib.Path(__file__).parent.absolute() / "resources" / "example_export.csv"
+        filepath = pathlib.Path(__file__).parent.absolute() / "resources" / "example_crypto_export.csv"
 
         reader = TransactionsCsvReader(filepath, CryptoCsvParser)
         transactions = list(reader.read())
