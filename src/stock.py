@@ -62,12 +62,17 @@ def stocks(tax_year: int, filepath: str, deductible_loss: float):
     stock_splits = stock_setup.filter_stock_splits(operations)
 
     profit_calculator = stock_setup.setup_profit_calculator()
-    profit = profit_calculator.calculate_cumulative_cost_and_income(
+    profit_from_transactions, profit_from_dividends = profit_calculator.calculate_cumulative_cost_and_income(
         transactions, stock_splits, dividends, custody_fees)
 
     tax_calculator = TaxCalculator()
-    tax_data = tax_calculator.calculate_tax_per_year(profit, tax_year, deductible_loss)
-    print(tax_data, end='\n\n')
+    tax_data_from_transactions = tax_calculator.calculate_tax_per_year(
+        profit_from_transactions, tax_year, deductible_loss)
+    tax_data_from_dividends = tax_calculator.calculate_tax_per_year(
+        profit_from_dividends, tax_year, 0)
+
+    print("Transactions: ", tax_data_from_transactions, end='\n\n')
+    print("Dividends (if you paid 30% in USA you don't have to pay):", tax_data_from_dividends, end='\n\n')
 
 
 if __name__ == "__main__":

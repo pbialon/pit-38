@@ -41,14 +41,18 @@ class TestProfitCalculator(TestCase):
         })
         calculator = ProfitCalculator(StubExchanger(), per_stock_calculator)
 
-        profit = calculator.calculate_cumulative_cost_and_income(
+        profit_from_transactions, profit_from_dividends = calculator.calculate_cumulative_cost_and_income(
             transactions, stock_splits, dividends, custody_fees)
 
-        expected_profit = ProfitPerYear(
+        expected_profit_from_transactions = ProfitPerYear(
             cost={2019: zl(4), 2020: zl(4404)},
-            income={2019: zl(20), 2020: zl(8800)}
+            income={2019: zl(0), 2020: zl(8800)}
         )
-        self.assertEqual(expected_profit, profit)
+        expected_profit_from_dividends = ProfitPerYear(
+            cost={2019: zl(0)}, income={2019: zl(20)}
+        )
+        self.assertEqual(expected_profit_from_transactions, profit_from_transactions)
+        self.assertEqual(expected_profit_from_dividends, profit_from_dividends)
 
 
 class PerStockCalculatorStub:

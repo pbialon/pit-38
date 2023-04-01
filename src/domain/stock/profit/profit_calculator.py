@@ -24,26 +24,39 @@ class ProfitCalculator:
             dividends: List[Dividend],
             custody_fees: List[CustodyFee]) -> ProfitPerYear:
 
-        profit = ProfitPerYear()
+        profit_from_transactions = self.handle_transactions(transactions, stock_splits, custody_fees)
+        profit_from_dividends = self.handle_dividends(dividends)
+
+        return profit_from_transactions, profit_from_dividends
+
+    def handle_transactions(self,
+                            transactions: List[Transaction],
+                            stock_splits: List[StockSplit],
+                            custody_fees: List[CustodyFee]) -> ProfitPerYear:
+        profit_transactions = ProfitPerYear()
         stock_splits_by_company = self._group_stock_split_by_stock(stock_splits)
 
         for company, transactions in self._group_transaction_by_stock(transactions).items():
             transactions_adjusted = StockSplitHandler.incorporate_stock_splits_into_transactions(
                 transactions, stock_splits_by_company[company])
-            profit += self.per_stock_calculator.calculate_cost_and_income(transactions_adjusted)
-
-        logger.info("Processing dividends")
-        for dividend in dividends:
-            income = self.exchanger.exchange(dividend.date, dividend.value)
-            profit.add_income(dividend.date.year, income)
+            profit_transactions += self.per_stock_calculator.calculate_cost_and_income(transactions_adjusted)
 
         logger.info("Processing custody fees")
         for custody_fees in custody_fees:
             cost = self.exchanger.exchange(custody_fees.date, custody_fees.value)
-            profit.add_cost(custody_fees.date.year, cost)
+            profit_transactions.add_cost(custody_fees.date.year, cost)
 
-        logger.info(f"Profit per year: {profit}")
-        return profit
+        logger.info(f"Profit per year from transactions: {profit_transactions}")
+        return profit_transactions
+
+    def handle_dividends(self, dividends: List[Dividend]) -> ProfitPerYear:
+        profit_dividends = ProfitPerYear()
+        for dividend in dividends:
+            income = self.exchanger.exchange(dividend.date, dividend.value)
+            profit_dividends.add_income(dividend.date.year, income)
+
+        logger.info(f"Profit per year from dividends: {profit_dividends}")
+        return profit_dividends
 
     def _group_transaction_by_stock(self, transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
         grouped_transactions = defaultdict(list)
