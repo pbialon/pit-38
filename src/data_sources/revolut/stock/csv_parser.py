@@ -11,7 +11,9 @@ from domain.transactions import Transaction
 class StockCsvParser(CsvParser):
     OPERATIONS = {
         "BUY - MARKET": OperationType.BUY,
+        "BUY - LIMIT": OperationType.BUY,
         "SELL - MARKET": OperationType.SELL,
+        "SELL - LIMIT": OperationType.SELL,
         "DIVIDEND": OperationType.DIVIDEND,
         "CUSTODY FEE": OperationType.CUSTODY_FEE,
         "STOCK SPLIT": OperationType.STOCK_SPLIT,
