@@ -87,3 +87,16 @@ class TestPerStockProfitCalculator(TestCase):
 
         self.assertEqual(profit.get_cost(2021), zl(1000))
         self.assertEqual(profit.get_income(2021), zl(800))
+        
+    def test_regression(self):
+        calculator = PerStockProfitCalculator(StubExchanger())
+        transactions = [
+            buy(apple(34.24657534), usd(1000), "2022-02-01 12:00"),
+            buy(apple(127.388535), usd(4000), "2022-02-04 12:00"),
+            sell(apple(161.6351104), usd(5500), "2022-03-01 12:00")
+        ]
+        
+        profit = calculator.calculate_cost_and_income(transactions)
+
+        self.assertEqual(profit.get_cost(2022), zl(20000))
+        self.assertEqual(profit.get_income(2022), zl(22000))
