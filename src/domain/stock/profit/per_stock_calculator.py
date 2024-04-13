@@ -10,7 +10,7 @@ from domain.transactions import Transaction, Action
 
 
 class PerStockProfitCalculator:
-    EPSILON = 0.00000001
+    EPSILON = 0.0000001
 
     def __init__(self, exchanger: Exchanger):
         self.exchanger = exchanger
