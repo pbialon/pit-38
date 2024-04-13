@@ -49,7 +49,9 @@ class StockSplitHandler:
     def _sort_by_date(cls, transactions: List[Transaction], stock_splits: List[StockSplit]) \
             -> Tuple[List[Transaction], List[StockSplit]]:
 
-        by_date = lambda x: x.date
+        def by_date(transaction: Transaction):
+            return transaction.date
+
         return sorted(transactions, key=by_date), sorted(stock_splits, key=by_date)
 
     @classmethod
