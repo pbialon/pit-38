@@ -6,7 +6,12 @@ from loguru import logger
 import pendulum
 import requests as requests
 
-from domain.calendar_service.calendar import year_start, year_end
+from domain.calendar_service.calendar import (
+    current_year,
+    yesterday,
+    year_start,
+    year_end,
+)
 from domain.currency_exchange_service.currencies import Currency
 
 
@@ -26,14 +31,20 @@ class ExchangeRatesProvider:
         return self._rates[currency][day]
 
     def _fetch_rates(self, currency: str, year: int) -> Dict[pendulum.Date, float]:
+        start_date = year_start(year)
+        end_date = year_end(year) if year < current_year() else yesterday()
 
-        api_url = self._prepare_url(currency, year_start(year), year_end(year))
+        api_url = self._prepare_url(currency, start_date, end_date)
         logger.debug("Querying NBP API: {}", api_url)
         payload = self._fetch_payload(api_url)
         return self._parse(payload)
 
-    def _prepare_url(self, currency: str, start_date: pendulum.Date, end_date: pendulum.Date) -> str:
-        return self.NBP_API_URL.format(currency=currency, start_date=start_date, end_date=end_date)
+    def _prepare_url(
+        self, currency: str, start_date: pendulum.Date, end_date: pendulum.Date
+    ) -> str:
+        return self.NBP_API_URL.format(
+            currency=currency, start_date=start_date, end_date=end_date
+        )
 
     def _fetch_payload(self, api_url: str) -> Dict[str, any]:
         response = requests.get(api_url)
@@ -45,5 +56,7 @@ class ExchangeRatesProvider:
             pendulum.parse(rate["effectiveDate"]).date(): rate["mid"]
             for rate in payload["rates"]
         }
-        logger.debug(f"Fetched rates for {len(rates)} days", )
+        logger.debug(
+            f"Fetched rates for {len(rates)} days",
+        )
         return rates

@@ -20,8 +20,9 @@ def year_end(year: int):
     return pendulum.date(year, 12, 31)
 
 
-def today() -> pendulum.Date:
-    return pendulum.today()
+def yesterday() -> pendulum.Date:
+    yesterday = pendulum.yesterday()
+    return pendulum.date(yesterday.year, yesterday.month, yesterday.day)
 
 
 class Calendar:
