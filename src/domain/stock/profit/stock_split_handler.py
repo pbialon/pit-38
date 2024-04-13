@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import pendulum
 from loguru import logger
@@ -47,7 +47,7 @@ class StockSplitHandler:
 
     @classmethod
     def _sort_by_date(cls, transactions: List[Transaction], stock_splits: List[StockSplit]) \
-            -> (List[Transaction], List[StockSplit]):
+            -> Tuple[List[Transaction], List[StockSplit]]:
 
         by_date = lambda x: x.date
         return sorted(transactions, key=by_date), sorted(stock_splits, key=by_date)
