@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import pathlib
 
-from data_sources.csv_reader import TransactionsCsvReader
+from data_sources.revolut.csv_reader import TransactionsCsvReader
 from data_sources.revolut.crypto import CryptoCsvParser
 from tests.utils import btc, zl, buy, sell
 

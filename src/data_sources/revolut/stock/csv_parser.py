@@ -2,7 +2,7 @@ from typing import Dict
 
 import pendulum
 
-from data_sources.csv_parser import CsvParser
+from data_sources.revolut.csv_parser import CsvParser
 from data_sources.revolut.stock.operation import OperationType
 from domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
 from domain.transactions import Transaction
