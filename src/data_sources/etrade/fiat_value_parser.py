@@ -4,7 +4,7 @@ from domain.currency_exchange_service.currencies import Currency, FiatValue
 class FiatValueParser:
     SYMBOL_TO_CURRENCY = {
         "$": Currency.DOLLAR,
-        "zł": Currency.ZLOTY,
+        "€": Currency.EURO,
     }
 
     @classmethod
