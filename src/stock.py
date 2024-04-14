@@ -76,7 +76,7 @@ def stocks(tax_year: int, revolut: str, etrade: str, deductible_loss: float):
     tax_data_from_dividends = tax_calculator.calculate_tax_per_year(
         profit_from_dividends, tax_year, 0)
 
-    print("Transactions: ", tax_data_from_transactions, end='\n\n')
+    print("\n\nTransactions: ", tax_data_from_transactions, end='\n\n')
     print("Dividends (if you paid 30% in USA you don't have to pay):", tax_data_from_dividends, end='\n\n')
 
 
