@@ -5,7 +5,7 @@ from loguru import logger
 
 from domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
 from domain.transactions import Transaction, AssetValue, Action
-from data_sources.csv_reader import CsvParser
+from data_sources.csv_parser import CsvParser
 
 
 class State:
