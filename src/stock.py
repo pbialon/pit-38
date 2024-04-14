@@ -1,7 +1,7 @@
 from typing import List
 import click
 
-from data_sources.revolut.csv_reader import TransactionsCsvReader
+from data_sources.csv_reader import TransactionsCsvReader
 from data_sources.revolut.stock.operation import OperationType
 from data_sources.revolut.stock.operation_csv_parser import OperationStockCsvParser
 from data_sources.revolut.stock.operations_csv_reader import OperationsCsvReader
