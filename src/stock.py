@@ -48,15 +48,17 @@ class StockSetup:
 
 @click.command()
 @click.option('--tax-year', '-y', default=previous_year(), help='Year you want to calculate tax for')
-@click.option('--filepath', '-f',
+@click.option('--etrade', help='Path to csv file with transactions from ETRADE')
+@click.option('--revolut',
               help='Path to csv file with transactions (currently only revolut csv format is supported)')
 @click.option('--deductible-loss', '-l', default=-1,
               help='Deductible loss from previous years. It overrides calculation of loss by the script',
               type=float)
-def stocks(tax_year: int, filepath: str, deductible_loss: float):
+def stocks(tax_year: int, etrade: str, revolut: str, deductible_loss: float):
+    revolut_filepath = revolut
     stock_setup = StockSetup()
-    transactions = stock_setup.read_transactions(filepath)
-    operations = stock_setup.read_operations(filepath)
+    transactions = stock_setup.read_transactions(revolut_filepath)
+    operations = stock_setup.read_operations(revolut_filepath)
     custody_fees = stock_setup.filter_custody_fees(operations)
     dividends = stock_setup.filter_dividends(operations)
     stock_splits = stock_setup.filter_stock_splits(operations)
