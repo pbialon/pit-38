@@ -5,11 +5,9 @@ import pandas as pd
 import pendulum
 
 from data_sources.etrade.fiat_value_parser import FiatValueParser
-from domain.currency_exchange_service.currencies import FiatValue
 from domain.transactions.action import Action
 from domain.transactions.asset import AssetValue
 from domain.transactions.transaction import Transaction
-from domain.currency_exchange_service.currencies import Currency
 
 FILEPATH = "~/Downloads/Etrade.csv"
 
@@ -50,5 +48,3 @@ def parse_row(row: pd.Series) -> List[Transaction]:
     logger.debug(f"Parsed sell transaction: {sell}")
 
     return [buy, sell]
-
-
