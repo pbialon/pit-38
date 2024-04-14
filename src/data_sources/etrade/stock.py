@@ -9,7 +9,7 @@ from domain.transactions.action import Action
 from domain.transactions.asset import AssetValue
 from domain.transactions.transaction import Transaction
 
-FILEPATH = "~/Downloads/Etrade.csv"
+FILEPATH = "/Users/pbialon/Downloads/Etrade.csv"
 
 
 def get_stock_data(file_path):
@@ -21,6 +21,8 @@ def get_stock_data(file_path):
     with open(file_path, "r") as csvfile:
         reader = csv.DictReader(csvfile, delimiter=",")
         for row in reader:
+            if row["Record Type"] == "Summary":
+                continue
             transactions.extend(parse_row(row))
 
     logger.info(f"Parsed {len(transactions)} transactions")
