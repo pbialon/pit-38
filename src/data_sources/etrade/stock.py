@@ -8,8 +8,6 @@ from domain.transactions.action import Action
 from domain.transactions.asset import AssetValue
 from domain.transactions.transaction import Transaction
 
-FILEPATH = "/Users/pbialon/Downloads/Etrade.csv"
-
 
 class StockCsvReader:
     @classmethod

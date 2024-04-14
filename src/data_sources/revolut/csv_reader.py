@@ -3,7 +3,7 @@ from typing import List
 
 from loguru import logger
 
-from data_sources.csv_parser import CsvParser
+from data_sources.revolut.csv_parser import CsvParser
 from domain.transactions import Transaction
 
 

@@ -1,7 +1,8 @@
 from typing import List
 import click
 
-from data_sources.csv_reader import TransactionsCsvReader
+from data_sources.revolut.csv_reader import TransactionsCsvReader as RevolutStockCsvReader
+from data_sources.etrade.stock import StockCsvReader as EtradeStockCsvReader
 from data_sources.revolut.stock.operation import OperationType
 from data_sources.revolut.stock.operation_csv_parser import OperationStockCsvParser
 from data_sources.revolut.stock.operations_csv_reader import OperationsCsvReader
@@ -26,8 +27,11 @@ class StockSetup:
         return ProfitCalculator(exchanger, per_stock_calculator)
 
     @classmethod
-    def read_transactions(cls, filepath: str) -> List:
-        return TransactionsCsvReader(filepath, TransactionStockCsvParser).read()
+    def read_transactions(cls, revolut_filepath: str, etrade_filepath: str) -> List:
+        etrade_transactions = EtradeStockCsvReader.read(etrade_filepath) if etrade_filepath else []
+        revolut_transaction = RevolutStockCsvReader(revolut_filepath, TransactionStockCsvParser).read() if revolut_filepath else []
+        
+        return etrade_transactions + revolut_transaction
 
     @classmethod
     def read_operations(cls, filepath: str) -> List:
@@ -48,15 +52,16 @@ class StockSetup:
 
 @click.command()
 @click.option('--tax-year', '-y', default=previous_year(), help='Year you want to calculate tax for')
-@click.option('--filepath', '-f',
+@click.option('--revolut',
               help='Path to csv file with transactions (currently only revolut csv format is supported)')
+@click.option('--etrade', help='Path to csv file with transactions from ETRADE')
 @click.option('--deductible-loss', '-l', default=-1,
               help='Deductible loss from previous years. It overrides calculation of loss by the script',
               type=float)
-def stocks(tax_year: int, filepath: str, deductible_loss: float):
+def stocks(tax_year: int, revolut: str, etrade: str, deductible_loss: float):
     stock_setup = StockSetup()
-    transactions = stock_setup.read_transactions(filepath)
-    operations = stock_setup.read_operations(filepath)
+    transactions = stock_setup.read_transactions(revolut, etrade)
+    operations = stock_setup.read_operations(revolut)
     custody_fees = stock_setup.filter_custody_fees(operations)
     dividends = stock_setup.filter_dividends(operations)
     stock_splits = stock_setup.filter_stock_splits(operations)
@@ -71,7 +76,7 @@ def stocks(tax_year: int, filepath: str, deductible_loss: float):
     tax_data_from_dividends = tax_calculator.calculate_tax_per_year(
         profit_from_dividends, tax_year, 0)
 
-    print("Transactions: ", tax_data_from_transactions, end='\n\n')
+    print("\n\nTransactions: ", tax_data_from_transactions, end='\n\n')
     print("Dividends (if you paid 30% in USA you don't have to pay):", tax_data_from_dividends, end='\n\n')
 
 
