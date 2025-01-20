@@ -29,13 +29,16 @@ class CryptoCsvParser(CsvParser):
         if operation_type == OperationType.TRANSFER:
             logger.debug(f"Skipping transaction: {row} (transfer)")
             return None
+        if not row["Description"] == "Revolut Ltd":
+            logger.debug(f"Skipping transaction: {row} (not Revolut Ltd)")
+            return None
         transaction = Transaction(
             asset=CryptoCsvParser.crypto_value(row),
             fiat_value=cls.fiat_value_of_transaction(row, operation_type),
             action=CryptoCsvParser.action(row),
             date=CryptoCsvParser.datetime(row),
         )
-        logger.debug(f"Parsed transaction: {transaction}")
+        logger.info(f"Parsed transaction: {transaction}")
         return transaction
 
     @classmethod
@@ -56,16 +59,13 @@ class CryptoCsvParser(CsvParser):
 
     @classmethod
     def fiat_value(cls, row: dict) -> FiatValue:
-        currency = CurrencyBuilder.build(row["Base currency"])
-        amount = abs(float(row["Fiat amount (inc. fees)"]))
+        currency = CurrencyBuilder.build(row["Currency"])
+        amount = abs(float(row["Amount"])) + float(row["Fee"])
         return FiatValue(amount, currency)
 
     @classmethod
     def action(cls, row: dict) -> Action:
-        target_currency = row["Description"].split(" ")[-1]
-        is_fiat_currency = target_currency in CurrencyBuilder.CURRENCIES
-
-        if is_fiat_currency:
+        if float(row["Amount"]) > 0:
             return Action.SELL
         return Action.BUY
 
