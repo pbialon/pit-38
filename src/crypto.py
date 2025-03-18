@@ -9,6 +9,8 @@ from domain.crypto.profit_calculator import YearlyProfitCalculator
 from domain.tax_service.tax_calculator import TaxCalculator
 from domain.transactions import Transaction
 from exchanger import create_exchanger
+from loguru import logger
+import sys
 
 
 class CryptoSetup:
@@ -29,7 +31,12 @@ class CryptoSetup:
 @click.option('--deductible-loss', '-l', default=-1,
               help='Deductible loss from previous years. It overrides calculation of loss by the script',
               type=float)
-def crypto(tax_year: int, filepath: str, deductible_loss: float):
+@click.option('--log-level', '-ll', default='DEBUG', help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
+def crypto(tax_year: int, filepath: str, deductible_loss: float, log_level: str):
+    # set log level
+    logger.remove()
+    logger.add(sys.stderr, level=log_level.upper())
+
     profit_calculator = CryptoSetup.setup_yearly_profit_calculator()
     transactions = CryptoSetup.read_transactions(filepath)
     profit_per_year = profit_calculator.profit_per_year(transactions)

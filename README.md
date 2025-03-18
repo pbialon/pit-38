@@ -15,7 +15,10 @@ Currently two data sources are supported - ETRADE (basic support) and Revolut.
     ```bash
     python -m stock --revolut $REVOLUT --etrade $ETRADE -y 2022
     ```
-    where $REVOLUT is the path to the file containing the list of stocks to be analyzed (csv exported from Revolut), as well as $ETRADE is the path to the **csv** file containing tax summary exported from Etrade. 
+    where 
+    `$REVOLUT` is the path to the file containing the list of stocks to be analyzed (csv exported from Revolut)
+    `$ETRADE` is the path to the **csv** file containing tax summary exported from Etrade. 
+    `-y 2022` is the year for which the tax should be calculated. With no `-y` option, the script will calculate tax for the past year.
 4. You can check --help for more options
    ```bash
    python -m stock --help
@@ -25,12 +28,14 @@ Currently two data sources are supported - ETRADE (basic support) and Revolut.
 Currently only Revolut is supported as a datasource.
 
 1. Prepare environment
-2. Export statement on your crypto from Revolut to csv file.
+2. Export statement from your Revolut account to csv file (from `Start` page in Revolut app, not from `Crypto` page).
 3. Run the script
    ```bash
    python -m crypto -f $CRYPTO -y 2022
    ```
-    where $CRYPTO is the path to the file containing the list of crypto to be analyzed (csv exported from Revolut).
+    where 
+    `$CRYPTO` is the path to the file containing the list of crypto to be analyzed (csv exported from Revolut).
+    `-y 2022` is the year for which the tax should be calculated. With no `-y` option, the script will calculate tax for the past year.
 4. You can check --help for more options
    ```bash
    python -m crypto --help

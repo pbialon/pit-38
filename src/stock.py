@@ -16,6 +16,8 @@ from domain.stock.profit.profit_calculator import ProfitCalculator
 from domain.stock.operations.stock_split import StockSplit
 from domain.tax_service.tax_calculator import TaxCalculator
 from exchanger import create_exchanger
+from loguru import logger
+import sys
 
 
 class StockSetup:
@@ -58,7 +60,12 @@ class StockSetup:
 @click.option('--deductible-loss', '-l', default=-1,
               help='Deductible loss from previous years. It overrides calculation of loss by the script',
               type=float)
-def stocks(tax_year: int, revolut: str, etrade: str, deductible_loss: float):
+@click.option('--log-level', '-ll', default='DEBUG', help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
+def stocks(tax_year: int, revolut: str, etrade: str, deductible_loss: float, log_level: str):
+    # set log level
+    logger.remove()
+    logger.add(sys.stderr, level=log_level.upper())
+
     stock_setup = StockSetup()
     transactions = stock_setup.read_transactions(revolut, etrade)
     operations = stock_setup.read_operations(revolut)

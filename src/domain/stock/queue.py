@@ -13,7 +13,10 @@ class Queue:
         self._queue.append(copied)
 
     def head(self) -> Transaction:
-        return self._queue[0]
+        try:
+            return self._queue[0]
+        except IndexError:
+            raise IndexError("Queue is empty")
 
     def pop_head(self) -> Transaction:
         return self._queue.pop(0)
