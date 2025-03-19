@@ -1,5 +1,3 @@
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="pbialon" data-color="#40DCA5" data-emoji="🍕"  data-font="Cookie" data-text="Buy me a piece of pizza" data-outline-color="#000000" data-font-color="#ffffff" data-coffee-color="#FFDD00" ></script>
-
 ## How to prepare environment
 1. Install python3
 2. Install pip3
