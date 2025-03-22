@@ -65,5 +65,6 @@ class CryptoCsvParser(CsvParser):
 
     @classmethod
     def _datetime(cls, row: dict) -> pendulum.DateTime:
-        return pendulum.from_format(row["Date"], "DD MMM YYYY, HH:mm:ss")
+        date_str = row["Date"].replace("Sept", "Sep") # revolut uses Sept instead of Sep
+        return pendulum.from_format(date_str, "DD MMM YYYY, HH:mm:ss")
 
