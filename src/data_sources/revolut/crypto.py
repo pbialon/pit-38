@@ -1,5 +1,6 @@
 import enum
 from typing import Dict
+import re
 
 import pendulum
 from loguru import logger
@@ -39,9 +40,19 @@ class CryptoCsvParser(CsvParser):
     def _fiat_value(cls, row: dict) -> FiatValue:
         if row["Value"] == "":
             return FiatValue(0, Currency.ZLOTY)
-        amount_str, currency_str = row["Value"].replace(",", "").split(" ")
+
+        value = row["Value"].replace(",", "")
+
+        amount_match = re.search(r'\d+\.?\d{2}', value)
+        if not amount_match:
+            raise ValueError(f"Unable to parse amount: {value}")
+
+        amount_str = amount_match.group()
+        currency_str = value.replace(amount_str, "").strip()
+
+        amount = float(amount_match.group())
         currency = CurrencyBuilder.build(currency_str)
-        return FiatValue(float(amount_str), currency)
+        return FiatValue(amount, currency)
 
     @classmethod
     def _action(cls, row: dict) -> Action:

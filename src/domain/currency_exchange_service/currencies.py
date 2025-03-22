@@ -17,8 +17,10 @@ class Currency(enum.Enum):
 class CurrencyBuilder:
     CURRENCIES = {
         "USD": Currency.DOLLAR,
+        "$": Currency.DOLLAR,
         "EUR": Currency.EURO,
-        "PLN": Currency.ZLOTY
+        "€": Currency.EURO,
+        "PLN": Currency.ZLOTY,
     }
 
     @staticmethod
