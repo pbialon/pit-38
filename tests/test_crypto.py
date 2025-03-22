@@ -17,5 +17,6 @@ class TestCsvReader(TestCase):
             buy(btc(0.03962455), zl(5000.0), "2021-01-11 13:24:26"),
             buy(btc(0.03785017), zl(5000.0), "2021-01-11 23:08:00"),
             sell(btc(0.01), zl(1304.96), "2021-01-29 09:03:37"),
+            sell(btc(0.01), zl(1353.53), "2021-01-29 09:25:31"),
         ]
         self.assertListEqual(transactions, expected)
