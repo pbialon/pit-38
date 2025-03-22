@@ -1,97 +1,70 @@
 import enum
 from typing import Dict
+import re
 
 import pendulum
 from loguru import logger
 
-from domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
+from domain.currency_exchange_service.currencies import Currency, FiatValue, CurrencyBuilder
 from domain.transactions import Transaction, AssetValue, Action
 from data_sources.revolut.csv_parser import CsvParser
 
 
-class State:
-    COMPLETED = "COMPLETED"
 
-
-class OperationType(enum.Enum):
-    EXCHANGE = "EXCHANGE"
-    REWARD = "REWARD"
-    TRANSFER = "TRANSFER"
-
+BUY_OPERATION_TYPES = ["Buy", "Receive", "Learn reward", "Staking reward"]
+SELL_OPERATION_TYPES = ["Sell"]
 
 class CryptoCsvParser(CsvParser):
     @classmethod
     def parse(cls, row: Dict) -> Transaction:
-        if not CryptoCsvParser._is_completed(row):
-            logger.debug(f"Skipping transaction: {row} (not completed)")
-            return None
-        operation_type = cls._operation_type(row)
-        if operation_type == OperationType.TRANSFER:
-            logger.debug(f"Skipping transaction: {row} (transfer)")
-            return None
-        if not row["Description"] == "Revolut Ltd":
-            logger.debug(f"Skipping transaction: {row} (not Revolut Ltd)")
+        action = cls._action(row)
+        if action is None:
+            logger.debug(f"Skipping transaction: {row}")
             return None
         transaction = Transaction(
-            asset=CryptoCsvParser.crypto_value(row),
-            fiat_value=cls.fiat_value_of_transaction(row, operation_type),
-            action=CryptoCsvParser.action(row),
-            date=CryptoCsvParser.datetime(row),
+            asset=cls._crypto_value(row),
+            fiat_value=cls._fiat_value(row),
+            action=cls._action(row),
+            date=cls._datetime(row),
         )
         logger.info(f"Parsed transaction: {transaction}")
         return transaction
 
     @classmethod
-    def fiat_value_of_transaction(
-        cls, row: dict, operation_type: OperationType
-    ) -> FiatValue:
-        fiat_value = cls.fiat_value(row)
-        if operation_type == OperationType.EXCHANGE:
-            return fiat_value
-        # operation_type == OperationType.REWARD
-        return FiatValue(0, fiat_value.currency)
+    def _crypto_value(cls, row: dict) -> AssetValue:
+        currency = row["Symbol"]
+        amount = row["Quantity"].replace(",", "")
+        return AssetValue(float(amount), currency)
 
     @classmethod
-    def crypto_value(cls, row: dict) -> AssetValue:
-        currency = row["Currency"]
-        amount = abs(float(row["Amount"]))
-        return AssetValue(amount, currency)
+    def _fiat_value(cls, row: dict) -> FiatValue:
+        if row["Value"] == "":
+            return FiatValue(0, Currency.ZLOTY)
 
-    @classmethod
-    def fiat_value(cls, row: dict) -> FiatValue:
-        currency = CurrencyBuilder.build(row["Currency"])
-        amount = abs(float(row["Amount"])) + float(row["Fee"])
+        value = row["Value"].replace(",", "")
+
+        amount_match = re.search(r'\d+\.?\d{2}', value)
+        if not amount_match:
+            raise ValueError(f"Unable to parse amount: {value}")
+
+        amount_str = amount_match.group()
+        currency_str = value.replace(amount_str, "").strip()
+
+        amount = float(amount_match.group())
+        currency = CurrencyBuilder.build(currency_str)
         return FiatValue(amount, currency)
 
     @classmethod
-    def action(cls, row: dict) -> Action:
-        if float(row["Amount"]) > 0:
+    def _action(cls, row: dict) -> Action:
+        if row["Type"] in BUY_OPERATION_TYPES:
+            return Action.BUY
+        if row["Type"] in SELL_OPERATION_TYPES:
             return Action.SELL
-        return Action.BUY
+        # Staking and unstaking are not important for tax purposes
+        return None
 
     @classmethod
-    def datetime(cls, row: dict) -> pendulum.DateTime:
-        raw_datetime = CryptoCsvParser._clean_up_datetime(row["Completed Date"])
-        return pendulum.parse(raw_datetime)
+    def _datetime(cls, row: dict) -> pendulum.DateTime:
+        date_str = row["Date"].replace("Sept", "Sep") # revolut uses Sept instead of Sep
+        return pendulum.from_format(date_str, "DD MMM YYYY, HH:mm:ss")
 
-    @classmethod
-    def _is_completed(cls, row: dict) -> bool:
-        return row["State"] == State.COMPLETED
-
-    @classmethod
-    def _operation_type(cls, row):
-        if row["Type"] == "EXCHANGE":
-            return OperationType.EXCHANGE
-        if row["Type"] == "REWARD":
-            return OperationType.REWARD
-        if row["Type"] == "TRANSFER":
-            return OperationType.TRANSFER
-
-    @classmethod
-    def _clean_up_datetime(cls, raw_datetime: str) -> str:
-        # add 0 in front of hour if needed
-        date, time = raw_datetime.split(" ")
-        hours, minutes, seconds = time.split(":")
-        if len(hours) == 1:
-            return f"{date} 0{hours}:{minutes}:{seconds}"
-        return raw_datetime
