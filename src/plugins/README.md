@@ -1,6 +1,6 @@
 # Plugins
 
-## README in English
+## English
 
 Plugins are designed to transform transaction data from various brokers into a standardized format that can be processed by this repository. Each plugin handles a specific broker's export file format and converts it to a unified CSV structure.
 
@@ -34,7 +34,7 @@ If your broker is not supported:
 
 ---
 
-## README po polsku
+## Polski
 
 Wtyczki służą do przekształcania danych transakcyjnych z różnych brokerów w ustandaryzowany format, który może być przetwarzany przez to repozytorium. Każda wtyczka obsługuje specyficzny format pliku eksportu danego brokera i konwertuje go do ujednoliconej struktury CSV.
 
