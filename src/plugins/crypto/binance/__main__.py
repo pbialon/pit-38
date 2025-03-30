@@ -1,10 +1,10 @@
 
 import click
-from plugins.crypto.generic_saver import GenericCsvSaver
-from plugins.crypto.revolut.csv import CsvService
-from plugins.crypto.revolut.row_parser import RowParser
 from loguru import logger
 import sys
+
+from plugins.crypto.binance.csv import BinanceTransactionProcessor
+from plugins.crypto.generic_saver import GenericCsvSaver
 
 
 def setup_logger(log_level: str):
@@ -19,11 +19,8 @@ def setup_logger(log_level: str):
 def main(input_path: str, output_path: str, log_level: str):
     setup_logger(log_level)
 
-    row_parser = RowParser()
-    csv_service = CsvService(row_parser)
-    transactions = csv_service.read(input_path)
+    transactions = BinanceTransactionProcessor().read(input_path)
     GenericCsvSaver.save(transactions, output_path)
-
 
 if __name__ == "__main__":
     main()

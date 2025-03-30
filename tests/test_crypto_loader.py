@@ -14,7 +14,7 @@ class TestCsvLoader(TestCase):
         self.temp_dir = tempfile.mkdtemp()
         self.valid_csv_content = """date,operation,amount,symbol,fiat_value,currency
 2025-01-10 12:34:10,BUY,0.02000000,BTC,8000.00,PLN
-2025-01-11 09:01:22,SELL,0.00240000,BTC,960.00,PLN"""
+2025-01-11 09:01:22,SELL,0.00240000,BTC,240.00,USD"""
         
         self.invalid_csv_content = """date,operation,amount,symbol,fiat_value,currency
 2025-01-10 12:34:10,INVALID,0.02000000,BTC,8000.00,PLN
@@ -53,8 +53,8 @@ class TestCsvLoader(TestCase):
         self.assertEqual(second_transaction.action, Action.SELL)
         self.assertEqual(second_transaction.asset.amount, 0.0024)
         self.assertEqual(second_transaction.asset.asset_name, "BTC")
-        self.assertEqual(second_transaction.fiat_value.amount, 960.00)
-        self.assertEqual(second_transaction.fiat_value.currency, Currency.ZLOTY)
+        self.assertEqual(second_transaction.fiat_value.amount, 240.00)
+        self.assertEqual(second_transaction.fiat_value.currency, Currency.DOLLAR)
         self.assertEqual(
             second_transaction.date,
             pendulum.parse("2025-01-11 09:01:22")

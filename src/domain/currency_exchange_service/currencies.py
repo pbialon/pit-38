@@ -15,6 +15,7 @@ class Currency(enum.Enum):
 
 
 class CurrencyBuilder:
+    # todo: rewrite - it's not a builder, but simple factory
     CURRENCIES = {
         "USD": Currency.DOLLAR,
         "$": Currency.DOLLAR,
