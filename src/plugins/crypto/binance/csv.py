@@ -63,8 +63,8 @@ class BinanceTransactionProcessor:
                 continue
             
             transactions.append(Transaction(
-                asset=AssetValue(buy_tx.change + fee_tx.change, buy_tx.coin),
-                fiat_value=FiatValue(spend_tx.change, spend_tx.coin),
+                asset=AssetValue(abs(buy_tx.change) + abs(fee_tx.change), buy_tx.coin),
+                fiat_value=FiatValue(abs(spend_tx.change), spend_tx.coin),
                 action=Action.BUY,
                 # TODO: handle datezone
                 date=pendulum.instance(buy_tx.utc_time)
