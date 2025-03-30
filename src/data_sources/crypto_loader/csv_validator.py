@@ -106,7 +106,7 @@ class CsvValidator:
                     row_number=row_number,
                     column="operation",
                     value=operation,
-                    reason=f"Operation must be one of: {', '.join(cls.VALID_OPERATIONS)}"
+                    reason=f"Operation must be one of: {', '.join(sorted(cls.VALID_OPERATIONS))}"
                 )
             )
         
