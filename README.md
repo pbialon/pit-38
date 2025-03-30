@@ -40,7 +40,7 @@ Currently two data sources are supported - ETRADE (basic support) and Revolut.
 
 3. Run the tax calculation script:
    ```bash
-   python -m crypto -f <file1> <file2> <file3> -y 2022
+   python -m crypto -f <file1> -f <file2> -f <file3> -y 2022
    ```
    where:
    - `-f` specifies files with transactions in standardized format
@@ -65,7 +65,7 @@ Currently two data sources are supported - ETRADE (basic support) and Revolut.
 
 3. Uruchom skrypt obliczający podatek:
    ```bash
-   python -m crypto -f <plik1> <plik2> <plik3> -y 2022
+   python -m crypto -f <plik1> -f <plik2> -f <plik3> -y 2022
    ```
    gdzie:
    - `-f` określa pliki z transakcjami w ustandaryzowanym formacie
