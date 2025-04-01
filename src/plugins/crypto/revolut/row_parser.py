@@ -11,7 +11,7 @@ from domain.transactions.transaction import Transaction
 BUY_OPERATION_TYPES = ["Buy", "Receive", "Learn reward", "Staking reward"]
 SELL_OPERATION_TYPES = ["Sell"]
 
-class RowParser():
+class RowParser:
     @classmethod
     def parse(cls, row: Dict) -> Transaction:
         action = cls._action(row)

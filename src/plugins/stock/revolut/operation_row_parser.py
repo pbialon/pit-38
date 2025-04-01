@@ -2,15 +2,14 @@ from typing import Dict
 
 import pendulum
 
-from plugins.stock.revolut.csv_parser import StockCsvParser
-from plugins.stock.revolut.operation import OperationType
 from domain.stock.operations.custody_fee import CustodyFee
 from domain.stock.operations.dividend import Dividend
-from domain.stock.operations.operation import Operation
+from domain.stock.operations.operation import Operation, OperationType
 from domain.stock.operations.stock_split import StockSplit
+from plugins.stock.revolut.row_parser import RowParser
 
 
-class OperationStockCsvParser(StockCsvParser):
+class OperationRowParser(RowParser):
     OPERATIONS_HANDLED = {
         OperationType.DIVIDEND,
         OperationType.CUSTODY_FEE,
@@ -23,11 +22,11 @@ class OperationStockCsvParser(StockCsvParser):
         if operation_type not in cls.OPERATIONS_HANDLED:
             return None
         if operation_type == OperationType.DIVIDEND:
-            return OperationStockCsvParser._parse_dividend(row)
+            return cls._parse_dividend(row)
         if operation_type == OperationType.CUSTODY_FEE:
-            return OperationStockCsvParser._parse_custody_fee(row)
+            return cls._parse_custody_fee(row)
         if operation_type == OperationType.STOCK_SPLIT:
-            return OperationStockCsvParser._parse_stock_split(row)
+            return cls._parse_stock_split(row)
 
     @classmethod
     def _parse_custody_fee(cls, row: Dict) -> CustodyFee:

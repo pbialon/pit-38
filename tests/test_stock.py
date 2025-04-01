@@ -2,8 +2,8 @@ from unittest import TestCase
 
 import pathlib
 
-from data_sources.revolut.csv_reader import TransactionsCsvReader
-from data_sources.revolut.stock.transaction_csv_parser import TransactionStockCsvParser
+from plugins.stock.revolut.operations_csv_reader import TransactionsCsvReader
+from plugins.stock.revolut.transaction_csv_parser import TransactionStockCsvParser
 from tests.utils import buy, sell, google, amazon, meta, usd
 
 

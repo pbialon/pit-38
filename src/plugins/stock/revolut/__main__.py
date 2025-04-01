@@ -3,9 +3,9 @@ import sys
 import click
 from loguru import logger
 
-from plugins.stock.revolut.operation_csv_parser import OperationStockCsvParser
-from plugins.stock.revolut.operations_csv_reader import OperationsCsvReader
-from plugins.stock.revolut.transaction_csv_parser import TransactionStockCsvParser
+from plugins.stock.revolut.operation_row_parser import OperationRowParser
+from plugins.stock.revolut.csv import CsvService
+from plugins.stock.revolut.transaction_row_parser import TransactionRowParser
 from plugins.stock.generic_saver import GenericCsvSaver
 
 def setup_logger(log_level: str):
@@ -20,8 +20,8 @@ def setup_logger(log_level: str):
 def main(input_path, output_path, log_level):
     setup_logger(log_level)
 
-    transactions_reader = OperationsCsvReader(input_path, TransactionStockCsvParser)
-    operations_reader = OperationsCsvReader(input_path, OperationStockCsvParser)
+    transactions_reader = CsvService(input_path, TransactionRowParser)
+    operations_reader = CsvService(input_path, OperationRowParser)
 
     transactions = transactions_reader.read()
     operations = operations_reader.read()

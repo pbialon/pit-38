@@ -2,12 +2,12 @@ from typing import Dict
 
 from loguru import logger
 
-from plugins.stock.revolut.csv_parser import StockCsvParser
-from plugins.stock.revolut.operation import OperationType
+from plugins.stock.revolut.row_parser import RowParser
+from domain.stock.operations.operation import OperationType
 from domain.transactions import Transaction, AssetValue
 
 
-class TransactionStockCsvParser(StockCsvParser):
+class TransactionRowParser(RowParser):
     OPERATIONS_HANDLED = {
         OperationType.BUY,
         OperationType.SELL,
@@ -19,7 +19,7 @@ class TransactionStockCsvParser(StockCsvParser):
         if operation_type not in cls.OPERATIONS_HANDLED:
             return None
 
-        transaction = TransactionStockCsvParser._parse_transaction(row)
+        transaction = cls._parse_transaction(row)
         logger.debug(f"Parsed transaction: {transaction}")
         return transaction
 
