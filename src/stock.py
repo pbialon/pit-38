@@ -1,11 +1,11 @@
 from typing import List
 import click
 
-from plugins.stock.revolut.csv import CsvService as RevolutStockCsvReader
-from data_sources.etrade.stock import StockCsvReader as EtradeStockCsvReader
-from plugins.stock.revolut.operation_row_parser import OperationRowParser
-from plugins.stock.revolut.csv import CsvService as OperationsCsvReader
-from plugins.stock.revolut.transaction_row_parser import TransactionRowParser
+from plugins.stock.revolut.operations_csv_reader import TransactionsCsvReader as RevolutStockCsvReader
+from plugins.stock.etrade.csv import EtradeCsvReader as EtradeStockCsvReader
+from plugins.stock.revolut.operation_csv_parser import OperationStockCsvParser
+from plugins.stock.revolut.operations_csv_reader import OperationsCsvReader
+from plugins.stock.revolut.transaction_csv_parser import TransactionStockCsvParser
 from domain.calendar_service.calendar import previous_year
 from domain.stock.operations.custody_fee import CustodyFee
 from domain.stock.operations.dividend import Dividend
@@ -30,13 +30,13 @@ class StockSetup:
     @classmethod
     def read_transactions(cls, revolut_filepath: str, etrade_filepath: str) -> List:
         etrade_transactions = EtradeStockCsvReader.read(etrade_filepath) if etrade_filepath else []
-        revolut_transaction = RevolutStockCsvReader(revolut_filepath, TransactionRowParser).read() if revolut_filepath else []
+        revolut_transaction = RevolutStockCsvReader(revolut_filepath, TransactionStockCsvParser).read() if revolut_filepath else []
         
         return etrade_transactions + revolut_transaction
 
     @classmethod
     def read_operations(cls, filepath: str) -> List:
-        return OperationsCsvReader(filepath, OperationRowParser).read()
+        return OperationsCsvReader(filepath, OperationStockCsvParser).read()
 
     @classmethod
     def filter_dividends(cls, operations: List[Operation]) -> List[Dividend]:

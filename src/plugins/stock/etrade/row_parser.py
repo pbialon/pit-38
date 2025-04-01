@@ -27,4 +27,4 @@ class FiatValueParser:
         currency = cls._resolve_currency(raw_fiat_value)
         cleaned_raw_number = cls._clean_up_raw_number(raw_fiat_value)
 
-        return FiatValue(amount=float(cleaned_raw_number), currency=currency)
+        return FiatValue(amount=float(cleaned_raw_number), currency=currency) 
