@@ -9,7 +9,7 @@ from domain.transactions.transaction import Transaction
 from plugins.stock.etrade.row_parser import FiatValueParser
 
 
-class EtradeCsvReader:
+class CsvService:
     @classmethod
     def read(cls, file_path: str) -> List[Transaction]:
         transactions = []
