@@ -65,7 +65,7 @@ class RowParser():
         date_str = row["Date"].replace("Sept", "Sep") # revolut uses Sept instead of Sep
         supported_formats = (
             "DD MMM YYYY, HH:mm:ss",
-            "MMM DD, YYYY, HH:mm:ss A",
+            "MMM DD, YYYY, hh:mm:ss A",
         )
 
         for fmt in supported_formats:
