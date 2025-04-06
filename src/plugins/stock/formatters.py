@@ -32,7 +32,7 @@ class TransactionFormatter(BaseFormatter):
 
 
 class StockSplitFormatter(BaseFormatter):
-    OPERATION = "STOCK SPLIT"
+    OPERATION = "STOCK_SPLIT"
 
     def format(self, operation: StockSplit) -> Dict[str, Any]:
         return {
@@ -49,7 +49,7 @@ class StockSplitFormatter(BaseFormatter):
 
 
 class CustodyFeeFormatter(BaseFormatter):
-    OPERATION = "SERVICE FEE"
+    OPERATION = "SERVICE_FEE"
 
     def format(self, operation: CustodyFee) -> Dict[str, Any]:
         return {
