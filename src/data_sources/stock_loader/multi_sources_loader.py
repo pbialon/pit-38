@@ -20,7 +20,7 @@ class MultiSourcesLoader:
                 logger.info(f"Successfully loaded {len(operations)} operations from {file_path}")
             except Exception as e:
                 logger.error(f"Failed to load operations from {file_path}: {str(e)}")
-                continue
+                raise e
         
         sorted_operations = sorted(all_operations, key=lambda op: op.date)
         logger.info(f"Total operations loaded: {len(sorted_operations)}")
