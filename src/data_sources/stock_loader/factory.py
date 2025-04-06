@@ -15,8 +15,8 @@ class OperationFactory:
         OperationType.SERVICE_FEE: lambda date, asset, fiat_value: ServiceFee(date=date, value=fiat_value),
         OperationType.DIVIDEND: lambda date, asset, fiat_value: Dividend(date=date, value=fiat_value),
         OperationType.STOCK_SPLIT: lambda date, asset, fiat_value: StockSplit(date=date, stock=asset.asset_name, ratio=int(asset.amount)),
-        OperationType.BUY: lambda date, asset, fiat_value: Transaction(date=date, action=Action.BUY, asset=asset.asset_name, fiat_value=fiat_value),
-        OperationType.SELL: lambda date, asset, fiat_value: Transaction(date=date, action=Action.SELL, asset=asset.asset_name, fiat_value=fiat_value),
+        OperationType.BUY: lambda date, asset, fiat_value: Transaction(date=date, action=Action.BUY, asset=asset, fiat_value=fiat_value),
+        OperationType.SELL: lambda date, asset, fiat_value: Transaction(date=date, action=Action.SELL, asset=asset, fiat_value=fiat_value),
 
     }
 
