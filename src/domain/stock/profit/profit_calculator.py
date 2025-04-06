@@ -10,10 +10,11 @@ from domain.stock.profit.per_stock_calculator import PerStockProfitCalculator
 from domain.tax_service.profit_per_year import ProfitPerYear
 from domain.stock.profit.stock_split_handler import StockSplitHandler
 from domain.transactions.transaction import Transaction
+from domain.currency_exchange_service.exchanger import Exchanger
 
 
 class ProfitCalculator:
-    def __init__(self, exchanger, per_stock_calculator: PerStockProfitCalculator):
+    def __init__(self, exchanger: Exchanger, per_stock_calculator: PerStockProfitCalculator):
         self.exchanger = exchanger
         self.per_stock_calculator = per_stock_calculator
     def calculate_cumulative_cost_and_income(

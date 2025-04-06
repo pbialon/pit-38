@@ -42,7 +42,7 @@ class StockSetup:
         return [record for record in records if isinstance(record, Operation)]
 
     @classmethod
-    def filter_transactions(cls, operations: List[Operation]) -> List[Transaction]:
+    def filter_transactions(cls, operations: List[Operation | Transaction]) -> List[Transaction]:
         return [operation for operation in operations if operation.type in [OperationType.BUY, OperationType.SELL]]
 
     @classmethod

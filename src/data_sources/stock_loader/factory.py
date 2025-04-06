@@ -8,7 +8,7 @@ from domain.stock.operations.stock_split import StockSplit
 from domain.currency_exchange_service.currencies import FiatValue
 from domain.transactions.action import Action
 from domain.transactions.asset import AssetValue
-from src.domain.transactions.transaction import Transaction
+from domain.transactions.transaction import Transaction
 
 class OperationFactory:
     _creators = {
