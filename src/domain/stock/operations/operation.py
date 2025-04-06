@@ -9,8 +9,8 @@ class OperationType(enum.Enum):
     BUY = "BUY"
     SELL = "SELL"
     DIVIDEND = "DIVIDEND"
-    CUSTODY_FEE = "CUSTODY FEE"
-    STOCK_SPLIT = "STOCK SPLIT"
+    CUSTODY_FEE = "CUSTODY_FEE"
+    STOCK_SPLIT = "STOCK_SPLIT"
 
     def __str__(self):
         return self.value
