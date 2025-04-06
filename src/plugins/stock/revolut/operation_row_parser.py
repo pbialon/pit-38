@@ -2,7 +2,7 @@ from typing import Dict
 
 import pendulum
 
-from domain.stock.operations.custody_fee import CustodyFee
+from domain.stock.operations.service_fee import ServiceFee
 from domain.stock.operations.dividend import Dividend
 from domain.stock.operations.operation import Operation, OperationType
 from domain.stock.operations.stock_split import StockSplit
@@ -12,9 +12,9 @@ from plugins.stock.revolut.row_parser import RowParser
 class OperationRowParser(RowParser):
     OPERATIONS_HANDLED = {
         OperationType.DIVIDEND,
-        OperationType.CUSTODY_FEE,
+        OperationType.SERVICE_FEE,
         OperationType.STOCK_SPLIT
-    }
+    }   
 
     @classmethod
     def parse(cls, row: Dict) -> Operation:
@@ -23,14 +23,14 @@ class OperationRowParser(RowParser):
             return None
         if operation_type == OperationType.DIVIDEND:
             return cls._parse_dividend(row)
-        if operation_type == OperationType.CUSTODY_FEE:
-            return cls._parse_custody_fee(row)
+        if operation_type == OperationType.SERVICE_FEE:
+            return cls._parse_service_fee(row)
         if operation_type == OperationType.STOCK_SPLIT:
             return cls._parse_stock_split(row)
 
     @classmethod
-    def _parse_custody_fee(cls, row: Dict) -> CustodyFee:
-        return CustodyFee(
+    def _parse_service_fee(cls, row: Dict) -> ServiceFee:
+        return ServiceFee(
             date=cls._date(row),
             value=cls._fiat_value(row)
         )

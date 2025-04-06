@@ -14,7 +14,7 @@ class RowParser:
         "SELL - MARKET": OperationType.SELL,
         "SELL - LIMIT": OperationType.SELL,
         "DIVIDEND": OperationType.DIVIDEND,
-        "CUSTODY FEE": OperationType.CUSTODY_FEE,
+        "CUSTODY FEE": OperationType.SERVICE_FEE,
         "STOCK SPLIT": OperationType.STOCK_SPLIT,
     }
 
@@ -43,4 +43,4 @@ class RowParser:
 
     @classmethod
     def _operation_type(cls, row: dict) -> OperationType:
-        return cls.OPERATIONS.get(row['Type']) 
+        return cls.OPERATIONS.get(row['Type'])

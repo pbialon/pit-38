@@ -2,12 +2,12 @@ import csv
 from typing import List, Dict, Any
 from domain.transactions import Transaction
 from domain.stock.operations.stock_split import StockSplit
-from domain.stock.operations.custody_fee import CustodyFee
+from domain.stock.operations.service_fee import ServiceFee
 from domain.stock.operations.dividend import Dividend
 from .formatters import (
     TransactionFormatter,
     StockSplitFormatter,
-    CustodyFeeFormatter,
+    ServiceFeeFormatter,
     DividendFormatter
 )
 
@@ -18,13 +18,13 @@ class GenericCsvSaver:
         for formatter in [
             TransactionFormatter(),
             StockSplitFormatter(),
-            CustodyFeeFormatter(),
+            ServiceFeeFormatter(),
             DividendFormatter()
         ]
     }
 
     @staticmethod
-    def _format_item(item: Transaction | StockSplit | CustodyFee | Dividend) -> Dict[str, Any]:
+    def _format_item(item: Transaction | StockSplit | ServiceFee | Dividend) -> Dict[str, Any]:
         formatter = GenericCsvSaver.FORMATTERS.get(type(item))
         if not formatter:
             raise ValueError(f"Unsupported item type: {type(item)}")
@@ -36,7 +36,7 @@ class GenericCsvSaver:
             writer.writerow(entry)
 
     @staticmethod
-    def save(transactions: List[Transaction], operations: List[StockSplit | CustodyFee | Dividend], file_path: str):
+    def save(transactions: List[Transaction], operations: List[StockSplit | ServiceFee | Dividend], file_path: str):
         with open(file_path, 'w', newline='') as csvfile:
             writer = csv.DictWriter(
                 csvfile,

@@ -58,7 +58,7 @@ class Loader:
     @classmethod
     def _requires_symbol(cls, row: dict) -> bool:
         operation = row.get("operation", "")
-        return operation not in ["SERVICE_FEE"]
+        return operation not in ["SERVICE_FEE", "DIVIDEND"]
 
     @classmethod
     def _fiat_value(cls, row: dict) -> Optional[FiatValue]:

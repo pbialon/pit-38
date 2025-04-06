@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, Type
 from domain.transactions import Transaction
 from domain.stock.operations.stock_split import StockSplit
-from domain.stock.operations.custody_fee import CustodyFee
+from domain.stock.operations.service_fee import ServiceFee
 from domain.stock.operations.dividend import Dividend
 
 
@@ -48,10 +48,10 @@ class StockSplitFormatter(BaseFormatter):
         return StockSplit
 
 
-class CustodyFeeFormatter(BaseFormatter):
+class ServiceFeeFormatter(BaseFormatter):
     OPERATION = "SERVICE_FEE"
 
-    def format(self, operation: CustodyFee) -> Dict[str, Any]:
+    def format(self, operation: ServiceFee) -> Dict[str, Any]:
         return {
             "date": operation.date.to_datetime_string(),
             "operation": self.OPERATION,
@@ -62,7 +62,7 @@ class CustodyFeeFormatter(BaseFormatter):
         }
 
     def item_type(self) -> Type:
-        return CustodyFee
+        return ServiceFee
 
 
 class DividendFormatter(BaseFormatter):
