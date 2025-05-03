@@ -63,5 +63,15 @@ class RowParser():
     @classmethod
     def _datetime(cls, row: dict) -> pendulum.DateTime:
         date_str = row["Date"].replace("Sept", "Sep") # revolut uses Sept instead of Sep
-        return pendulum.from_format(date_str, "DD MMM YYYY, HH:mm:ss")
+        supported_formats = (
+            "DD MMM YYYY, HH:mm:ss",
+            "MMM DD, YYYY, hh:mm:ss A",
+        )
+
+        for fmt in supported_formats:
+            try:
+                return pendulum.from_format(date_str, fmt)
+            except ValueError:
+                pass
+        raise ValueError(f"String '{date_str}' does not match any of valid formats: <{'>, <'.join(supported_formats)}>")
 
