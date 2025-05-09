@@ -30,7 +30,8 @@ class Loader:
                 asset=cls._asset_value(row),
                 fiat_value=cls._fiat_value(row),
                 action=cls._action(row),
-                date=cls._datetime(row)
+                date=cls._datetime(row),
+                fees=cls._fiat_value(row, "fees")
             )
             return transaction
         except (ValueError, KeyError) as e:
@@ -49,9 +50,9 @@ class Loader:
             raise ValueError(f"Failed to parse cryptocurrency value: {str(e)}")
 
     @classmethod
-    def _fiat_value(cls, row: dict) -> FiatValue:
+    def _fiat_value(cls, row: dict, column="fiat_value") -> FiatValue:
         try:
-            amount = float(row["fiat_value"])
+            amount = float(row[column])
             currency = CurrencyBuilder.build(row["currency"])
             return FiatValue(amount, currency)
         except (ValueError, KeyError) as e:

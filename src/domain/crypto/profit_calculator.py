@@ -13,10 +13,15 @@ class YearlyProfitCalculator:
     def __init__(self, exchanger: Exchanger):
         self.exchanger = exchanger
 
-    def profit_per_year(self, transactions: List[Transaction]) -> ProfitPerYear:
+    def profit_per_year(self, transactions: List[Transaction], include_fees: bool) -> ProfitPerYear:
         income = self._sum_transactions_per_year(transactions, Action.SELL)
         cost = self._sum_transactions_per_year(transactions, Action.BUY)
+        fees = self._sum_fees_per_year(transactions)
         profit = ProfitPerYear(income, cost)
+        if include_fees:
+            logger.info("Adding fees to the cost calculation")
+            for year in fees.keys():
+                profit.add_cost(year, fees[year])
         logger.info(f"Calculated profit per year: {profit}")
         return profit
 
@@ -31,3 +36,9 @@ class YearlyProfitCalculator:
             transactions_sum_per_year[transaction.year()] += transaction_value_in_base_currency
 
         return transactions_sum_per_year
+
+    def _sum_fees_per_year(self, transactions: List[Transaction]) -> defaultdict[int, FiatValue]:
+        fees_sum_per_year: defaultdict[int, FiatValue] = defaultdict(lambda: FiatValue(0))
+        for transaction in transactions:
+            fees_sum_per_year[transaction.year()] += transaction.fees
+        return fees_sum_per_year
