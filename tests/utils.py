@@ -1,8 +1,9 @@
 import pendulum
 
 from domain.currency_exchange_service.currencies import FiatValue, Currency
-from domain.stock.operations.custody_fee import CustodyFee
+from domain.stock.operations.service_fee import ServiceFee
 from domain.stock.operations.dividend import Dividend
+from domain.stock.operations.stock_split import StockSplit
 from domain.transactions import AssetValue, Transaction, Action
 
 
@@ -48,9 +49,11 @@ def dividend(fiat: FiatValue, datetime_str: str) -> Dividend:
     return Dividend(date=parsed_datetime, value=fiat)
 
 
-def custody_fee(fiat: FiatValue, datetime_str: str) -> CustodyFee:
-    parsed_datetime = datetime(datetime_str)
-    return CustodyFee(date=parsed_datetime, value=fiat)
+def service_fee(fiat: FiatValue, datetime_str: str) -> ServiceFee:
+    return ServiceFee(
+        date=pendulum.parse(datetime_str),
+        value=fiat
+    )
 
 
 def date(date_str: str):

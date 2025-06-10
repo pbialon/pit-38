@@ -3,18 +3,15 @@ from typing import Dict, List, Tuple
 from loguru import logger
 import pendulum
 
-from data_sources.etrade.fiat_value_parser import FiatValueParser
 from domain.transactions.action import Action
 from domain.transactions.asset import AssetValue
 from domain.transactions.transaction import Transaction
+from plugins.stock.etrade.row_parser import FiatValueParser
 
 
-class StockCsvReader:
+class CsvService:
     @classmethod
     def read(cls, file_path: str) -> List[Transaction]:
-        """
-        Get stock data from the csv file
-        """
         transactions = []
         logger.info(f"Reading transactions from {file_path}...")
         with open(file_path, "r") as csvfile:
@@ -28,12 +25,8 @@ class StockCsvReader:
         logger.info(f"Parsed {len(transactions)} transactions")
         return transactions
 
-
     @classmethod
     def parse_row(cls, row: Dict) -> Tuple[Transaction, Transaction]:
-        """
-        Parse a row from the DataFrame into a Transaction object
-        """
         buy = cls._buy_transaction(row)
         logger.debug(f"Parsed buy transaction: {buy}")
 
@@ -70,4 +63,4 @@ class StockCsvReader:
         return FiatValueParser.parse(row["Acquisition Cost"])
     
     def _sell_cost(row: Dict) -> float:
-        return FiatValueParser.parse(row["Total Proceeds"])
+        return FiatValueParser.parse(row["Total Proceeds"]) 

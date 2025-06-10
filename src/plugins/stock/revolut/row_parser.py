@@ -2,20 +2,19 @@ from typing import Dict
 
 import pendulum
 
-from data_sources.revolut.csv_parser import CsvParser
-from data_sources.revolut.stock.operation import OperationType
 from domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
 from domain.transactions import Transaction
+from domain.stock.operations.operation import OperationType
 
 
-class StockCsvParser(CsvParser):
+class RowParser:
     OPERATIONS = {
         "BUY - MARKET": OperationType.BUY,
         "BUY - LIMIT": OperationType.BUY,
         "SELL - MARKET": OperationType.SELL,
         "SELL - LIMIT": OperationType.SELL,
         "DIVIDEND": OperationType.DIVIDEND,
-        "CUSTODY FEE": OperationType.CUSTODY_FEE,
+        "CUSTODY FEE": OperationType.SERVICE_FEE,
         "STOCK SPLIT": OperationType.STOCK_SPLIT,
     }
 
