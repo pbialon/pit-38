@@ -1,20 +1,20 @@
 from typing import List
 import click
+import sys
+from loguru import logger
 
+from data_sources.stock_loader.csv_loader import Loader as StockLoader
+from data_sources.stock_loader.multi_sources_loader import MultiSourcesLoader
 from domain.calendar_service.calendar import previous_year
 from domain.stock.operations.dividend import Dividend
 from domain.stock.operations.operation import Operation, OperationType
+from domain.stock.operations.service_fee import ServiceFee
+from domain.stock.operations.stock_split import StockSplit
 from domain.stock.profit.per_stock_calculator import PerStockProfitCalculator
 from domain.stock.profit.profit_calculator import ProfitCalculator
-from domain.stock.operations.stock_split import StockSplit
 from domain.tax_service.tax_calculator import TaxCalculator
 from domain.transactions.transaction import Transaction
 from exchanger import create_exchanger
-from loguru import logger
-import sys
-from data_sources.stock_loader.multi_sources_loader import MultiSourcesLoader
-from data_sources.stock_loader.csv_loader import Loader as StockLoader
-from domain.stock.operations.service_fee import ServiceFee
 
 class StockSetup:
 
