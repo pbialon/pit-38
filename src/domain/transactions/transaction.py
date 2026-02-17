@@ -10,11 +10,13 @@ class Transaction:
                  asset: AssetValue,
                  fiat_value: FiatValue,
                  action: Action,
-                 date: pendulum.DateTime):
+                 date: pendulum.DateTime,
+                 fees: FiatValue = FiatValue(0)):
         self.fiat_value = fiat_value
         self.asset = asset
         self.action = action
         self.date = date
+        self.fees = fees
 
     def year(self) -> int:
         return self.date.year

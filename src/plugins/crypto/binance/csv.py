@@ -44,14 +44,14 @@ class BinanceTransactionProcessor:
                 fiat_value=FiatValue(abs(fiat_tx.change), fiat_tx.coin),
                 action=Action.SELL if crypto_tx.change < 0 else Action.BUY,
                 # TODO: handle datezone
-                date=pendulum.instance(current_tx.utc_time)
+                date=pendulum.instance(current_tx.utc_time),
+                fees=FiatValue(0)  # Default to 0 fees for convert operations
             )
             for current_tx, next_tx in zip(binance_transactions[::2], binance_transactions[1::2])
             for fiat_tx, crypto_tx in [(current_tx, next_tx) if current_tx.coin in fiat_currencies_list else (next_tx, current_tx)]
         ]
 
     def _process_transaction_operations(self, binance_transactions: List[BinanceTransaction]) -> List[Transaction]:
-        # TODO: handle sell operations
         transactions = []
         for group in zip(binance_transactions[::3], binance_transactions[1::3], binance_transactions[2::3]):
             buy_tx = next(tx for tx in group if tx.operation == "Transaction Buy")
@@ -63,11 +63,12 @@ class BinanceTransactionProcessor:
                 continue
             
             transactions.append(Transaction(
-                asset=AssetValue(abs(buy_tx.change) + abs(fee_tx.change), buy_tx.coin),
+                asset=AssetValue(abs(buy_tx.change), buy_tx.coin),
                 fiat_value=FiatValue(abs(spend_tx.change), spend_tx.coin),
                 action=Action.BUY,
                 # TODO: handle datezone
-                date=pendulum.instance(buy_tx.utc_time)
+                date=pendulum.instance(buy_tx.utc_time),
+                fees=FiatValue(abs(fee_tx.change), fee_tx.coin)
             ))
         
         return transactions

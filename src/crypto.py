@@ -23,7 +23,7 @@ class CryptoSetup:
     def read_transactions(cls, filepaths: List[str]) -> List[Transaction]:
         transaction_loader = MultiSourcesLoader(Loader())
         return transaction_loader.load(filepaths)
-    
+
     @classmethod
     def set_log_level(cls, log_level: str):
         logger.remove()
@@ -37,14 +37,15 @@ class CryptoSetup:
 @click.option('--deductible-loss', '-l', default=-1,
               help='Deductible loss from previous years. It overrides calculation of loss by the script',
               type=float)
+@click.option('--include-fees', '-fe', default=True, help='Should fees be included in the loss calculation')
 @click.option('--log-level', '-ll', default='DEBUG', help='Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)')
-def crypto(tax_year: int, filepaths: tuple[str, ...], deductible_loss: float, log_level: str):
+def crypto(tax_year: int, filepaths: tuple[str, ...], deductible_loss: float, log_level: str, include_fees: bool):
     CryptoSetup.set_log_level(log_level)
 
     profit_calculator = CryptoSetup.setup_yearly_profit_calculator()
     all_transactions = CryptoSetup.read_transactions(list(filepaths))
-    
-    profit_per_year = profit_calculator.profit_per_year(all_transactions)
+
+    profit_per_year = profit_calculator.profit_per_year(all_transactions, include_fees)
     tax_calculator = TaxCalculator()
     tax_data = tax_calculator.calculate_tax_per_year(profit_per_year, tax_year, deductible_loss)
     print(tax_data, end='\n\n')

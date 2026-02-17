@@ -18,11 +18,20 @@ class RowParser:
         if action is None:
             logger.debug(f"Skipping transaction: {row}")
             return None
+
+        # Try to parse fees, default to 0 if not present or invalid
+        try:
+            fees = cls._fiat_value(row, "Fees") if "Fees" in row else FiatValue(0, Currency.ZLOTY)
+        except (ValueError, KeyError):
+            logger.debug(f"Could not parse fees for row: {row}, defaulting to 0")
+            fees = FiatValue(0, Currency.ZLOTY)
+
         transaction = Transaction(
             asset=cls._crypto_value(row),
             fiat_value=cls._fiat_value(row),
             action=cls._action(row),
             date=cls._datetime(row),
+            fees=fees
         )
         logger.info(f"Parsed transaction: {transaction}")
         return transaction
@@ -34,11 +43,11 @@ class RowParser:
         return AssetValue(float(amount), currency)
 
     @classmethod
-    def _fiat_value(cls, row: dict) -> FiatValue:
-        if row["Value"] == "":
+    def _fiat_value(cls, row: dict, column: str="Value") -> FiatValue:
+        if row[column] == "":
             return FiatValue(0, Currency.ZLOTY)
 
-        value = row["Value"].replace(",", "")
+        value = row[column].replace(",", "")
 
         amount_match = re.search(r'\d+\.?\d{2}', value)
         if not amount_match:
