@@ -2,8 +2,8 @@ from unittest import TestCase
 
 import pathlib
 
-from data_sources.revolut.csv_reader import TransactionsCsvReader
-from data_sources.revolut.stock.transaction_csv_parser import TransactionStockCsvParser
+from plugins.stock.revolut.csv import CsvService as RevolutStockCsvReader
+from plugins.stock.revolut.transaction_row_parser import TransactionRowParser
 from tests.utils import buy, sell, google, amazon, meta, usd
 
 
@@ -11,7 +11,7 @@ class TestCsvReader(TestCase):
     def test_read(self):
         filepath = pathlib.Path(__file__).parent.absolute() / "resources" / "example_stock_export.csv"
 
-        reader = TransactionsCsvReader(filepath, TransactionStockCsvParser)
+        reader = RevolutStockCsvReader(filepath, TransactionRowParser)
         transactions = list(reader.read())
 
         expected = [
