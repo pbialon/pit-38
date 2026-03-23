@@ -9,10 +9,8 @@ from domain.stock.operations.operation import OperationType
 
 class RowParser:
     OPERATIONS = {
-        "BUY - MARKET": OperationType.BUY,
-        "BUY - LIMIT": OperationType.BUY,
-        "SELL - MARKET": OperationType.SELL,
-        "SELL - LIMIT": OperationType.SELL,
+        "BUY": OperationType.BUY,
+        "SELL": OperationType.SELL,
         "DIVIDEND": OperationType.DIVIDEND,
         "CUSTODY FEE": OperationType.SERVICE_FEE,
         "STOCK SPLIT": OperationType.STOCK_SPLIT,
@@ -27,6 +25,7 @@ class RowParser:
         currency = CurrencyBuilder.build(row['Currency'])
         # e.g."-$1,003.01"
         amount_row = row['Total Amount']
+        amount_row = amount_row.strip(str(currency))
         if amount_row.startswith("-"):
             amount_row = amount_row[1:]
         amount_row = amount_row[1:].replace(",", "")
@@ -43,4 +42,10 @@ class RowParser:
 
     @classmethod
     def _operation_type(cls, row: dict) -> OperationType:
-        return cls.OPERATIONS.get(row['Type'])
+        operation_type = cls.OPERATIONS.get(row['Type'])
+        if operation_type:
+            return operation_type
+        for operation_name, operation_type in cls.OPERATIONS.items():
+            if operation_name in row['Type']:
+                return operation_type
+        return None
