@@ -62,10 +62,12 @@ class RowParser:
 
     @classmethod
     def _datetime(cls, row: dict) -> pendulum.DateTime:
-        date_str = row["Date"].replace("Sept", "Sep") # revolut uses Sept instead of Sep
+        date_str = re.sub(r"\s+", " ", row["Date"], flags=re.UNICODE) # Revolut sometimes uses unicode thin/non-breaking spaces in timestamps.
+        date_str = date_str.replace("Sept", "Sep").strip() # Revolut uses Sept instead of Sep
         supported_formats = (
             "DD MMM YYYY, HH:mm:ss",
             "MMM DD, YYYY, hh:mm:ss A",
+            "MMM DD, YYYY, h:mm:ss A",
         )
 
         for fmt in supported_formats:
