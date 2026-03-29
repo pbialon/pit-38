@@ -8,8 +8,8 @@ from domain.transactions.action import Action
 from domain.transactions.asset import AssetValue
 from domain.transactions.transaction import Transaction
 
-BUY_OPERATION_TYPES = ["Buy", "Receive", "Learn reward", "Staking reward"]
-SELL_OPERATION_TYPES = ["Sell"]
+BUY_OPERATION_TYPES = ["Buy", "Buy - Revolut X", "Receive", "Learn reward", "Staking reward"]
+SELL_OPERATION_TYPES = ["Sell", "Sell - Revolut X"]
 
 class RowParser:
     @classmethod
