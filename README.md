@@ -63,6 +63,14 @@ You can also prepare transaction files manually. See the example formats:
 - Stocks: [`pit38/data_sources/stock_loader/example_format.csv`](pit38/data_sources/stock_loader/example_format.csv)
 - Crypto: [`pit38/data_sources/crypto_loader/example_format.csv`](pit38/data_sources/crypto_loader/example_format.csv)
 
+## Tax Rules
+
+This calculator implements Polish tax law for capital gains (PIT-38).
+For a detailed description of the rules, see:
+
+- [Tax Rules (English)](docs/TAX_RULES.md)
+- [Zasady podatkowe (Polski)](docs/TAX_RULES.pl.md)
+
 ## How It Works
 
 1. **Import** — broker plugins convert proprietary CSV exports into a standardized format

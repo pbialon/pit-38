@@ -6,7 +6,7 @@ from pit38.data_sources.crypto_loader.csv_loader import Loader
 from pit38.data_sources.crypto_loader.multi_sources_loader import MultiSourcesLoader
 from pit38.domain.calendar_service.calendar import previous_year
 from pit38.domain.crypto.profit_calculator import YearlyProfitCalculator
-from pit38.domain.tax_service.tax_calculator import TaxCalculator
+from pit38.domain.tax_service.crypto_tax_calculator import CryptoTaxCalculator
 from pit38.domain.transactions import Transaction
 from pit38.exchanger import create_exchanger
 from loguru import logger
@@ -45,7 +45,7 @@ def crypto(tax_year: int, filepaths: tuple[str, ...], deductible_loss: float, lo
     all_transactions = CryptoSetup.read_transactions(list(filepaths))
     
     profit_per_year = profit_calculator.profit_per_year(all_transactions)
-    tax_calculator = TaxCalculator()
+    tax_calculator = CryptoTaxCalculator()
     tax_data = tax_calculator.calculate_tax_per_year(profit_per_year, tax_year, deductible_loss)
     print(tax_data, end='\n\n')
 
