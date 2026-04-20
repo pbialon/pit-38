@@ -42,7 +42,7 @@ class PerStockProfitCalculator:
 
     def _get_company_name(self, transaction: List[Transaction]) -> str:
         # check all transactions are from the same company
-        assert (t.asset.asset_name == transaction[0].asset.asset_name for t in transaction), \
+        assert all(t.asset.asset_name == transaction[0].asset.asset_name for t in transaction), \
             "All transactions should be from the same company"
         return transaction[0].asset.asset_name
 

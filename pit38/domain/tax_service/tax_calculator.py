@@ -48,9 +48,9 @@ class TaxCalculator:
 
         return accumulated_loss
 
-    def _years_before(self, tax_year: int, years: set[int]) -> set[int]:
-        return {
+    def _years_before(self, tax_year: int, years: set[int]) -> list[int]:
+        return sorted(
             year
             for year in years
             if year < tax_year
-        }
+        )
