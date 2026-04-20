@@ -1,5 +1,11 @@
 # PIT-38 — Polish Investment Tax Calculator
 
+[![CI](https://github.com/pbialon/pit-38/actions/workflows/python-app.yml/badge.svg)](https://github.com/pbialon/pit-38/actions/workflows/python-app.yml)
+[![codecov](https://codecov.io/gh/pbialon/pit-38/graph/badge.svg)](https://codecov.io/gh/pbialon/pit-38)
+[![GitHub release](https://img.shields.io/github/v/release/pbialon/pit-38)](https://github.com/pbialon/pit-38/releases)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 > **[&#127477;&#127473; Wersja polska](README.pl.md)**
 
 A command-line tool for calculating Polish income tax on **stocks** and **cryptocurrency** (PIT-38 form). It imports transaction history from popular brokers, converts foreign currencies to PLN using official NBP exchange rates, and computes your tax liability.
