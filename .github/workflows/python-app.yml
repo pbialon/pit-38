@@ -31,7 +31,7 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
     - name: Test with pytest
       run: |
-        pytest tests/ --cov=pit38 --cov-branch --cov-report=xml --cov-report=term
+        pytest tests/ --cov=pit38 --cov-branch --cov-report=xml --cov-report=term --junitxml=junit.xml -o junit_family=legacy
     - name: Upload coverage to Codecov
       if: always()
       uses: codecov/codecov-action@v5
@@ -40,3 +40,8 @@ jobs:
         fail_ci_if_error: false
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    - name: Upload test results to Codecov
+      if: ${{ !cancelled() }}
+      uses: codecov/test-results-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
