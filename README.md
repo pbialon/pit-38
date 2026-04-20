@@ -18,15 +18,13 @@ A command-line tool for calculating Polish income tax on **stocks** and **crypto
 ### Install
 
 ```bash
-pipx install .
+pipx install pit-38
 ```
 
-Or with pip in a virtual environment:
+Or from source:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install .
+pipx install .
 ```
 
 ### Calculate stock tax

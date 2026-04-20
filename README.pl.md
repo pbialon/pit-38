@@ -18,15 +18,13 @@ Narzędzie wiersza poleceń do obliczania polskiego podatku dochodowego od **akc
 ### Instalacja
 
 ```bash
-pipx install .
+pipx install pit-38
 ```
 
-Lub z pip w wirtualnym środowisku:
+Lub ze źródeł:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install .
+pipx install .
 ```
 
 ### Obliczanie podatku od akcji
