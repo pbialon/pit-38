@@ -59,14 +59,17 @@ class TestTaxCalculator(TestCase):
         cost = {2019: zl(100), 2020: zl(100), 2021: zl(100)}
         profit = ProfitPerYear(income, cost)
 
-        base_for_tax_2019 = tax_calculator.calculate_tax_per_year(profit, 2019).base_for_tax
-        self.assertEqual(zl(100), base_for_tax_2019)
+        result_2019 = tax_calculator.calculate_tax_per_year(profit, 2019)
+        self.assertEqual(zl(100), result_2019.base_for_tax)
+        self.assertEqual(zl(19), result_2019.tax)
 
-        base_for_tax_2020 = tax_calculator.calculate_tax_per_year(profit, 2020).base_for_tax
-        self.assertEqual(zl(100), base_for_tax_2020)
+        result_2020 = tax_calculator.calculate_tax_per_year(profit, 2020)
+        self.assertEqual(zl(100), result_2020.base_for_tax)
+        self.assertEqual(zl(19), result_2020.tax)
 
-        base_for_tax_2021 = tax_calculator.calculate_tax_per_year(profit, 2021).base_for_tax
-        self.assertEqual(zl(100), base_for_tax_2021)
+        result_2021 = tax_calculator.calculate_tax_per_year(profit, 2021)
+        self.assertEqual(zl(100), result_2021.base_for_tax)
+        self.assertEqual(zl(19), result_2021.tax)
 
     def test_calculate_tax_per_year_hodl(self):
         tax_calculator = TaxCalculator()
@@ -75,14 +78,17 @@ class TestTaxCalculator(TestCase):
         cost = {2019: zl(100), 2020: zl(100), 2021: zl(100)}
         profit = ProfitPerYear(income, cost)
 
-        base_for_tax_2019 = tax_calculator.calculate_tax_per_year(profit, 2019).base_for_tax
-        self.assertEqual(zl(-100), base_for_tax_2019)
+        result_2019 = tax_calculator.calculate_tax_per_year(profit, 2019)
+        self.assertEqual(zl(-100), result_2019.base_for_tax)
+        self.assertEqual(zl(0), result_2019.tax)
 
-        base_for_tax_2020 = tax_calculator.calculate_tax_per_year(profit, 2020).base_for_tax
-        self.assertEqual(zl(-200), base_for_tax_2020)
+        result_2020 = tax_calculator.calculate_tax_per_year(profit, 2020)
+        self.assertEqual(zl(-200), result_2020.base_for_tax)
+        self.assertEqual(zl(0), result_2020.tax)
 
-        base_for_tax_2021 = tax_calculator.calculate_tax_per_year(profit, 2021).base_for_tax
-        self.assertEqual(zl(700), base_for_tax_2021)
+        result_2021 = tax_calculator.calculate_tax_per_year(profit, 2021)
+        self.assertEqual(zl(700), result_2021.base_for_tax)
+        self.assertEqual(zl(133), result_2021.tax)
 
     def test_calculate_tax_per_year_losses(self):
         tax_calculator = TaxCalculator()
@@ -91,12 +97,38 @@ class TestTaxCalculator(TestCase):
         cost = {2019: zl(200), 2020: zl(200), 2021: zl(100)}
         profit = ProfitPerYear(income, cost)
 
-        base_for_tax_2019 = tax_calculator.calculate_tax_per_year(profit, 2019).base_for_tax
-        self.assertEqual(zl(-150), base_for_tax_2019)
+        result_2019 = tax_calculator.calculate_tax_per_year(profit, 2019)
+        self.assertEqual(zl(-150), result_2019.base_for_tax)
+        self.assertEqual(zl(0), result_2019.tax)
 
-        base_for_tax_2020 = tax_calculator.calculate_tax_per_year(profit, 2020).base_for_tax
-        self.assertEqual(zl(-300), base_for_tax_2020)
+        result_2020 = tax_calculator.calculate_tax_per_year(profit, 2020)
+        self.assertEqual(zl(-300), result_2020.base_for_tax)
+        self.assertEqual(zl(0), result_2020.tax)
 
-        base_for_tax_2021 = tax_calculator.calculate_tax_per_year(profit, 2021).base_for_tax
+        result_2021 = tax_calculator.calculate_tax_per_year(profit, 2021)
         # 300 losses from previous years deducted
-        self.assertEqual(zl(100), base_for_tax_2021)
+        self.assertEqual(zl(100), result_2021.base_for_tax)
+        self.assertEqual(zl(19), result_2021.tax)
+
+    def test_tax_is_zero_when_loss(self):
+        tax_calculator = TaxCalculator()
+
+        income = {2021: zl(100)}
+        cost = {2021: zl(500)}
+        profit = ProfitPerYear(income, cost)
+
+        result = tax_calculator.calculate_tax_per_year(profit, 2021)
+        self.assertEqual(zl(-400), result.base_for_tax)
+        self.assertEqual(zl(0), result.tax)
+
+    def test_manual_deductible_loss(self):
+        tax_calculator = TaxCalculator()
+
+        income = {2020: zl(100), 2021: zl(1000)}
+        cost = {2020: zl(200), 2021: zl(100)}
+        profit = ProfitPerYear(income, cost)
+
+        result = tax_calculator.calculate_tax_per_year(profit, 2021, deductible_loss=500)
+        self.assertEqual(zl(500), result.deductible_loss)
+        self.assertEqual(zl(400), result.base_for_tax)
+        self.assertEqual(zl(76), result.tax)
