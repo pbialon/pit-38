@@ -12,7 +12,7 @@ from pit38.domain.stock.operations.service_fee import ServiceFee
 from pit38.domain.stock.operations.stock_split import StockSplit
 from pit38.domain.stock.profit.per_stock_calculator import PerStockProfitCalculator
 from pit38.domain.stock.profit.profit_calculator import ProfitCalculator
-from pit38.domain.tax_service.tax_calculator import TaxCalculator
+from pit38.domain.tax_service.stock_tax_calculator import StockTaxCalculator
 from pit38.domain.transactions.transaction import Transaction
 from pit38.exchanger import create_exchanger
 
@@ -82,7 +82,7 @@ def stocks(tax_year: int, filepaths: tuple[str, ...], deductible_loss: float, lo
     profit_from_transactions, profit_from_dividends = profit_calculator.calculate_cumulative_cost_and_income(
         transactions, stock_splits, dividends, service_fees)
 
-    tax_calculator = TaxCalculator()
+    tax_calculator = StockTaxCalculator()
     tax_data_from_transactions = tax_calculator.calculate_tax_per_year(
         profit_from_transactions, tax_year, deductible_loss)
     tax_data_from_dividends = tax_calculator.calculate_tax_per_year(

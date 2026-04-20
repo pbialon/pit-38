@@ -63,6 +63,14 @@ Możesz też przygotować pliki transakcji ręcznie. Przykładowe formaty:
 - Akcje: [`pit38/data_sources/stock_loader/example_format.csv`](pit38/data_sources/stock_loader/example_format.csv)
 - Krypto: [`pit38/data_sources/crypto_loader/example_format.csv`](pit38/data_sources/crypto_loader/example_format.csv)
 
+## Zasady podatkowe
+
+Kalkulator implementuje polskie prawo podatkowe dot. zysków kapitałowych (PIT-38).
+Szczegółowy opis zasad:
+
+- [Tax Rules (English)](docs/TAX_RULES.md)
+- [Zasady podatkowe (Polski)](docs/TAX_RULES.pl.md)
+
 ## Jak to działa
 
 1. **Import** — pluginy brokerów konwertują eksporty CSV do ustandaryzowanego formatu
