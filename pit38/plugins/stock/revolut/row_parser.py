@@ -1,3 +1,4 @@
+import re
 from typing import Dict
 
 import pendulum
@@ -24,14 +25,25 @@ class RowParser:
 
     @classmethod
     def _fiat_value(cls, row: Dict) -> FiatValue:
-        currency = CurrencyBuilder.build(row['Currency'])
-        # e.g."-$1,003.01"
-        amount_row = row['Total Amount']
-        if amount_row.startswith("-"):
-            amount_row = amount_row[1:]
-        amount_row = amount_row[1:].replace(",", "")
-        amount = float(amount_row)
-        return FiatValue(amount, currency)
+        raw = row['Total Amount']
+        if raw.startswith("-"):
+            raw = raw[1:]
+
+        # "USD 1317.06" or "EUR 500.00" — currency code + space + amount
+        code_match = re.match(r'([A-Z]{3})\s+([\d,.]+)', raw)
+        if code_match:
+            currency = CurrencyBuilder.build(code_match.group(1))
+            amount = float(code_match.group(2).replace(",", ""))
+            return FiatValue(amount, currency)
+
+        # "$1,003.01" or "€500.00" — currency symbol + amount
+        symbol_match = re.match(r'([^\d\s])([\d,.]+)', raw)
+        if symbol_match:
+            currency = CurrencyBuilder.build(symbol_match.group(1))
+            amount = float(symbol_match.group(2).replace(",", ""))
+            return FiatValue(amount, currency)
+
+        raise ValueError(f"Cannot parse Total Amount: '{row['Total Amount']}')")
 
     @classmethod
     def _stock(cls, row: Dict) -> str:
