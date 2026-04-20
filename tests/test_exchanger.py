@@ -35,3 +35,16 @@ class TestExchanger(TestCase):
         exchanger = Exchanger(ExchangeRateProviderStub(), Calendar())
         amount_in_pln = exchanger.exchange(datetime("2022-01-04"), zl(100))
         self.assertEqual(amount_in_pln, zl(100))
+
+    def test_get_day_one_skips_independence_day(self):
+        exchanger = Exchanger(None, Calendar())
+        # Nov 11 is Independence Day, Nov 12 is a Friday in 2021
+        day_one = exchanger.get_day_one(datetime("2021-11-12"))
+        self.assertEqual(day_one, date("2021-11-10"))
+
+    def test_get_day_one_skips_new_year(self):
+        exchanger = Exchanger(None, Calendar())
+        # Jan 1, 2025 is Wednesday (holiday)
+        # day-1 from Jan 2 = Jan 1 (holiday) → Dec 31, 2024 (Tuesday, workday)
+        day_one = exchanger.get_day_one(datetime("2025-01-02"))
+        self.assertEqual(day_one, date("2024-12-31"))

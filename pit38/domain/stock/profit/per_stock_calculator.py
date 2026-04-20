@@ -64,7 +64,7 @@ class PerStockProfitCalculator:
             else:
                 ratio_of_oldest_buy_to_include = stock_amount_to_account / oldest_buy_stock_amount
                 cost += self.exchanger.exchange(
-                    transaction.date, oldest_buy.fiat_value) * ratio_of_oldest_buy_to_include
+                    oldest_buy.date, oldest_buy.fiat_value) * ratio_of_oldest_buy_to_include
                 stock_amount_to_account = 0
                 new_head = buy_queue.head() * (1 - ratio_of_oldest_buy_to_include)
                 buy_queue.replace_head(new_head)

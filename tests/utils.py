@@ -11,6 +11,10 @@ def btc(amount: float) -> AssetValue:
     return AssetValue(amount, "BTC")
 
 
+def eth(amount: float) -> AssetValue:
+    return AssetValue(amount, "ETH")
+
+
 def apple(amount: float) -> AssetValue:
     return AssetValue(amount, "AAPL")
 
@@ -69,3 +73,16 @@ class StubExchanger:
         if fiat_value.currency == Currency.DOLLAR:
             return FiatValue(fiat_value.amount * 4.0, Currency.ZLOTY)
         return FiatValue(fiat_value.amount, Currency.ZLOTY)
+
+
+class DateAwareExchanger:
+    """Exchanger that returns different rates based on the date's month."""
+    def __init__(self, rates: dict[str, float]):
+        self.rates = rates
+
+    def exchange(self, date: pendulum.DateTime, fiat_value: FiatValue) -> FiatValue:
+        date_key = date.format("YYYY-MM-DD") if hasattr(date, 'format') else str(date)
+        for key, rate in self.rates.items():
+            if date_key.startswith(key):
+                return FiatValue(round(fiat_value.amount * rate, 2), Currency.ZLOTY)
+        return FiatValue(fiat_value.amount * 4.0, Currency.ZLOTY)
