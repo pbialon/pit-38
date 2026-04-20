@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from domain.currency_exchange_service.currencies import Currency, FiatValue, InvalidCurrencyException
+from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue, InvalidCurrencyException
 from tests.utils import usd, zl
 
 

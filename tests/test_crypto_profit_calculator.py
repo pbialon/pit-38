@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from domain.crypto.profit_calculator import YearlyProfitCalculator
-from domain.tax_service.profit_per_year import ProfitPerYear
+from pit38.domain.crypto.profit_calculator import YearlyProfitCalculator
+from pit38.domain.tax_service.profit_per_year import ProfitPerYear
 from tests.utils import buy, sell, btc, usd, StubExchanger, zl
 
 

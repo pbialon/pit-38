@@ -10,27 +10,31 @@ and computing tax liability at the 19% flat rate.
 ## Quick Reference
 
 ```bash
+# Install (user)
+pipx install .
+
+# Install (development)
+pip install -e ".[dev]"
+
 # Run stock tax calculation
-PYTHONPATH=./src python -m stock -f <file1> -f <file2> -y 2025
+pit38 stock -f <file1> -f <file2> -y 2025
 
 # Run crypto tax calculation
-PYTHONPATH=./src python -m crypto -f <file1> -y 2025
+pit38 crypto -f <file1> -y 2025
 
 # Import from broker (Revolut stocks example)
-PYTHONPATH=./src python -m plugins.stock.revolut --input-path <export> --output-path <output>
+python -m pit38.plugins.stock.revolut --input-path <export> --output-path <output>
 
 # Run tests
-PYTHONPATH=./src python -m unittest discover tests
-
-# Run a single test file
-PYTHONPATH=./src python -m pytest tests/test_profit_calculator.py
+pytest tests/
 ```
 
 ## Architecture
 
 ```
-src/
-├── stock.py / crypto.py        # CLI entry points (Click commands)
+pit38/                          # Main Python package
+├── cli.py                      # Unified CLI entry point (click.group)
+├── stock.py / crypto.py        # Subcommands (Click commands)
 ├── exchanger.py                # Factory for currency exchanger
 ├── plugins/                    # Broker-specific importers
 │   ├── stock/                  #   Revolut, E*Trade → standardized CSV
@@ -62,7 +66,7 @@ src/
 
 ## Tech Stack
 
-- **Python 3.10+** (CI uses 3.10; type hints use `X | Y` union syntax)
+- **Python 3.10+** (type hints use `X | Y` union syntax)
 - **Click** — CLI argument parsing
 - **Pendulum** — date/time handling
 - **Requests** — NBP API calls
@@ -70,23 +74,25 @@ src/
 - **Loguru** — structured logging
 - **Pandas / Openpyxl** — broker data import parsing
 
-## Environment
+## Packaging
 
-- `PYTHONPATH=./src` is required for all commands (set in `.env`)
-- No virtualenv is committed; create one locally and `pip install -r requirements.txt`
+- `pyproject.toml` defines the package, dependencies, and CLI entry point (`pit38`)
+- Install with `pipx install .` (user) or `pip install -e ".[dev]"` (development)
+- No `PYTHONPATH` hacks needed — proper Python package with `pit38.*` imports
 
 ## Testing
 
 - Tests use `unittest.TestCase` (not pytest fixtures)
 - Test helpers live in `tests/utils.py` — provides factory functions like `buy()`, `sell()`,
   `apple()`, `usd()`, `zl()` and a `StubExchanger` (uses fixed 4.0 USD→PLN rate)
-- CI runs: `PYTHONPATH=./src python -m unittest discover tests`
+- CI: `pip install -e ".[dev]"` then `pytest tests/`
 - Flake8 linting in CI (syntax errors and undefined names only)
 
 ## Conventions
 
-- Broker plugins go in `src/plugins/{stock,crypto}/<broker_name>/`
+- Broker plugins go in `pit38/plugins/{stock,crypto}/<broker_name>/`
 - Each plugin has a `__main__.py` entry point and parser modules
 - Standardized CSV format is defined by `example_format.csv` in each data source directory
 - Domain types use value objects (`FiatValue`, `AssetValue`) with operator overloading
 - Currency enum: `Currency.DOLLAR` ("USD"), `Currency.EURO` ("EUR"), `Currency.ZLOTY` ("PLN")
+- All imports use the `pit38.` package prefix (e.g., `from pit38.domain.xxx import Yyy`)

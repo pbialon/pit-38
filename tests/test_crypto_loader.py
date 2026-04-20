@@ -4,9 +4,9 @@ from unittest import TestCase
 
 import pendulum
 
-from domain.transactions import Action
-from domain.currency_exchange_service.currencies import Currency
-from data_sources.crypto_loader.csv_loader import Loader
+from pit38.domain.transactions import Action
+from pit38.domain.currency_exchange_service.currencies import Currency
+from pit38.data_sources.crypto_loader.csv_loader import Loader
 
 
 class TestCsvLoader(TestCase):

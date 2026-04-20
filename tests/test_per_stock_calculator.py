@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from domain.stock.profit.per_stock_calculator import PerStockProfitCalculator
+from pit38.domain.stock.profit.per_stock_calculator import PerStockProfitCalculator
 from tests.utils import StubExchanger, apple, usd, buy, sell, zl
 
 

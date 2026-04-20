@@ -1,118 +1,97 @@
-## How to prepare environment
-1. Install python3
-2. Install pip3
-3. Install dependencies (best in virtualenv)
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+# PIT-38 — Polish Investment Tax Calculator
 
-## How to calculate tax on stocks in Poland / Jak obliczyć podatek od akcji w Polsce
+> **[&#127477;&#127473; Wersja polska](README.pl.md)**
 
-### English
+A command-line tool for calculating Polish income tax on **stocks** and **cryptocurrency** (PIT-38 form). It imports transaction history from popular brokers, converts foreign currencies to PLN using official NBP exchange rates, and computes your tax liability.
 
-1. Prepare environment (see "How to prepare environment" section above)
+## Supported Brokers
 
-2. Prepare data in standardized format:
-   - Use appropriate plugin for your broker:
-     ```bash
-     python -m plugins.stock.revolut --input-path <export_path> --output-path <output_path>
-     ```
-     ```bash
-     python -m plugins.stock.etrade --input-path <export_path> --output-path <output_path>
-     ```
-   - You can prepare multiple files from different brokers
-   - You can also prepare a file manually in the format matching the example in `src/data_sources/stock_loader/example_format.csv`
+| Broker   | Stocks | Crypto |
+|----------|--------|--------|
+| Revolut  | Yes    | Yes    |
+| E*Trade  | Yes    | —      |
+| Binance  | —      | Yes    |
+| Manual CSV | Yes  | Yes    |
 
-3. Run the tax calculation script:
-   ```bash
-   python -m stock -f <file1> -f <file2> -f <file3> -y 2022
-   ```
-   where:
-   - `-f` specifies files with transactions in standardized format
-   - `-y 2022` specifies the year for tax calculation (optional, defaults to previous year)
+## Quick Start
 
-4. For more options use:
-   ```bash
-   python -m stock --help
-   ```
+### Install
 
-### Polski
+```bash
+pipx install .
+```
 
-1. Przygotuj środowisko (patrz sekcja "How to prepare environment" powyżej)
+Or with pip in a virtual environment:
 
-2. Przygotuj dane w ustandaryzowanym formacie:
-   - Użyj odpowiedniego pluginu dla swojego brokera:
-     ```bash
-     python -m plugins.stock.revolut --input-path <sciezka_do_eksportu> --output-path <sciezka_wyjsciowa>
-     ```
-   - Możesz przygotować kilka plików od różnych brokerów
-   - Możesz też przygotować plik ręcznie w formacie zgodnym z przykładem w `src/data_sources/stock_loader/example_format.csv`
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install .
+```
 
-3. Uruchom skrypt obliczający podatek:
-   ```bash
-   python -m stock -f <plik1> -f <plik2> -f <plik3> -y 2022
-   ```
-   gdzie:
-   - `-f` określa pliki z transakcjami w ustandaryzowanym formacie
-   - `-y 2022` określa rok, dla którego obliczany jest podatek (opcjonalne, domyślnie poprzedni rok)
+### Calculate stock tax
 
-4. Więcej opcji znajdziesz używając:
-   ```bash
-   python -m stock --help
-   ```
+```bash
+pit38 stock -f transactions.csv -y 2025
+```
 
-## How to calculate tax on crypto in Poland/ Jak obliczyć podatek od kryptowalut w Polsce 
+### Calculate crypto tax
 
-### English
+```bash
+pit38 crypto -f transactions.csv -y 2025
+```
 
-1. Prepare environment (see "How to prepare environment" section above)
+### Import from broker
 
-2. Prepare data in standardized format:
-   - Use appropriate plugin for your broker:
-     ```bash
-     python -m plugins.crypto.revolut --input-path <export_path> --output-path <output_path>
-     ```
-   - You can prepare multiple files from different brokers
-   - You can also prepare a file manually in the format matching the example in `src/data_sources/crypto_loader/example_format.csv`
+Convert your broker's export into the standardized CSV format:
 
-3. Run the tax calculation script:
-   ```bash
-   python -m crypto -f <file1> -f <file2> -f <file3> -y 2022
-   ```
-   where:
-   - `-f` specifies files with transactions in standardized format
-   - `-y 2022` specifies the year for tax calculation (optional, defaults to previous year)
+```bash
+# Revolut stocks
+python -m pit38.plugins.stock.revolut --input-path revolut_export.csv --output-path transactions.csv
 
-4. For more options use:
-   ```bash
-   python -m crypto --help
-   ```
+# Revolut crypto
+python -m pit38.plugins.crypto.revolut --input-path revolut_export.csv --output-path transactions.csv
 
-### Polski
+# E*Trade
+python -m pit38.plugins.stock.etrade --input-path etrade_export.csv --output-path transactions.csv
 
-1. Przygotuj środowisko (patrz sekcja "How to prepare environment" powyżej)
+# Binance
+python -m pit38.plugins.crypto.binance --input-path binance_export.csv --output-path transactions.csv
+```
 
-2. Przygotuj dane w ustandaryzowanym formacie:
-   - Użyj odpowiedniego pluginu dla swojego brokera (np. Revolut):
-     ```bash
-     python -m plugins.crypto.revolut --input-path <sciezka_do_eksportu> --output-path <sciezka_wyjsciowa>
-     ```
-   - Możesz przygotować kilka plików od różnych brokerów
-   - Możesz też przygotować plik ręcznie w formacie zgodnym z przykładem w `src/data_sources/crypto_loader/example_format.csv`
+You can combine multiple files from different brokers:
 
-3. Uruchom skrypt obliczający podatek:
-   ```bash
-   python -m crypto -f <plik1> -f <plik2> -f <plik3> -y 2022
-   ```
-   gdzie:
-   - `-f` określa pliki z transakcjami w ustandaryzowanym formacie
-   - `-y 2022` określa rok, dla którego obliczany jest podatek (opcjonalne, domyślnie poprzedni rok)
+```bash
+pit38 stock -f revolut.csv -f etrade.csv -y 2025
+```
 
-4. Więcej opcji znajdziesz używając:
-   ```bash
-   python -m crypto --help
-   ```
+### Manual CSV format
 
+You can also prepare transaction files manually. See the example formats:
 
+- Stocks: [`pit38/data_sources/stock_loader/example_format.csv`](pit38/data_sources/stock_loader/example_format.csv)
+- Crypto: [`pit38/data_sources/crypto_loader/example_format.csv`](pit38/data_sources/crypto_loader/example_format.csv)
+
+## How It Works
+
+1. **Import** — broker plugins convert proprietary CSV exports into a standardized format
+2. **Exchange** — foreign currency amounts are converted to PLN using NBP average rates (table A) from the last business day before each transaction
+3. **Calculate** — stock profits use the FIFO method; crypto uses yearly cost/income aggregation
+4. **Tax** — 19% flat tax rate is applied, with automatic deduction of losses from previous years
+
+## Development
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+pytest tests/
+```
+
+## Disclaimer
+
+This tool is provided for **informational purposes only** and does not constitute tax advice. Always verify your calculations with a qualified tax advisor before filing your PIT-38 declaration.
+
+---
 
 <a href="https://www.buymeacoffee.com/pbialon" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>

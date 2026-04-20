@@ -2,12 +2,12 @@ from typing import List
 from unittest import TestCase
 import pendulum
 
-from domain.stock.operations.stock_split import StockSplit
-from domain.stock.profit.profit_calculator import ProfitCalculator
-from domain.tax_service.profit_per_year import ProfitPerYear
-from domain.transactions import Transaction
+from pit38.domain.stock.operations.stock_split import StockSplit
+from pit38.domain.stock.profit.profit_calculator import ProfitCalculator
+from pit38.domain.tax_service.profit_per_year import ProfitPerYear
+from pit38.domain.transactions import Transaction
 from tests.utils import buy, apple, usd, sell, amazon, dividend, service_fee, StubExchanger, zl
-from domain.currency_exchange_service.currencies import FiatValue
+from pit38.domain.currency_exchange_service.currencies import FiatValue
 
 
 class TestProfitCalculator(TestCase):

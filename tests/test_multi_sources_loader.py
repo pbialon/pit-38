@@ -3,9 +3,9 @@ from unittest.mock import Mock
 
 import pendulum
 
-from domain.transactions import Transaction, AssetValue, Action
-from domain.currency_exchange_service.currencies import FiatValue, Currency
-from data_sources.crypto_loader.multi_sources_loader import MultiSourcesLoader
+from pit38.domain.transactions import Transaction, AssetValue, Action
+from pit38.domain.currency_exchange_service.currencies import FiatValue, Currency
+from pit38.data_sources.crypto_loader.multi_sources_loader import MultiSourcesLoader
 
 
 class TestMultiSourcesLoader(TestCase):

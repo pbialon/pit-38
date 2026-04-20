@@ -2,8 +2,8 @@ from unittest import TestCase
 
 import pathlib
 
-from plugins.stock.revolut.csv import CsvService as RevolutStockCsvReader
-from plugins.stock.revolut.transaction_row_parser import TransactionRowParser
+from pit38.plugins.stock.revolut.csv import CsvService as RevolutStockCsvReader
+from pit38.plugins.stock.revolut.transaction_row_parser import TransactionRowParser
 from tests.utils import buy, sell, google, amazon, meta, usd
 
 

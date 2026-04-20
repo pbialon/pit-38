@@ -2,7 +2,7 @@ import os
 import tempfile
 from unittest import TestCase
 
-from data_sources.crypto_loader.csv_validator import CsvValidator
+from pit38.data_sources.crypto_loader.csv_validator import CsvValidator
 
 
 class TestCsvValidator(TestCase):
