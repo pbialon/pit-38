@@ -46,17 +46,10 @@ pit38 crypto -f transactions.csv -y 2025
 Convert your broker's export into the standardized CSV format:
 
 ```bash
-# Revolut stocks
-python -m pit38.plugins.stock.revolut --input-path revolut_export.csv --output-path transactions.csv
-
-# Revolut crypto
-python -m pit38.plugins.crypto.revolut --input-path revolut_export.csv --output-path transactions.csv
-
-# E*Trade
-python -m pit38.plugins.stock.etrade --input-path etrade_export.csv --output-path transactions.csv
-
-# Binance
-python -m pit38.plugins.crypto.binance --input-path binance_export.csv --output-path transactions.csv
+pit38 import revolut-stock  -i revolut_export.csv -o transactions.csv
+pit38 import revolut-crypto -i revolut_export.csv -o transactions.csv
+pit38 import etrade         -i etrade_export.csv  -o transactions.csv
+pit38 import binance        -i binance_export.csv -o transactions.csv
 ```
 
 You can combine multiple files from different brokers:

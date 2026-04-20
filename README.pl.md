@@ -46,17 +46,10 @@ pit38 crypto -f transakcje.csv -y 2025
 Konwertuj eksport brokera do ustandaryzowanego formatu CSV:
 
 ```bash
-# Revolut — akcje
-python -m pit38.plugins.stock.revolut --input-path eksport_revolut.csv --output-path transakcje.csv
-
-# Revolut — kryptowaluty
-python -m pit38.plugins.crypto.revolut --input-path eksport_revolut.csv --output-path transakcje.csv
-
-# E*Trade
-python -m pit38.plugins.stock.etrade --input-path eksport_etrade.csv --output-path transakcje.csv
-
-# Binance
-python -m pit38.plugins.crypto.binance --input-path eksport_binance.csv --output-path transakcje.csv
+pit38 import revolut-stock  -i eksport_revolut.csv -o transakcje.csv
+pit38 import revolut-crypto -i eksport_revolut.csv -o transakcje.csv
+pit38 import etrade         -i eksport_etrade.csv  -o transakcje.csv
+pit38 import binance        -i eksport_binance.csv -o transakcje.csv
 ```
 
 Możesz łączyć pliki z różnych brokerów:

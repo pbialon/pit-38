@@ -25,5 +25,8 @@ dev = [
     "ipdb==0.13.13",
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+
 [project.scripts]
 pit38 = "pit38.cli:main"
