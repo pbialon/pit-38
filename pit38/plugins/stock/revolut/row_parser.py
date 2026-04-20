@@ -3,7 +3,7 @@ from typing import Dict
 
 import pendulum
 
-from pit38.domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
+from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue, CurrencyBuilder
 from pit38.domain.transactions import Transaction
 from pit38.domain.stock.operations.operation import OperationType
 
@@ -34,6 +34,7 @@ class RowParser:
         if code_match:
             currency = CurrencyBuilder.build(code_match.group(1))
             amount = float(code_match.group(2).replace(",", ""))
+            cls._validate_currency(row, currency)
             return FiatValue(amount, currency)
 
         # "$1,003.01" or "€500.00" — currency symbol + amount
@@ -41,9 +42,20 @@ class RowParser:
         if symbol_match:
             currency = CurrencyBuilder.build(symbol_match.group(1))
             amount = float(symbol_match.group(2).replace(",", ""))
+            cls._validate_currency(row, currency)
             return FiatValue(amount, currency)
 
         raise ValueError(f"Cannot parse Total Amount: '{row['Total Amount']}')")
+
+    @classmethod
+    def _validate_currency(cls, row: Dict, parsed_currency: Currency) -> None:
+        if 'Currency' in row and row['Currency']:
+            expected = CurrencyBuilder.build(row['Currency'])
+            if expected != parsed_currency:
+                raise ValueError(
+                    f"Currency mismatch: Total Amount implies {parsed_currency}, "
+                    f"but Currency column says {expected} (row: {row['Total Amount']})"
+                )
 
     @classmethod
     def _stock(cls, row: Dict) -> str:
