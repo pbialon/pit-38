@@ -15,6 +15,7 @@ from pit38.domain.stock.profit.profit_calculator import ProfitCalculator
 from pit38.domain.tax_service.stock_tax_calculator import StockTaxCalculator
 from pit38.domain.transactions.transaction import Transaction
 from pit38.exchanger import create_exchanger
+from pit38.output import print_stock_result
 
 class StockSetup:
 
@@ -88,8 +89,12 @@ def stocks(tax_year: int, filepaths: tuple[str, ...], deductible_loss: float, lo
     tax_data_from_dividends = tax_calculator.calculate_tax_per_year(
         profit_from_dividends, tax_year, 0)
 
-    print("\n\nTransactions: ", tax_data_from_transactions, end='\n\n')
-    print("Dividends (if you paid 30% in USA you don't have to pay):", tax_data_from_dividends, end='\n\n')
+    print_stock_result(
+        tax_data_from_transactions,
+        tax_data_from_dividends,
+        num_transactions=len(transactions),
+        num_files=len(filepaths),
+    )
 
 
 if __name__ == "__main__":
