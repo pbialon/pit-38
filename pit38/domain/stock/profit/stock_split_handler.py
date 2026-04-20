@@ -56,9 +56,9 @@ class StockSplitHandler:
 
     @classmethod
     def _assert_the_same_company(cls, transactions: List[Transaction], stock_splits: List[StockSplit]):
-        assert (t.asset.asset_name == transactions[0].asset.asset_name for t in transactions), \
+        assert all(t.asset.asset_name == transactions[0].asset.asset_name for t in transactions), \
             "All transactions should be from the same company"
-        assert (split.stock == stock_splits[0].stock for split in stock_splits), \
+        assert all(split.stock == stock_splits[0].stock for split in stock_splits), \
             "All stock splits should be for the same stock"
         assert transactions[0].asset.asset_name == stock_splits[0].stock, \
             "All operations should be from the same company"

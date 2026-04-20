@@ -3,13 +3,14 @@ from typing import Dict, List, Tuple
 from loguru import logger
 import pendulum
 
+from pit38.domain.currency_exchange_service.currencies import FiatValue
 from pit38.domain.transactions.action import Action
 from pit38.domain.transactions.asset import AssetValue
 from pit38.domain.transactions.transaction import Transaction
 from pit38.plugins.stock.etrade.row_parser import FiatValueParser
 
 
-class CsvService:
+class EtradeCsvReader:
     @classmethod
     def read(cls, file_path: str) -> List[Transaction]:
         transactions = []
@@ -59,8 +60,10 @@ class CsvService:
         stock_name = row['Symbol']
         return AssetValue(quantity, stock_name)
     
-    def _buy_cost(row: Dict) -> float:
+    @classmethod
+    def _buy_cost(cls, row: Dict) -> FiatValue:
         return FiatValueParser.parse(row["Acquisition Cost"])
-    
-    def _sell_cost(row: Dict) -> float:
+
+    @classmethod
+    def _sell_cost(cls, row: Dict) -> FiatValue:
         return FiatValueParser.parse(row["Total Proceeds"]) 
