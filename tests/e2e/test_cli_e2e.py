@@ -34,7 +34,7 @@ class TestStockCLI(TestCase):
         result = runner.invoke(stocks, ["-f", csv_path, "-y", "2024", "-ll", "ERROR"])
 
         self.assertEqual(result.exit_code, 0, msg=result.output)
-        self.assertIn("Transactions:", result.output)
+        self.assertIn("Stock Tax Summary", result.output)
 
 
 class TestCryptoCLI(TestCase):

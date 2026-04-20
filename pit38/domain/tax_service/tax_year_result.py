@@ -14,8 +14,10 @@ class TaxYearResult:
         self.tax = tax
 
     def __str__(self):
-        return f"[Tax year {self.tax_year}]: \n" \
-               f"income: +{self.income} ZŁ, outcome: -{self.cost}\n" \
-               f"deductible loss: {self.deductible_loss} ZŁ\n" \
-               f"base for tax: {self.base_for_tax} ZŁ\n" \
-               f"tax: {self.tax} ZŁ"
+        return (
+            f"[Tax year {self.tax_year}]: "
+            f"income: +{self.income}, cost: -{self.cost}, "
+            f"deductible loss: {self.deductible_loss}, "
+            f"base for tax: {self.base_for_tax}, "
+            f"tax: {self.tax}"
+        )

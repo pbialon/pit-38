@@ -9,6 +9,7 @@ from pit38.domain.crypto.profit_calculator import YearlyProfitCalculator
 from pit38.domain.tax_service.crypto_tax_calculator import CryptoTaxCalculator
 from pit38.domain.transactions import Transaction
 from pit38.exchanger import create_exchanger
+from pit38.output import print_crypto_result
 from loguru import logger
 import sys
 
@@ -47,7 +48,11 @@ def crypto(tax_year: int, filepaths: tuple[str, ...], deductible_loss: float, lo
     profit_per_year = profit_calculator.profit_per_year(all_transactions)
     tax_calculator = CryptoTaxCalculator()
     tax_data = tax_calculator.calculate_tax_per_year(profit_per_year, tax_year, deductible_loss)
-    print(tax_data, end='\n\n')
+    print_crypto_result(
+        tax_data,
+        num_transactions=len(all_transactions),
+        num_files=len(filepaths),
+    )
 
 
 if __name__ == "__main__":
