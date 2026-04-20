@@ -8,8 +8,8 @@ from pit38.domain.transactions.action import Action
 from pit38.domain.transactions.asset import AssetValue
 from pit38.domain.transactions.transaction import Transaction
 
-BUY_OPERATION_TYPES = ["Buy", "Receive", "Learn reward", "Staking reward"]
-SELL_OPERATION_TYPES = ["Sell"]
+BUY_OPERATION_TYPES = ["Buy", "Buy - Revolut X", "Receive", "Learn reward", "Staking reward"]
+SELL_OPERATION_TYPES = ["Sell", "Sell - Revolut X"]
 
 class RowParser:
     @classmethod
