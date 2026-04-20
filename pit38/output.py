@@ -94,9 +94,9 @@ def print_stock_result(
 
     console.print()
     console.print(_build_section("Dividends", dividends_result))
-    console.print(
-        "  [dim italic]ℹ W-8BEN: 15% US withheld → 4% PL tax due[/]"
-    )
+    console.print("  [dim italic]ℹ Dividends from US stocks:[/]")
+    console.print("  [dim italic]  • With W-8BEN form:  15% US tax withheld → pay 4% in Poland (19% - 15%)[/]")
+    console.print("  [dim italic]  • Without W-8BEN:    30% US tax withheld → no Polish tax due[/]")
 
     console.print()
     console.print(
