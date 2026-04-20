@@ -7,82 +7,54 @@ Performed April 2026.
 
 ## Summary
 
-| # | Issue | Severity | Tax Impact |
-|---|-------|----------|------------|
-| 1 | Wrong exchange rate for partial sell cost | **CRITICAL** | Over/underpayment |
-| 2 | No 5-year limit on loss deduction | **CRITICAL** | Underpayment if old losses |
-| 3 | Crypto cost method — accidentally correct | OK (for now) | None |
-| 4 | OperationType vs Action type mismatch | Low | None currently |
-| 5 | Stock split handling | **CORRECT** | — |
-| 6 | NBP table "a" | **CORRECT** | — |
-| 7 | Day-minus-one rule | **CORRECT** | — |
-| 8 | 19% tax rate | **CORRECT** | — |
-| 9 | FIFO method | **CORRECT** | — |
-| 10 | Polish holidays | **CORRECT** | — |
-| 11 | Rounding to full PLN | Minor | Cosmetic |
-| 12 | Dividend withholding tax | Moderate | Under/overpayment |
-| 13 | Commission fees | Low | Depends on broker |
+| # | Issue | Severity | Tax Impact | Status |
+|---|-------|----------|------------|--------|
+| 1 | Wrong exchange rate for partial sell cost | **CRITICAL** | Over/underpayment | **FIXED** (PR #37) |
+| 2 | No 5-year limit on loss deduction | **CRITICAL** | Underpayment if old losses | **FIXED** (PR #38) |
+| 3 | Crypto cost method — now explicitly correct | OK | None | **FIXED** (PR #38) |
+| 4 | OperationType vs Action type mismatch | Low | None currently | Open |
+| 5 | Stock split handling | **CORRECT** | — | — |
+| 6 | NBP table "a" | **CORRECT** | — | — |
+| 7 | Day-minus-one rule | **CORRECT** | — | — |
+| 8 | 19% tax rate | **CORRECT** | — | — |
+| 9 | FIFO method | **CORRECT** | — | — |
+| 10 | Polish holidays | **CORRECT** | — | — |
+| 11 | Rounding to full PLN | Minor | Cosmetic | Open |
+| 12 | Dividend withholding tax | Moderate | Under/overpayment | Open |
+| 13 | Commission fees | Low | Depends on broker | Open (likely non-issue) |
 
 ---
 
 ## Critical Bugs
 
-### 1. Wrong exchange rate date for partial sell cost
+### 1. ~~Wrong exchange rate date for partial sell cost~~ — FIXED
 
-**File:** `src/domain/stock/profit/per_stock_calculator.py:66-67`
+**Status:** Fixed in PR #37 (commit `12c9381`).
 
-When a SELL transaction only partially consumes a BUY position, the code uses the **SELL date** for currency exchange instead of the **BUY date**:
-
-```python
-# Line 66-67 — BUG: uses transaction.date (SELL date) instead of oldest_buy.date (BUY date)
-cost += self.exchanger.exchange(
-    transaction.date, oldest_buy.fiat_value) * ratio_of_oldest_buy_to_include
-```
-
-Compare with the correct branch (line 61) which correctly uses `oldest_buy.date`:
-```python
-cost += self.exchanger.exchange(oldest_buy.date, oldest_buy.fiat_value)
-```
-
-**Polish tax law (art. 23 ust. 1 pkt 38 ustawy o PIT):** The cost of acquisition (koszt uzyskania przychodu) must be converted to PLN at the NBP rate from the business day preceding the **purchase date**, not the sale date.
-
-**Impact:** If USD/PLN changed between buy and sell dates, the calculated tax will be incorrect. This could cause either overpayment or underpayment of tax.
-
-**Fix:** Change `transaction.date` to `oldest_buy.date` on line 67.
-
-**Why tests don't catch this:** The `StubExchanger` in tests returns a fixed 4.0x rate regardless of date, so both dates produce the same result.
+Changed `transaction.date` → `oldest_buy.date` on line 67 of
+`per_stock_calculator.py`. Added `DateAwareExchanger` test helper and
+`test_partial_sell_uses_buy_date_exchange_rate` test that catches this bug.
 
 ---
 
-### 2. Deductible loss has no 5-year limit
+### 2. ~~Deductible loss has no 5-year limit~~ — FIXED
 
-**File:** `src/domain/tax_service/tax_calculator.py:35-48`
+**Status:** Fixed in PR #38 (commit `02123ee`).
 
-The code has a `# todo: up to 5 years (?)` comment acknowledging this issue but it's not implemented. The method `deductible_loss_from_previous_years()` accumulates losses from **all** previous years without any time limit.
-
-**Polish tax law (art. 9 ust. 3 ustawy o PIT):** Losses can only be deducted within the **5 following tax years**. A loss from 2018 cannot be deducted in 2024 or later.
-
-Additionally, since 2019 there's a rule that in a single year you can deduct either:
-- up to 50% of the loss from a given year, OR
-- the full amount if the loss was ≤ 5,000,000 PLN
-
-The code implements neither the 5-year limit nor the 50%/5M PLN per-year cap.
-
-**Impact:** If someone has losses from >5 years ago, the tool would incorrectly deduct them, leading to underpayment of tax.
-
-**Important caveat for crypto:** For cryptocurrency (art. 30b ust. 1a), the cost carry-forward rules are different — unrealized costs carry forward **without** the 5-year or 50% limitations. The current code accidentally produces the right result for crypto because it applies no limits at all. If you fix this for stocks, you must NOT apply the 5-year limit to crypto.
+Split `TaxCalculator` into `StockTaxCalculator` (5-year limit, 50% cap,
+one-time ≤5M PLN for post-2018 losses) and `CryptoTaxCalculator` (unlimited
+carry-forward per art. 22 ust. 16). Added `LossRecord` value object for
+per-year loss tracking with individual expiry dates and 50% ceilings.
 
 ---
 
 ## Moderate Issues
 
-### 3. Crypto cost calculation — accidentally correct
+### 3. ~~Crypto cost calculation — accidentally correct~~ — FIXED
 
-**File:** `src/domain/crypto/profit_calculator.py`
-
-The crypto calculator sums all BUYs as cost and all SELLs as income per year, without FIFO matching. For crypto under Polish tax law, this is actually the correct approach — costs are recognized in the year they're incurred, and any excess carries forward. The `TaxCalculator`'s loss accumulation mechanism handles the carry-forward.
-
-However, this only works correctly because the missing 5-year limit (bug #2) happens to be the correct behavior for crypto. Fixing bug #2 requires separating the stock and crypto code paths.
+**Status:** Fixed in PR #38. Now **explicitly** correct — `CryptoTaxCalculator`
+is a separate class that implements art. 22 ust. 16 (unlimited cost surplus
+carry-forward) without any of the stock-specific limits.
 
 ---
 
@@ -147,8 +119,9 @@ The code tracks `SERVICE_FEE` (custody fees) as costs but doesn't separately ext
 
 ---
 
-## Recommended Fix Priority
+## Remaining Issues
 
-1. **Bug #1** — partial sell exchange rate (one-line fix: `transaction.date` → `oldest_buy.date`)
-2. **Bug #2** — 5-year deductible loss limit (requires separating stock vs crypto tax logic)
-3. **Feature #4** — dividend withholding tax tracking
+1. **#4** — OperationType vs Action type mismatch (Low — works by coincidence, fragile)
+2. **#11** — Rounding to full PLN (Minor — cosmetic, users round manually)
+3. **#12** — Dividend withholding tax (Moderate — needs W-8BEN status tracking)
+4. **#13** — Commission fees (Low — likely already in Revolut's Total Amount)
