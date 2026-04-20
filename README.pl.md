@@ -1,5 +1,11 @@
 # PIT-38 — Kalkulator podatku od inwestycji
 
+[![CI](https://github.com/pbialon/pit-38/actions/workflows/python-app.yml/badge.svg)](https://github.com/pbialon/pit-38/actions/workflows/python-app.yml)
+[![codecov](https://codecov.io/gh/pbialon/pit-38/graph/badge.svg)](https://codecov.io/gh/pbialon/pit-38)
+[![GitHub release](https://img.shields.io/github/v/release/pbialon/pit-38)](https://github.com/pbialon/pit-38/releases)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 > **[&#127468;&#127463; English version](README.md)**
 
 Narzędzie wiersza poleceń do obliczania polskiego podatku dochodowego od **akcji** i **kryptowalut** (formularz PIT-38). Importuje historię transakcji z popularnych brokerów, przelicza waluty obce na PLN po kursach średnich NBP i oblicza wysokość podatku.
