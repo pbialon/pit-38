@@ -1,0 +1,3 @@
+date,operation,amount,symbol,fiat_value,currency
+2023-03-15 10:00:00,BUY,0.10000000,BTC,16000.00,PLN
+2023-06-20 14:00:00,BUY,2.00000000,ETH,16000.00,PLN
