@@ -1,8 +1,9 @@
+import re
 from typing import Dict
 
 import pendulum
 
-from pit38.domain.currency_exchange_service.currencies import FiatValue, CurrencyBuilder
+from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue, CurrencyBuilder
 from pit38.domain.transactions import Transaction
 from pit38.domain.stock.operations.operation import OperationType
 
@@ -24,14 +25,37 @@ class RowParser:
 
     @classmethod
     def _fiat_value(cls, row: Dict) -> FiatValue:
-        currency = CurrencyBuilder.build(row['Currency'])
-        # e.g."-$1,003.01"
-        amount_row = row['Total Amount']
-        if amount_row.startswith("-"):
-            amount_row = amount_row[1:]
-        amount_row = amount_row[1:].replace(",", "")
-        amount = float(amount_row)
-        return FiatValue(amount, currency)
+        raw = row['Total Amount']
+        if raw.startswith("-"):
+            raw = raw[1:]
+
+        # "USD 1317.06" or "EUR 500.00" — currency code + space + amount
+        code_match = re.match(r'([A-Z]{3})\s+([\d,.]+)', raw)
+        if code_match:
+            currency = CurrencyBuilder.build(code_match.group(1))
+            amount = float(code_match.group(2).replace(",", ""))
+            cls._validate_currency(row, currency)
+            return FiatValue(amount, currency)
+
+        # "$1,003.01" or "€500.00" — currency symbol + amount
+        symbol_match = re.match(r'([^\d\s])([\d,.]+)', raw)
+        if symbol_match:
+            currency = CurrencyBuilder.build(symbol_match.group(1))
+            amount = float(symbol_match.group(2).replace(",", ""))
+            cls._validate_currency(row, currency)
+            return FiatValue(amount, currency)
+
+        raise ValueError(f"Cannot parse Total Amount: '{row['Total Amount']}')")
+
+    @classmethod
+    def _validate_currency(cls, row: Dict, parsed_currency: Currency) -> None:
+        if 'Currency' in row and row['Currency']:
+            expected = CurrencyBuilder.build(row['Currency'])
+            if expected != parsed_currency:
+                raise ValueError(
+                    f"Currency mismatch: Total Amount implies {parsed_currency}, "
+                    f"but Currency column says {expected} (row: {row['Total Amount']})"
+                )
 
     @classmethod
     def _stock(cls, row: Dict) -> str:
