@@ -31,7 +31,7 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
     - name: Test with pytest
       run: |
-        pytest tests/ --cov=pit38 --cov-report=xml --cov-report=term
+        pytest tests/ --cov=pit38 --cov-branch --cov-report=xml --cov-report=term
     - name: Upload coverage to Codecov
       if: always()
       uses: codecov/codecov-action@v5
