@@ -79,6 +79,9 @@ pit38/                          # Main Python package
 - `pyproject.toml` defines the package, dependencies, and CLI entry point (`pit38`)
 - Install with `pipx install .` (user) or `pip install -e ".[dev]"` (development)
 - No `PYTHONPATH` hacks needed — proper Python package with `pit38.*` imports
+- **Versioning:** CalVer `YYYY.M.DD` (e.g., `2026.4.20`). Set the version in `pyproject.toml`
+  to the release date. Calendar versioning fits a tax tool — it's immediately clear whether
+  a release covers the current tax year's rules.
 
 ## Testing
 
