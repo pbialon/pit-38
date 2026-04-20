@@ -2,12 +2,12 @@ from typing import List
 from unittest import TestCase
 import pendulum
 
-from domain.stock.operations.stock_split import StockSplit
-from domain.stock.profit.profit_calculator import ProfitCalculator
-from domain.tax_service.profit_per_year import ProfitPerYear
-from domain.transactions import Transaction
+from pit38.domain.stock.operations.stock_split import StockSplit
+from pit38.domain.stock.profit.profit_calculator import ProfitCalculator
+from pit38.domain.tax_service.profit_per_year import ProfitPerYear
+from pit38.domain.transactions import Transaction
 from tests.utils import buy, apple, usd, sell, amazon, dividend, service_fee, StubExchanger, zl
-from domain.currency_exchange_service.currencies import FiatValue
+from pit38.domain.currency_exchange_service.currencies import FiatValue
 
 
 class TestProfitCalculator(TestCase):
@@ -66,40 +66,3 @@ class PerStockCalculatorStub:
 
     def calculate_cost_and_income(self, transactions: List[Transaction]) -> ProfitPerYear:
         return self.profit[self._company(transactions)]
-
-
-def test_profit_calculator():
-    exchanger = StubExchanger()
-    calculator = ProfitCalculator(exchanger)
-
-    transactions = [
-        buy(apple, amount=1, fiat=usd(100), datetime="2019-01-01 12:00"),
-        buy(apple, amount=1, fiat=usd(200), datetime="2019-02-01 12:00"),
-        sell(apple, amount=1, fiat=usd(300), datetime="2019-03-01 12:00"),
-        buy(amazon, amount=1, fiat=usd(400), datetime="2019-04-01 12:00"),
-        sell(amazon, amount=1, fiat=usd(500), datetime="2019-05-01 12:00"),
-    ]
-
-    stock_splits = [
-        StockSplit(pendulum.parse("2019-12-01 12:00"), "AAPL", 20),
-    ]
-
-    dividends = [
-        dividend(usd(10), "2019-01-01 12:00"),
-        dividend(usd(20), "2019-02-01 12:00"),
-        dividend(usd(30), "2019-03-01 12:00"),
-    ]
-
-    service_fees = [
-        service_fee(usd(0.50), "2019-01-01 12:00"),
-        service_fee(usd(0.50), "2019-07-01 12:00"),
-        service_fee(usd(0.50), "2020-01-01 12:00"),
-        service_fee(usd(0.50), "2020-07-01 12:00"),
-    ]
-
-    profit = calculator.calculate_profit(
-        transactions=transactions,
-        stock_splits=stock_splits,
-        dividends=dividends,
-        service_fees=service_fees
-    )

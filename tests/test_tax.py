@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from domain.tax_service.profit_per_year import ProfitPerYear
-from domain.tax_service.tax_calculator import TaxCalculator
+from pit38.domain.tax_service.profit_per_year import ProfitPerYear
+from pit38.domain.tax_service.tax_calculator import TaxCalculator
 from tests.utils import zl
 
 

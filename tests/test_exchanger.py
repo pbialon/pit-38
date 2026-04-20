@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from domain.calendar_service.calendar import Calendar
-from domain.currency_exchange_service.exchanger import Exchanger
+from pit38.domain.calendar_service.calendar import Calendar
+from pit38.domain.currency_exchange_service.exchanger import Exchanger
 from tests.utils import usd, zl, date, datetime
 
 

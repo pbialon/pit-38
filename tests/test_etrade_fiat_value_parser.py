@@ -1,6 +1,6 @@
 from unittest import TestCase
-from domain.currency_exchange_service.currencies import Currency, FiatValue
-from plugins.stock.etrade.row_parser import FiatValueParser
+from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue
+from pit38.plugins.stock.etrade.row_parser import FiatValueParser
 
 
 class TestFiatValueParser(TestCase):

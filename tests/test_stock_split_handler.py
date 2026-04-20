@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from domain.stock.operations.stock_split import StockSplit
-from domain.stock.profit.stock_split_handler import StockSplitHandler
+from pit38.domain.stock.operations.stock_split import StockSplit
+from pit38.domain.stock.profit.stock_split_handler import StockSplitHandler
 from tests.utils import usd, datetime, buy, apple, sell
 
 
