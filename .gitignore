@@ -8,3 +8,8 @@ resources/*
 *.egg-info/
 dist/
 build/
+
+# pytest-cov artefacts
+.coverage
+.coverage.*
+htmlcov/
