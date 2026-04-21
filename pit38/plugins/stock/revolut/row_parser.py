@@ -25,7 +25,7 @@ class RowParser:
 
     @classmethod
     def _fiat_value(cls, row: Dict) -> FiatValue:
-        raw = row['Total Amount']
+        raw = row['total amount']
         if raw.startswith("-"):
             raw = raw[1:]
 
@@ -45,26 +45,26 @@ class RowParser:
             cls._validate_currency(row, currency)
             return FiatValue(amount, currency)
 
-        raise ValueError(f"Cannot parse Total Amount: '{row['Total Amount']}')")
+        raise ValueError(f"Cannot parse Total Amount: '{row['total amount']}')")
 
     @classmethod
     def _validate_currency(cls, row: Dict, parsed_currency: Currency) -> None:
-        if 'Currency' in row and row['Currency']:
-            expected = parse_currency(row['Currency'])
+        if 'currency' in row and row['currency']:
+            expected = parse_currency(row['currency'])
             if expected != parsed_currency:
                 raise ValueError(
                     f"Currency mismatch: Total Amount implies {parsed_currency}, "
-                    f"but Currency column says {expected} (row: {row['Total Amount']})"
+                    f"but Currency column says {expected} (row: {row['total amount']})"
                 )
 
     @classmethod
     def _stock(cls, row: Dict) -> str:
-        return row['Ticker']
+        return row['ticker']
 
     @classmethod
     def _date(cls, row: dict) -> pendulum.DateTime:
-        return pendulum.parse(row['Date'])
+        return pendulum.parse(row['date'])
 
     @classmethod
     def _operation_type(cls, row: dict) -> OperationType:
-        return cls.OPERATIONS.get(row['Type'])
+        return cls.OPERATIONS.get(row['type'])

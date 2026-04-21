@@ -1,8 +1,8 @@
-import csv
 from typing import Dict, List, Tuple
 from loguru import logger
 import pendulum
 
+from pit38.data_sources.csv_utils import open_csv_reader
 from pit38.domain.currency_exchange_service.currencies import FiatValue
 from pit38.domain.transactions.action import Action
 from pit38.domain.transactions.asset import AssetValue
@@ -15,10 +15,9 @@ class EtradeCsvReader:
     def read(cls, file_path: str) -> List[Transaction]:
         transactions = []
         logger.info(f"Reading transactions from {file_path}...")
-        with open(file_path, "r") as csvfile:
-            reader = csv.DictReader(csvfile, delimiter=",")
+        with open_csv_reader(file_path) as reader:
             for row in reader:
-                if row["Record Type"] == "Summary":
+                if row["record type"] == "Summary":
                     continue
                 buy, sell = cls.parse_row(row)
                 transactions.extend((buy, sell))
@@ -42,28 +41,28 @@ class EtradeCsvReader:
             asset=cls._asset(row),
             fiat_value=cls._buy_cost(row),
             action=Action.BUY,
-            date=pendulum.parse(str(row["Date Acquired"]), strict=False),
+            date=pendulum.parse(str(row["date acquired"]), strict=False),
         )
-        
+
     @classmethod
     def _sell_transaction(cls, row: Dict) -> Transaction:
         return Transaction(
             asset=cls._asset(row),
             fiat_value=cls._sell_cost(row),
             action=Action.SELL,
-            date=pendulum.parse(str(row["Date Sold"]), strict=False),
+            date=pendulum.parse(str(row["date sold"]), strict=False),
         )
 
     @classmethod
     def _asset(cls, row: Dict) -> AssetValue:
-        quantity = float(row['Qty.'])
-        stock_name = row['Symbol']
+        quantity = float(row['qty.'])
+        stock_name = row['symbol']
         return AssetValue(quantity, stock_name)
-    
+
     @classmethod
     def _buy_cost(cls, row: Dict) -> FiatValue:
-        return FiatValueParser.parse(row["Acquisition Cost"])
+        return FiatValueParser.parse(row["acquisition cost"])
 
     @classmethod
     def _sell_cost(cls, row: Dict) -> FiatValue:
-        return FiatValueParser.parse(row["Total Proceeds"]) 
+        return FiatValueParser.parse(row["total proceeds"])

@@ -38,4 +38,4 @@ class TransactionRowParser(RowParser):
 
     @classmethod
     def _quantity(cls, row: Dict) -> float:
-        return float(row['Quantity']) 
+        return float(row['quantity'])

@@ -5,54 +5,56 @@ from pit38.plugins.stock.revolut.row_parser import RowParser
 
 
 class TestFiatValueParsing(TestCase):
+    # NOTE: column names are lowercase because `open_csv_reader` normalizes
+    # headers to `strip().lower()` at read time (see data_sources/csv_utils.py).
     def test_old_format_usd(self):
-        row = {'Total Amount': '$500', 'Currency': 'USD'}
+        row = {'total amount': '$500', 'currency': 'USD'}
         self.assertEqual(RowParser._fiat_value(row), FiatValue(500, Currency.DOLLAR))
 
     def test_old_format_usd_with_comma(self):
-        row = {'Total Amount': '$1,003.01', 'Currency': 'USD'}
+        row = {'total amount': '$1,003.01', 'currency': 'USD'}
         self.assertEqual(RowParser._fiat_value(row), FiatValue(1003.01, Currency.DOLLAR))
 
     def test_old_format_negative(self):
-        row = {'Total Amount': '-$529.68', 'Currency': 'USD'}
+        row = {'total amount': '-$529.68', 'currency': 'USD'}
         self.assertEqual(RowParser._fiat_value(row), FiatValue(529.68, Currency.DOLLAR))
 
     def test_old_format_eur(self):
-        row = {'Total Amount': '€250.00', 'Currency': 'EUR'}
+        row = {'total amount': '€250.00', 'currency': 'EUR'}
         self.assertEqual(RowParser._fiat_value(row), FiatValue(250, Currency.EURO))
 
     def test_new_format_usd(self):
-        row = {'Total Amount': 'USD 1317.06', 'Currency': 'USD'}
+        row = {'total amount': 'USD 1317.06', 'currency': 'USD'}
         self.assertEqual(RowParser._fiat_value(row), FiatValue(1317.06, Currency.DOLLAR))
 
     def test_new_format_eur(self):
-        row = {'Total Amount': 'EUR 500.00', 'Currency': 'EUR'}
+        row = {'total amount': 'EUR 500.00', 'currency': 'EUR'}
         self.assertEqual(RowParser._fiat_value(row), FiatValue(500, Currency.EURO))
 
     def test_new_format_negative(self):
-        row = {'Total Amount': '-USD 529.68', 'Currency': 'USD'}
+        row = {'total amount': '-USD 529.68', 'currency': 'USD'}
         self.assertEqual(RowParser._fiat_value(row), FiatValue(529.68, Currency.DOLLAR))
 
     def test_new_format_with_comma(self):
-        row = {'Total Amount': 'USD 1,317.06', 'Currency': 'USD'}
+        row = {'total amount': 'USD 1,317.06', 'currency': 'USD'}
         self.assertEqual(RowParser._fiat_value(row), FiatValue(1317.06, Currency.DOLLAR))
 
     def test_currency_mismatch_raises_error(self):
-        row = {'Total Amount': '$500', 'Currency': 'EUR'}
+        row = {'total amount': '$500', 'currency': 'EUR'}
         with self.assertRaises(ValueError) as ctx:
             RowParser._fiat_value(row)
         self.assertIn("Currency mismatch", str(ctx.exception))
 
     def test_missing_currency_column(self):
-        row = {'Total Amount': 'USD 1317.06'}
+        row = {'total amount': 'USD 1317.06'}
         self.assertEqual(RowParser._fiat_value(row), FiatValue(1317.06, Currency.DOLLAR))
 
     def test_empty_currency_column(self):
-        row = {'Total Amount': 'EUR 500.00', 'Currency': ''}
+        row = {'total amount': 'EUR 500.00', 'currency': ''}
         self.assertEqual(RowParser._fiat_value(row), FiatValue(500, Currency.EURO))
 
     def test_unparseable_amount_raises_error(self):
-        row = {'Total Amount': '???', 'Currency': 'USD'}
+        row = {'total amount': '???', 'currency': 'USD'}
         with self.assertRaises(ValueError) as ctx:
             RowParser._fiat_value(row)
         self.assertIn("Cannot parse Total Amount", str(ctx.exception))
