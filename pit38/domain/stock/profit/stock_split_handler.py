@@ -56,9 +56,10 @@ class StockSplitHandler:
 
     @classmethod
     def _assert_the_same_company(cls, transactions: List[Transaction], stock_splits: List[StockSplit]):
+
         if not all(
                 t.asset.asset_name == transactions[0].asset.asset_name
-                for t in transactions
+                for t transactions
         ):
             raise ValueError("All transactions should be from the same company")
 

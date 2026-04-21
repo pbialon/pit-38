@@ -58,7 +58,7 @@ class PerStockProfitCalculator:
                 oldest_buy = buy_queue.head()
             except IndexError:
                 raise ValueError("No buy transaction to match sell transaction. Try exporting whole history.")
-            oldest_buy_stock_amount = oldest_buy.asset.amount
+            oldest_buy_stock_amount = oldest_buyasset.amount
 
             if oldest_buy_stock_amount <= stock_amount_to_account + self.EPSILON:
                 cost += self.exchanger.exchange(oldest_buy.date, oldest_buy.fiat_value)
