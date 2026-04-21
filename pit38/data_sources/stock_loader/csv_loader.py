@@ -3,7 +3,8 @@ from typing import List, Optional
 import pendulum
 from loguru import logger
 
-from pit38.domain.stock.operations.operation import Operation, OperationType
+from pit38.domain.stock.operations.operation import Operation
+from pit38.domain.stock.operations.stock_market_operation import StockMarketOperation
 from pit38.data_sources.stock_loader.factory import OperationFactory
 from pit38.domain.currency_exchange_service.currencies import CurrencyBuilder, FiatValue, InvalidCurrencyException
 from pit38.domain.transactions.asset import AssetValue
@@ -74,9 +75,9 @@ class Loader:
             raise ValueError(f"Failed to parse currency: {str(e)}")
 
     @classmethod
-    def _operation_type(cls, row: dict) -> OperationType:
+    def _operation_type(cls, row: dict) -> StockMarketOperation:
         try:
-            return OperationType[row["operation"]]
+            return StockMarketOperation[row["operation"]]
         except (KeyError, ValueError) as e:
             raise ValueError(f"Failed to parse operation type: {str(e)}")
 

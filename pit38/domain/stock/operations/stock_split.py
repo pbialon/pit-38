@@ -1,10 +1,11 @@
 import pendulum
 
-from pit38.domain.stock.operations.operation import Operation, OperationType
+from pit38.domain.stock.operations.operation import Operation
+from pit38.domain.stock.operations.stock_market_operation import StockMarketOperation
 
 
 class StockSplit(Operation):
-    type = OperationType.STOCK_SPLIT
+    type = StockMarketOperation.STOCK_SPLIT
 
     def __init__(self, date: pendulum.DateTime, stock: str, ratio: int):
         self.date = date

@@ -4,19 +4,19 @@ from typing import Dict
 import pendulum
 
 from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue, CurrencyBuilder
+from pit38.domain.stock.operations.stock_market_operation import StockMarketOperation
 from pit38.domain.transactions import Transaction
-from pit38.domain.stock.operations.operation import OperationType
 
 
 class RowParser:
     OPERATIONS = {
-        "BUY - MARKET": OperationType.BUY,
-        "BUY - LIMIT": OperationType.BUY,
-        "SELL - MARKET": OperationType.SELL,
-        "SELL - LIMIT": OperationType.SELL,
-        "DIVIDEND": OperationType.DIVIDEND,
-        "CUSTODY FEE": OperationType.SERVICE_FEE,
-        "STOCK SPLIT": OperationType.STOCK_SPLIT,
+        "BUY - MARKET": StockMarketOperation.BUY,
+        "BUY - LIMIT": StockMarketOperation.BUY,
+        "SELL - MARKET": StockMarketOperation.SELL,
+        "SELL - LIMIT": StockMarketOperation.SELL,
+        "DIVIDEND": StockMarketOperation.DIVIDEND,
+        "CUSTODY FEE": StockMarketOperation.SERVICE_FEE,
+        "STOCK SPLIT": StockMarketOperation.STOCK_SPLIT,
     }
 
     @classmethod
@@ -66,5 +66,5 @@ class RowParser:
         return pendulum.parse(row['Date'])
 
     @classmethod
-    def _operation_type(cls, row: dict) -> OperationType:
+    def _operation_type(cls, row: dict) -> StockMarketOperation:
         return cls.OPERATIONS.get(row['Type'])

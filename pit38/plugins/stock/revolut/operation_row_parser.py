@@ -2,30 +2,31 @@ from typing import Dict
 
 import pendulum
 
-from pit38.domain.stock.operations.service_fee import ServiceFee
 from pit38.domain.stock.operations.dividend import Dividend
-from pit38.domain.stock.operations.operation import Operation, OperationType
+from pit38.domain.stock.operations.operation import Operation
+from pit38.domain.stock.operations.service_fee import ServiceFee
+from pit38.domain.stock.operations.stock_market_operation import StockMarketOperation
 from pit38.domain.stock.operations.stock_split import StockSplit
 from pit38.plugins.stock.revolut.row_parser import RowParser
 
 
 class OperationRowParser(RowParser):
     OPERATIONS_HANDLED = {
-        OperationType.DIVIDEND,
-        OperationType.SERVICE_FEE,
-        OperationType.STOCK_SPLIT
-    }   
+        StockMarketOperation.DIVIDEND,
+        StockMarketOperation.SERVICE_FEE,
+        StockMarketOperation.STOCK_SPLIT,
+    }
 
     @classmethod
     def parse(cls, row: Dict) -> Operation:
         operation_type = cls._operation_type(row)
         if operation_type not in cls.OPERATIONS_HANDLED:
             return None
-        if operation_type == OperationType.DIVIDEND:
+        if operation_type == StockMarketOperation.DIVIDEND:
             return cls._parse_dividend(row)
-        if operation_type == OperationType.SERVICE_FEE:
+        if operation_type == StockMarketOperation.SERVICE_FEE:
             return cls._parse_service_fee(row)
-        if operation_type == OperationType.STOCK_SPLIT:
+        if operation_type == StockMarketOperation.STOCK_SPLIT:
             return cls._parse_stock_split(row)
 
     @classmethod
