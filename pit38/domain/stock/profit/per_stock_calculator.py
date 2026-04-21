@@ -41,9 +41,8 @@ class PerStockProfitCalculator:
         return profit
 
     def _get_company_name(self, transaction: List[Transaction]) -> str:
-        # check all transactions are from the same company
-        assert all(t.asset.asset_name == transaction[0].asset.asset_name for t in transaction), \
-            "All transactions should be from the same company"
+        if not all(t.asset.asset_name == transaction[0].asset.asset_name for t in transaction):
+            raise ValueError("All transactions should be from the same company")
         return transaction[0].asset.asset_name
 
     def _calculate_cost_for_sell(self, buy_queue: Queue, transaction: Transaction) -> FiatValue:
