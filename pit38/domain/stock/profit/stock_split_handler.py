@@ -59,7 +59,7 @@ class StockSplitHandler:
 
         if not all(
                 t.asset.asset_name == transactions[0].asset.asset_name
-                for t transactions
+                for t in transactions
         ):
             raise ValueError("All transactions should be from the same company")
 
