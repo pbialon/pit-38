@@ -35,8 +35,8 @@ class PerStockProfitCalculator:
                 f"Calculated cost and income for transaction: {transaction}, "
                 f"cost = {transaction_cost}, income = {transaction_income}, profit = {transaction_profit}")
 
-            profit.add_income(transaction.year(), transaction_income)
-            profit.add_cost(transaction.year(), transaction_cost)
+            profit.add_income(transaction.year, transaction_income)
+            profit.add_cost(transaction.year, transaction_cost)
 
         return profit
 

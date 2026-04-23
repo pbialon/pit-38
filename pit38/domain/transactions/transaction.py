@@ -16,6 +16,7 @@ class Transaction:
         self.action = action
         self.date = date
 
+    @property
     def year(self) -> int:
         return self.date.year
 
@@ -39,4 +40,4 @@ class Transaction:
                 self.action,
                 self.date,
             )
-        raise Exception("Cannot multiply by non-numeric value")
+        raise TypeError("Cannot multiply by non-numeric value")
