@@ -14,21 +14,19 @@ class Currency(enum.Enum):
         return self.value
 
 
-class CurrencyBuilder:
-    # todo: rewrite - it's not a builder, but simple factory
-    CURRENCIES = {
-        "USD": Currency.DOLLAR,
-        "$": Currency.DOLLAR,
-        "EUR": Currency.EURO,
-        "€": Currency.EURO,
-        "PLN": Currency.ZLOTY,
-    }
+CURRENCY_MAP = {
+    "USD": Currency.DOLLAR,
+    "$": Currency.DOLLAR,
+    "EUR": Currency.EURO,
+    "€": Currency.EURO,
+    "PLN": Currency.ZLOTY,
+}
 
-    @staticmethod
-    def build(currency: str) -> Currency:
-        if currency in CurrencyBuilder.CURRENCIES:
-            return CurrencyBuilder.CURRENCIES[currency]
-        raise InvalidCurrencyException(f"Invalid currency: {currency}")
+
+def parse_currency(currency: str) -> Currency:
+    if currency in CURRENCY_MAP:
+        return CURRENCY_MAP[currency]
+    raise InvalidCurrencyException(f"Invalid currency: {currency}")
 
 
 class FiatValue:

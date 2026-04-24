@@ -3,7 +3,7 @@ from typing import Dict
 
 import pendulum
 
-from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue, CurrencyBuilder
+from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue, parse_currency
 from pit38.domain.transactions import Transaction
 from pit38.domain.stock.operations.operation import OperationType
 
@@ -32,7 +32,7 @@ class RowParser:
         # "USD 1317.06" or "EUR 500.00" — currency code + space + amount
         code_match = re.match(r'([A-Z]{3})\s+([\d,.]+)', raw)
         if code_match:
-            currency = CurrencyBuilder.build(code_match.group(1))
+            currency = parse_currency(code_match.group(1))
             amount = float(code_match.group(2).replace(",", ""))
             cls._validate_currency(row, currency)
             return FiatValue(amount, currency)
@@ -40,7 +40,7 @@ class RowParser:
         # "$1,003.01" or "€500.00" — currency symbol + amount
         symbol_match = re.match(r'([^\d\s])([\d,.]+)', raw)
         if symbol_match:
-            currency = CurrencyBuilder.build(symbol_match.group(1))
+            currency = parse_currency(symbol_match.group(1))
             amount = float(symbol_match.group(2).replace(",", ""))
             cls._validate_currency(row, currency)
             return FiatValue(amount, currency)
@@ -50,7 +50,7 @@ class RowParser:
     @classmethod
     def _validate_currency(cls, row: Dict, parsed_currency: Currency) -> None:
         if 'Currency' in row and row['Currency']:
-            expected = CurrencyBuilder.build(row['Currency'])
+            expected = parse_currency(row['Currency'])
             if expected != parsed_currency:
                 raise ValueError(
                     f"Currency mismatch: Total Amount implies {parsed_currency}, "

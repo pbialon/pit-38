@@ -5,7 +5,7 @@ from typing import List
 
 import pendulum
 from loguru import logger
-from pit38.domain.currency_exchange_service.currencies import CurrencyBuilder, FiatValue
+from pit38.domain.currency_exchange_service.currencies import CURRENCY_MAP, FiatValue
 from pit38.domain.transactions.action import Action
 from pit38.domain.transactions.asset import AssetValue
 from pit38.domain.transactions.transaction import Transaction
@@ -37,7 +37,7 @@ class BinanceTransaction:
 
 class BinanceTransactionProcessor:
     def _process_convert_transactions(self, binance_transactions: List[BinanceTransaction]) -> List[Transaction]:
-        fiat_currencies_list = CurrencyBuilder.CURRENCIES.keys()
+        fiat_currencies_list = CURRENCY_MAP.keys()
         return [
             Transaction(
                 asset=AssetValue(abs(crypto_tx.change), crypto_tx.coin),

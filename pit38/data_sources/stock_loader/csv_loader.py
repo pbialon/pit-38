@@ -5,7 +5,7 @@ from loguru import logger
 
 from pit38.domain.stock.operations.operation import Operation, OperationType
 from pit38.data_sources.stock_loader.factory import OperationFactory
-from pit38.domain.currency_exchange_service.currencies import CurrencyBuilder, FiatValue, InvalidCurrencyException
+from pit38.domain.currency_exchange_service.currencies import parse_currency, FiatValue, InvalidCurrencyException
 from pit38.domain.transactions.asset import AssetValue
 from pit38.domain.transactions.transaction import Transaction
 
@@ -66,7 +66,7 @@ class Loader:
             if not row.get("fiat_value"):
                 return None
             amount = float(row["fiat_value"])
-            currency = CurrencyBuilder.build(row["currency"])
+            currency = parse_currency(row["currency"])
             return FiatValue(amount, currency)
         except (ValueError, KeyError) as e:
             raise ValueError(f"Failed to parse fiat value: {str(e)}")
