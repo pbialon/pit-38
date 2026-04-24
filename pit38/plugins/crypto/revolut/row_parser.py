@@ -3,7 +3,7 @@ from typing import Dict
 import pendulum
 from loguru import logger
 
-from pit38.domain.currency_exchange_service.currencies import Currency, CurrencyBuilder, FiatValue
+from pit38.domain.currency_exchange_service.currencies import Currency, parse_currency, FiatValue
 from pit38.domain.transactions.action import Action
 from pit38.domain.transactions.asset import AssetValue
 from pit38.domain.transactions.transaction import Transaction
@@ -48,7 +48,7 @@ class RowParser:
         currency_str = value.replace(amount_str, "").strip()
 
         amount = float(amount_match.group())
-        currency = CurrencyBuilder.build(currency_str)
+        currency = parse_currency(currency_str)
         return FiatValue(amount, currency)
 
     @classmethod

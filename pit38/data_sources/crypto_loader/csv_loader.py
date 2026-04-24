@@ -4,7 +4,7 @@ import pendulum
 from loguru import logger
 
 from pit38.domain.transactions import Transaction, AssetValue, Action
-from pit38.domain.currency_exchange_service.currencies import CurrencyBuilder, FiatValue, Currency, InvalidCurrencyException
+from pit38.domain.currency_exchange_service.currencies import parse_currency, FiatValue, Currency, InvalidCurrencyException
 
 class Loader:
     @classmethod
@@ -52,7 +52,7 @@ class Loader:
     def _fiat_value(cls, row: dict) -> FiatValue:
         try:
             amount = float(row["fiat_value"])
-            currency = CurrencyBuilder.build(row["currency"])
+            currency = parse_currency(row["currency"])
             return FiatValue(amount, currency)
         except (ValueError, KeyError) as e:
             raise ValueError(f"Failed to parse fiat value: {str(e)}")
