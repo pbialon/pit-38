@@ -1,11 +1,12 @@
 import pendulum
 
 from pit38.domain.currency_exchange_service.currencies import FiatValue
-from pit38.domain.stock.operations.operation import Operation, OperationType
+from pit38.domain.stock.operations.operation import Operation
+from pit38.domain.stock.operations.stock_market_operation import StockMarketOperation
 
 
 class ServiceFee(Operation):
-    type = OperationType.SERVICE_FEE
+    type = StockMarketOperation.SERVICE_FEE
 
     def __init__(self, date: pendulum.DateTime, value: FiatValue):
         self.date = date

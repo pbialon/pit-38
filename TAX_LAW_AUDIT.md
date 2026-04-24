@@ -7,12 +7,12 @@ Performed April 2026.
 
 ## Summary
 
-| # | Issue | Severity | Tax Impact |
-|---|-------|----------|------------|
-| 1 | OperationType vs Action type mismatch | Low | None currently |
-| 2 | Rounding to full PLN | Minor | Cosmetic |
-| 3 | Dividend withholding tax | Moderate | Under/overpayment |
-| 4 | Commission fees | Low | Depends on broker |
+| # | Issue | Severity | Tax Impact | Status |
+|---|-------|----------|------------|--------|
+| 1 | OperationType vs Action type mismatch | Low | None currently | ✅ Resolved (#53) |
+| 2 | Rounding to full PLN | Minor | Cosmetic | Open (#52) |
+| 3 | Dividend withholding tax | Moderate | Under/overpayment | Open (#51) |
+| 4 | Commission fees | Low | Depends on broker | Open |
 
 ## What's Correct
 
@@ -32,12 +32,19 @@ Performed April 2026.
 
 ## Open Issues
 
-### 1. OperationType vs Action type mismatch
+### 1. OperationType vs Action type mismatch ✅ RESOLVED
 
-**File:** `pit38/plugins/stock/revolut/transaction_row_parser.py:31`
+Resolved by splitting the responsibility into two enums with clear roles (see #53):
 
-`_operation_type()` returns `OperationType.BUY` but `Transaction` expects
-`Action.BUY`. Works because both have `.value = "BUY"`. Fragile, no tax impact.
+- `Action(BUY, SELL)` — the transactional action, attribute of `Transaction`.
+  Common to stocks and crypto.
+- `StockMarketOperation(BUY, SELL, DIVIDEND, SERVICE_FEE, STOCK_SPLIT)` —
+  classifier for rows in a stock-market CSV. Stock-specific; crypto CSV uses
+  `Action` directly.
+
+Silent `.value`-based coercion from `OperationType` to `Action` in the stock
+factory is replaced by an explicit `StockMarketOperation.to_action()` method
+that raises for non-transactional values.
 
 ### 2. Rounding to full PLN
 

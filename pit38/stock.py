@@ -7,8 +7,9 @@ from pit38.data_sources.stock_loader.csv_loader import Loader as StockLoader
 from pit38.data_sources.stock_loader.multi_sources_loader import MultiSourcesLoader
 from pit38.domain.calendar_service.calendar import previous_year
 from pit38.domain.stock.operations.dividend import Dividend
-from pit38.domain.stock.operations.operation import Operation, OperationType
+from pit38.domain.stock.operations.operation import Operation
 from pit38.domain.stock.operations.service_fee import ServiceFee
+from pit38.domain.stock.operations.stock_market_operation import StockMarketOperation
 from pit38.domain.stock.operations.stock_split import StockSplit
 from pit38.domain.stock.profit.per_stock_calculator import PerStockProfitCalculator
 from pit38.domain.stock.profit.profit_calculator import ProfitCalculator
@@ -44,19 +45,19 @@ class StockSetup:
 
     @classmethod
     def filter_transactions(cls, operations: List[Operation | Transaction]) -> List[Transaction]:
-        return [operation for operation in operations if operation.type in [OperationType.BUY, OperationType.SELL]]
+        return [op for op in operations if isinstance(op, Transaction)]
 
     @classmethod
     def filter_stock_splits(cls, operations: List[Operation]) -> List[StockSplit]:
-        return [operation for operation in operations if operation.type == OperationType.STOCK_SPLIT]
+        return [op for op in operations if op.type == StockMarketOperation.STOCK_SPLIT]
 
     @classmethod
     def filter_dividends(cls, operations: List[Operation]) -> List[Dividend]:
-        return [operation for operation in operations if operation.type == OperationType.DIVIDEND]
+        return [op for op in operations if op.type == StockMarketOperation.DIVIDEND]
 
     @classmethod
     def filter_service_fees(cls, operations: List[Operation]) -> List[ServiceFee]:
-        return [operation for operation in operations if operation.type == OperationType.SERVICE_FEE]
+        return [op for op in operations if op.type == StockMarketOperation.SERVICE_FEE]
 
 
 

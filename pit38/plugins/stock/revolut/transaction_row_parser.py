@@ -2,15 +2,15 @@ from typing import Dict
 
 from loguru import logger
 
-from pit38.plugins.stock.revolut.row_parser import RowParser
-from pit38.domain.stock.operations.operation import OperationType
+from pit38.domain.stock.operations.stock_market_operation import StockMarketOperation
 from pit38.domain.transactions import Transaction, AssetValue
+from pit38.plugins.stock.revolut.row_parser import RowParser
 
 
 class TransactionRowParser(RowParser):
     OPERATIONS_HANDLED = {
-        OperationType.BUY,
-        OperationType.SELL,
+        StockMarketOperation.BUY,
+        StockMarketOperation.SELL,
     }
 
     @classmethod
@@ -28,7 +28,7 @@ class TransactionRowParser(RowParser):
         return Transaction(
             asset=cls._asset(row),
             fiat_value=cls._fiat_value(row),
-            action=cls._operation_type(row),
+            action=cls._operation_type(row).to_action(),
             date=cls._date(row),
         )
 
