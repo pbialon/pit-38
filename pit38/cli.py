@@ -1,4 +1,5 @@
 import sys
+from collections import Counter
 
 import click
 from loguru import logger
@@ -24,7 +25,7 @@ def import_cmd():
     pass
 
 
-def _print_skipped_summary(skipped_by_type: "Counter") -> None:
+def _print_skipped_summary(skipped_by_type: Counter) -> None:
     """Pretty-print a skip summary to stderr for the user to review."""
     if not skipped_by_type:
         return
