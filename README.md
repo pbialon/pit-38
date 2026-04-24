@@ -97,6 +97,11 @@ pytest tests/
 
 This tool is provided for **informational purposes only** and does not constitute tax advice. Always verify your calculations with a qualified tax advisor before filing your PIT-38 declaration.
 
+## Community
+
+- **[GitHub Discussions](https://github.com/pbialon/pit-38/discussions)** — tax-rule Q&A, broker requests, feedback. English and Polish both welcome.
+- **[Issue tracker](https://github.com/pbialon/pit-38/issues)** — bug reports and feature requests.
+
 ---
 
 <a href="https://www.buymeacoffee.com/pbialon" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
