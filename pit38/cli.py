@@ -1,4 +1,5 @@
 import sys
+from collections import Counter
 
 import click
 from loguru import logger
@@ -24,6 +25,24 @@ def import_cmd():
     pass
 
 
+def _print_skipped_summary(skipped_by_type: Counter) -> None:
+    """Pretty-print a skip summary to stderr for the user to review."""
+    if not skipped_by_type:
+        return
+    total = sum(skipped_by_type.values())
+    click.echo(
+        f"\nSkipped {total} rows (operation types not recognized as tax-relevant):",
+        err=True,
+    )
+    for op_type, count in skipped_by_type.most_common():
+        click.echo(f"  • {op_type}: {count} rows", err=True)
+    click.echo(
+        "\nIf you believe any of these should be taxed, please check with your\n"
+        "tax advisor and open an issue: https://github.com/pbialon/pit-38/issues",
+        err=True,
+    )
+
+
 @import_cmd.command("revolut-stock")
 @click.option("-i", "--input", "input_path", type=click.Path(exists=True), required=True, help="Revolut stock export CSV")
 @click.option("-o", "--output", "output_path", type=click.Path(), required=True, help="Output standardized CSV")
@@ -36,10 +55,17 @@ def import_revolut_stock(input_path, output_path, log_level):
     from pit38.plugins.stock.revolut.operation_row_parser import OperationRowParser
     from pit38.plugins.stock.generic_saver import GenericCsvSaver
 
-    transactions = CsvService(input_path, TransactionRowParser).read()
-    operations = CsvService(input_path, OperationRowParser).read()
-    GenericCsvSaver.save(transactions, operations, output_path)
-    click.echo(f"Saved {len(transactions)} transactions and {len(operations)} operations to {output_path}")
+    # Both parsers scan every row; they skip the same unknown-type rows, so
+    # the skip counters are identical. Report just once (from the first pass).
+    transaction_result = CsvService(input_path, TransactionRowParser).read_with_summary()
+    operation_result = CsvService(input_path, OperationRowParser).read_with_summary()
+
+    GenericCsvSaver.save(transaction_result.records, operation_result.records, output_path)
+    click.echo(
+        f"Saved {len(transaction_result.records)} transactions and "
+        f"{len(operation_result.records)} operations to {output_path}"
+    )
+    _print_skipped_summary(transaction_result.skipped_by_type)
 
 
 @import_cmd.command("revolut-crypto")

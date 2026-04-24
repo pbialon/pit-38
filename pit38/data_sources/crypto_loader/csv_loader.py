@@ -1,8 +1,8 @@
-import csv
 from typing import List, Optional
 import pendulum
 from loguru import logger
 
+from pit38.data_sources.csv_utils import open_csv_reader
 from pit38.domain.transactions import Transaction, AssetValue, Action
 from pit38.domain.currency_exchange_service.currencies import parse_currency, FiatValue, Currency, InvalidCurrencyException
 
@@ -11,9 +11,8 @@ class Loader:
     def load(cls, file_path: str) -> List[Transaction]:
         transactions = []
         logger.info(f"Loading transactions from {file_path}...")
-        
-        with open(file_path, "r") as csvfile:
-            reader = csv.DictReader(csvfile)
+
+        with open_csv_reader(file_path) as reader:
             for row in reader:
                 transaction = cls._parse_row(row)
                 if transaction:

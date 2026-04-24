@@ -1,10 +1,10 @@
-import csv
 from datetime import datetime
 from enum import Enum
 from typing import List
 
 import pendulum
 from loguru import logger
+from pit38.data_sources.csv_utils import open_csv_reader
 from pit38.domain.currency_exchange_service.currencies import CURRENCY_MAP, FiatValue
 from pit38.domain.transactions.action import Action
 from pit38.domain.transactions.asset import AssetValue
@@ -19,10 +19,10 @@ class BinanceOperationType(Enum):
 
 class BinanceTransaction:
     def __init__(self, row: dict):
-        self.utc_time = datetime.strptime(row["UTC_Time"], "%Y-%m-%d %H:%M:%S")
-        self.operation = row["Operation"]
-        self.coin = row["Coin"]
-        self.change = float(row["Change"])
+        self.utc_time = datetime.strptime(row["utc_time"], "%Y-%m-%d %H:%M:%S")
+        self.operation = row["operation"]
+        self.coin = row["coin"]
+        self.change = float(row["change"])
         
     def operation_type(self) -> BinanceOperationType:
         if self.operation == BinanceOperationType.CONVERT.value:
@@ -75,8 +75,7 @@ class BinanceTransactionProcessor:
     def read(self, file_path: str) -> List[Transaction]:
         convert_operations = []
         transaction_operations = []
-        with open(file_path, 'r') as file:
-            reader = csv.DictReader(file)
+        with open_csv_reader(file_path) as reader:
             for row in reader:
                 binance_transaction = BinanceTransaction(row)
                 if binance_transaction.operation_type() == BinanceOperationType.DEPOSIT:

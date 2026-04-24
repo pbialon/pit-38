@@ -29,16 +29,16 @@ class RowParser:
 
     @classmethod
     def _crypto_value(cls, row: dict) -> AssetValue:
-        currency = row["Symbol"]
-        amount = row["Quantity"].replace(",", "")
+        currency = row["symbol"]
+        amount = row["quantity"].replace(",", "")
         return AssetValue(float(amount), currency)
 
     @classmethod
     def _fiat_value(cls, row: dict) -> FiatValue:
-        if row["Value"] == "":
+        if row["value"] == "":
             return FiatValue(0, Currency.ZLOTY)
 
-        value = row["Value"].replace(",", "")
+        value = row["value"].replace(",", "")
 
         amount_match = re.search(r'\d+\.?\d{2}', value)
         if not amount_match:
@@ -53,16 +53,16 @@ class RowParser:
 
     @classmethod
     def _action(cls, row: dict) -> Action:
-        if row["Type"] in BUY_OPERATION_TYPES:
+        if row["type"] in BUY_OPERATION_TYPES:
             return Action.BUY
-        if row["Type"] in SELL_OPERATION_TYPES:
+        if row["type"] in SELL_OPERATION_TYPES:
             return Action.SELL
         # Staking and unstaking are not important for tax purposes
         return None
 
     @classmethod
     def _datetime(cls, row: dict) -> pendulum.DateTime:
-        date_str = row["Date"].replace("Sept", "Sep") # revolut uses Sept instead of Sep
+        date_str = row["date"].replace("Sept", "Sep") # revolut uses Sept instead of Sep
         supported_formats = (
             "DD MMM YYYY, HH:mm:ss",
             "MMM DD, YYYY, hh:mm:ss A",

@@ -34,6 +34,42 @@ class TestStockFullPipeline(TestCase):
         loaded = StockLoader.load(tmp_path)
         self.assertEqual(len(loaded), len(transactions))
 
+    def test_revolut_real_export_with_bom_and_unknown_operations(self):
+        """Regression for #33 — real Revolut CSV has UTF-8 BOM, lowercase
+        headers (`date` not `Date`), and non-tax operations (CASH WITHDRAWAL,
+        DEPOSIT, TRANSFER). Each broke the parser before; now:
+          - BOM is stripped by utf-8-sig encoding
+          - Headers normalized to lowercase at read time
+          - Unknown operation types are counted and skipped, not crashed
+        """
+        from pit38.plugins.stock.revolut.operation_row_parser import OperationRowParser
+
+        revolut_csv = FIXTURES / "revolut_stock_real.csv"
+        # Sanity: fixture actually has BOM
+        self.assertEqual(revolut_csv.read_bytes()[:3], b"\xef\xbb\xbf")
+
+        # Transactions: BUY + SELL rows parsed
+        tx_result = CsvService(str(revolut_csv), TransactionRowParser).read_with_summary()
+        self.assertEqual(len(tx_result.records), 2, "Should find BUY and SELL")
+
+        # Operations: DIVIDEND + CUSTODY FEE rows parsed
+        op_result = CsvService(str(revolut_csv), OperationRowParser).read_with_summary()
+        self.assertEqual(len(op_result.records), 2, "Should find DIVIDEND and CUSTODY FEE")
+
+        # Skipped summary includes all non-tax rows (same for both parsers)
+        self.assertEqual(tx_result.skipped_by_type["CASH WITHDRAWAL"], 1)
+        self.assertEqual(tx_result.skipped_by_type["DEPOSIT"], 1)
+        self.assertEqual(tx_result.skipped_by_type["TRANSFER"], 1)
+        self.assertEqual(tx_result.total_skipped, 3)
+
+        # Regression for @inobrevi's follow-up: CUSTODY FEE with "USD -X"
+        # format must parse (was silently dropping before the
+        # normalize_currency_layout migration)
+        from pit38.domain.stock.operations.service_fee import ServiceFee
+        service_fees = [r for r in op_result.records if isinstance(r, ServiceFee)]
+        self.assertEqual(len(service_fees), 1)
+        self.assertAlmostEqual(service_fees[0].value.amount, 0.15, places=4)
+
     def test_standardized_csv_to_tax_result(self):
         csv_path = FIXTURES / "standardized_stock.csv"
 
