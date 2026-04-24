@@ -4,8 +4,9 @@ from typing import Dict
 import pendulum
 
 from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue, parse_currency
-from pit38.domain.transactions import Transaction
 from pit38.domain.stock.operations.operation import OperationType
+from pit38.domain.transactions import Transaction
+from pit38.plugins.normalization import normalize_currency_layout, parse_amount
 
 
 class RowParser:
@@ -25,27 +26,27 @@ class RowParser:
 
     @classmethod
     def _fiat_value(cls, row: Dict) -> FiatValue:
-        raw = row['total amount']
-        if raw.startswith("-"):
-            raw = raw[1:]
+        normalized = normalize_currency_layout(row['total amount'])
 
-        # "USD 1317.06" or "EUR 500.00" — currency code + space + amount
-        code_match = re.match(r'([A-Z]{3})\s+([\d,.]+)', raw)
-        if code_match:
-            currency = parse_currency(code_match.group(1))
-            amount = float(code_match.group(2).replace(",", ""))
-            cls._validate_currency(row, currency)
-            return FiatValue(amount, currency)
+        # After normalization: "<currency><space><signed_amount>"
+        # (both code "USD 529.68" and symbol "$ 529.68" reach the same form)
+        match = re.match(r'(\S+)\s+(\S+)$', normalized)
+        if not match:
+            raise ValueError(f"Cannot parse Total Amount: '{row['total amount']}'")
 
-        # "$1,003.01" or "€500.00" — currency symbol + amount
-        symbol_match = re.match(r'([^\d\s])([\d,.]+)', raw)
-        if symbol_match:
-            currency = parse_currency(symbol_match.group(1))
-            amount = float(symbol_match.group(2).replace(",", ""))
-            cls._validate_currency(row, currency)
-            return FiatValue(amount, currency)
+        currency_str, amount_str = match.groups()
+        try:
+            currency = parse_currency(currency_str)  # accepts "USD" and "$"
+        except Exception:
+            raise ValueError(f"Cannot parse Total Amount: '{row['total amount']}'")
+        # abs() preserves existing "all fiat values are absolute magnitudes"
+        # semantic — callers treat ServiceFee/Dividend/etc. as cost/income
+        # regardless of original sign. See #61 for the future refactor that
+        # will propagate signed amounts through the domain.
+        amount = abs(parse_amount(amount_str))
 
-        raise ValueError(f"Cannot parse Total Amount: '{row['total amount']}')")
+        cls._validate_currency(row, currency)
+        return FiatValue(amount, currency)
 
     @classmethod
     def _validate_currency(cls, row: Dict, parsed_currency: Currency) -> None:

@@ -58,3 +58,23 @@ class TestFiatValueParsing(TestCase):
         with self.assertRaises(ValueError) as ctx:
             RowParser._fiat_value(row)
         self.assertIn("Cannot parse Total Amount", str(ctx.exception))
+
+    # ─── Regression tests for #33 follow-up (@inobrevi CUSTODY FEE) ──
+
+    def test_negative_between_code_and_amount(self):
+        """Primary regression for @inobrevi's CUSTODY FEE row: 'USD -0.07'
+        (minus between code and amount). Before the shared normalization
+        fix, this raised ValueError."""
+        row = {'total amount': 'USD -0.07', 'currency': 'USD'}
+        self.assertEqual(RowParser._fiat_value(row), FiatValue(0.07, Currency.DOLLAR))
+
+    def test_eu_format_with_comma_decimal(self):
+        """Forward-looking: Revolut hypothetically emits EU-formatted
+        numbers. Babel's de_DE locale handles this via the locale chain."""
+        row = {'total amount': 'EUR 1.317,06', 'currency': 'EUR'}
+        self.assertEqual(RowParser._fiat_value(row), FiatValue(1317.06, Currency.EURO))
+
+    def test_eu_format_negative_mixed(self):
+        """Combined: EU decimal format + minus between code and amount."""
+        row = {'total amount': 'EUR -1.317,06', 'currency': 'EUR'}
+        self.assertEqual(RowParser._fiat_value(row), FiatValue(1317.06, Currency.EURO))

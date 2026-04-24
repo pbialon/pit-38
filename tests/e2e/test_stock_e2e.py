@@ -52,15 +52,23 @@ class TestStockFullPipeline(TestCase):
         tx_result = CsvService(str(revolut_csv), TransactionRowParser).read_with_summary()
         self.assertEqual(len(tx_result.records), 2, "Should find BUY and SELL")
 
-        # Operations: DIVIDEND row parsed
+        # Operations: DIVIDEND + CUSTODY FEE rows parsed
         op_result = CsvService(str(revolut_csv), OperationRowParser).read_with_summary()
-        self.assertEqual(len(op_result.records), 1, "Should find DIVIDEND")
+        self.assertEqual(len(op_result.records), 2, "Should find DIVIDEND and CUSTODY FEE")
 
-        # Skipped summary includes all non-tax rows
+        # Skipped summary includes all non-tax rows (same for both parsers)
         self.assertEqual(tx_result.skipped_by_type["CASH WITHDRAWAL"], 1)
         self.assertEqual(tx_result.skipped_by_type["DEPOSIT"], 1)
         self.assertEqual(tx_result.skipped_by_type["TRANSFER"], 1)
         self.assertEqual(tx_result.total_skipped, 3)
+
+        # Regression for @inobrevi's follow-up: CUSTODY FEE with "USD -X"
+        # format must parse (was silently dropping before the
+        # normalize_currency_layout migration)
+        from pit38.domain.stock.operations.service_fee import ServiceFee
+        service_fees = [r for r in op_result.records if isinstance(r, ServiceFee)]
+        self.assertEqual(len(service_fees), 1)
+        self.assertAlmostEqual(service_fees[0].value.amount, 0.15, places=4)
 
     def test_standardized_csv_to_tax_result(self):
         csv_path = FIXTURES / "standardized_stock.csv"
