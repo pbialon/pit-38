@@ -27,9 +27,15 @@ dev = [
     "pytest-cov~=5.0",
     "ipdb==0.13.13",
 ]
+ibi = [
+    "pdfplumber~=0.11.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.setuptools.package-data]
+"pit38.plugins.stock.ibi_capital" = ["companies.json"]
 
 [project.scripts]
 pit38 = "pit38.cli:main"

@@ -99,6 +99,60 @@ def import_etrade(input_path, output_path, log_level):
     click.echo(f"Saved {len(transactions)} transactions to {output_path}")
 
 
+@import_cmd.command("ibi-capital")
+@click.option("-i", "--input", "input_paths", type=click.Path(exists=True),
+              multiple=True, required=True,
+              help="IBI order confirmation PDF or directory of PDFs (repeatable)")
+@click.option("-o", "--output", "output_path", type=click.Path(), required=True, help="Output standardized CSV")
+@click.option("--ticker", default=None,
+              help="Override ticker (skips companies.json lookup — useful for companies not yet in the seed)")
+@click.option("-ll", "--log-level", default="INFO", type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]))
+def import_ibi_capital(input_paths, output_path, ticker, log_level):
+    """Import stock sale confirmations from IBI Capital (Israeli broker, PDF input)."""
+    setup_logger(log_level)
+
+    from pathlib import Path
+    from pit38.plugins.stock.generic_saver import GenericCsvSaver
+    from pit38.plugins.stock.ibi_capital.company_ticker import resolve_ticker
+    from pit38.plugins.stock.ibi_capital.order_parser import parse_order_report
+    from pit38.plugins.stock.ibi_capital.pdf_reader import extract_text
+    from pit38.plugins.stock.ibi_capital.record_builder import build_records
+
+    pdfs: list[Path] = []
+    for raw in input_paths:
+        p = Path(raw)
+        pdfs.extend(sorted(p.rglob("*.pdf")) if p.is_dir() else [p])
+
+    if not pdfs:
+        click.echo("No PDF files found under the provided --input paths.", err=True)
+        raise click.Abort()
+
+    transactions = []
+    fees = []
+    saw_rsu = False
+    for pdf_path in pdfs:
+        parsed = parse_order_report(extract_text(pdf_path))
+        resolved = resolve_ticker(parsed.company, override=ticker)
+        t, f = build_records(parsed, resolved)
+        transactions.extend(t)
+        fees.extend(f)
+        if parsed.price_for_tax == 0:
+            saw_rsu = True
+
+    GenericCsvSaver.save(transactions, fees, output_path)
+    click.echo(
+        f"Saved {len(transactions)} transactions and {len(fees)} service fees "
+        f"from {len(pdfs)} IBI Capital PDF(s) to {output_path}"
+    )
+    if saw_rsu:
+        click.echo(
+            "\nℹ For RSU orders (Price For Tax = 0), cost basis is recorded as 0 — "
+            "consistent with the standard Polish tax treatment of RSU share sales. "
+            "See docs/BROKERS.md#ibi-capital for details.",
+            err=True,
+        )
+
+
 @import_cmd.command("binance")
 @click.option("-i", "--input", "input_path", type=click.Path(exists=True), required=True, help="Binance export CSV")
 @click.option("-o", "--output", "output_path", type=click.Path(), required=True, help="Output standardized CSV")
