@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pit-38"
-version = "2026.4.20.4"
+version = "2026.4.25"
 description = "Polish investment tax calculator (PIT-38) for stocks and cryptocurrency"
 readme = "README.md"
 license = "MIT"
