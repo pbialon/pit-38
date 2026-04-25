@@ -29,19 +29,6 @@ and emits standardized transactions plus service fees.
 - Automatically handle currencies other than USD (all sample PDFs were
   USD — if you have a non-USD order, open an issue).
 
-### Installation
-
-Parsing PDFs requires the optional `pdfplumber` dependency:
-
-```bash
-pipx install 'pit-38[ibi]'
-# or for development:
-pip install -e ".[ibi,dev]"
-```
-
-Users who don't need IBI support can skip the `[ibi]` extra — the core
-tool works without `pdfplumber`.
-
 ### Usage
 
 Download your order confirmations from the IBI Capital portal into a

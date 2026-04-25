@@ -172,8 +172,8 @@ architecture overview (PL/EN).
 - **Stocks, CSV input** — `pit38/plugins/stock/revolut/` (most complete,
   handles BOM, unknown operations, dividends, fees, stock splits)
 - **Stocks, PDF input** — `pit38/plugins/stock/ibi_capital/` (regex-based
-  PDF text parsing via pdfplumber as an optional extra, synthetic BUY
-  emitted from order confirmation)
+  PDF text parsing via pdfplumber, synthetic BUY emitted from order
+  confirmation)
 - **Crypto** — `pit38/plugins/crypto/binance/`
 
 **High-level recipe:**

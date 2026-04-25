@@ -57,7 +57,7 @@ pit38 import revolut-stock  -i eksport_revolut.csv -o transakcje.csv
 pit38 import revolut-crypto -i eksport_revolut.csv -o transakcje.csv
 pit38 import etrade         -i eksport_etrade.csv  -o transakcje.csv
 pit38 import binance        -i eksport_binance.csv -o transakcje.csv
-pit38 import ibi-capital    -i ~/ibi_orders/       -o transakcje.csv   # input: PDF; instalacja: pipx install 'pit-38[ibi]'
+pit38 import ibi-capital    -i ~/ibi_orders/       -o transakcje.csv   # input: PDF (plik lub katalog)
 ```
 
 Możesz łączyć pliki z różnych brokerów:

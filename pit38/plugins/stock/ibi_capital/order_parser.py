@@ -9,8 +9,9 @@ before labels) — the labelled totals we care about are easier to read off
 the flat text than off the partially-ordered table cells.
 
 This module must not import pdfplumber. That way unit tests can exercise
-the parser against anonymized ``.txt`` fixtures without installing the
-optional ``[ibi]`` extra.
+the parser against anonymized ``.txt`` fixtures without pulling in the
+PDF-parsing stack, and the parser stays usable for upstream callers that
+feed text from a different source.
 """
 from __future__ import annotations
 

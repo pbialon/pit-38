@@ -57,7 +57,7 @@ pit38 import revolut-stock  -i revolut_export.csv -o transactions.csv
 pit38 import revolut-crypto -i revolut_export.csv -o transactions.csv
 pit38 import etrade         -i etrade_export.csv  -o transactions.csv
 pit38 import binance        -i binance_export.csv -o transactions.csv
-pit38 import ibi-capital    -i ~/ibi_orders/      -o transactions.csv   # PDF input; install with: pipx install 'pit-38[ibi]'
+pit38 import ibi-capital    -i ~/ibi_orders/      -o transactions.csv   # PDF input (single file or directory)
 ```
 
 You can combine multiple files from different brokers:

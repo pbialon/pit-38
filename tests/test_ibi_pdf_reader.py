@@ -1,17 +1,12 @@
 """Tests for the pdfplumber wrapper.
 
-The wrapper is three lines of real logic. The tests below cover both
-branches: the ImportError guard (for users who install ``pit-38``
-without the ``[ibi]`` extra) and the happy path, exercised against a
+The wrapper is three lines of real logic. We exercise it against a
 minimal hand-crafted PDF so we don't need to commit a binary fixture
-that would risk leaking PII.
+that would risk leaking PII from real IBI statements.
 """
-import builtins
-import sys
 import tempfile
 from pathlib import Path
 from unittest import TestCase
-from unittest.mock import patch
 
 # A valid but minimal PDF containing a single page with one text run.
 # Hand-crafted so we can test without committing a binary fixture —
@@ -42,37 +37,7 @@ startxref
 """
 
 
-class TestExtractTextImportGuard(TestCase):
-    def test_import_error_has_actionable_message(self):
-        # Simulate a user who ran `pipx install pit-38` without `[ibi]`
-        # by hiding any already-imported pdfplumber module and blocking
-        # re-import.
-        real_import = builtins.__import__
-
-        def _block_pdfplumber(name, *args, **kwargs):
-            if name == "pdfplumber":
-                raise ImportError("No module named 'pdfplumber'")
-            return real_import(name, *args, **kwargs)
-
-        saved_pdfplumber = sys.modules.pop("pdfplumber", None)
-        try:
-            with patch.object(builtins, "__import__", _block_pdfplumber):
-                from pit38.plugins.stock.ibi_capital import pdf_reader
-
-                with self.assertRaises(ImportError) as ctx:
-                    pdf_reader.extract_text("/tmp/whatever.pdf")
-
-            msg = str(ctx.exception)
-            self.assertIn("pdfplumber", msg)
-            # The whole point of the wrapped error is steering the user
-            # to the right install incantation.
-            self.assertIn("pit-38[ibi]", msg)
-        finally:
-            if saved_pdfplumber is not None:
-                sys.modules["pdfplumber"] = saved_pdfplumber
-
-
-class TestExtractTextHappyPath(TestCase):
+class TestExtractText(TestCase):
     def test_extracts_text_from_minimal_pdf(self):
         from pit38.plugins.stock.ibi_capital.pdf_reader import extract_text
 
