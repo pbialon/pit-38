@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Tax-rule Q&A (use Discussions)
+    url: https://github.com/pbialon/pit-38/discussions/categories/q-a
+    about: Questions about interpretation of Polish tax law belong in Discussions, not Issues. Use this if you're not reporting a code bug.
+  - name: 💬 Pytania o zasady podatkowe (Discussions)
+    url: https://github.com/pbialon/pit-38/discussions/categories/q-a
+    about: Pytania o interpretację polskiego prawa podatkowego — Discussions, nie Issues. Użyj jeśli nie zgłaszasz błędu w kodzie.
+  - name: 🏦 Broker support discussion
+    url: https://github.com/pbialon/pit-38/discussions/categories/broker-support
+    about: Informal discussion about a broker before opening a formal support request. Share sanitized CSV samples, compare workflows.
