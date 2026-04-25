@@ -129,28 +129,18 @@ def import_ibi_capital(input_paths, output_path, ticker, log_level):
 
     transactions = []
     fees = []
-    saw_rsu = False
     for pdf_path in pdfs:
         parsed = parse_order_report(extract_text(pdf_path))
         resolved = resolve_ticker(parsed.company, override=ticker)
         t, f = build_records(parsed, resolved)
         transactions.extend(t)
         fees.extend(f)
-        if parsed.price_for_tax == 0:
-            saw_rsu = True
 
     GenericCsvSaver.save(transactions, fees, output_path)
     click.echo(
         f"Saved {len(transactions)} transactions and {len(fees)} service fees "
         f"from {len(pdfs)} IBI Capital PDF(s) to {output_path}"
     )
-    if saw_rsu:
-        click.echo(
-            "\nℹ For RSU orders (Price For Tax = 0), cost basis is recorded as 0 — "
-            "consistent with the standard Polish tax treatment of RSU share sales. "
-            "See docs/BROKERS.md#ibi-capital for details.",
-            err=True,
-        )
 
 
 @import_cmd.command("binance")

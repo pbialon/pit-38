@@ -80,7 +80,6 @@ class TestImportIbiCapitalCLI(TestCase):
     """
 
     RSU_TEXT = (FIXTURES / "ibi_order_fake_rsu.txt").read_text()
-    ESPP_TEXT = (FIXTURES / "ibi_order_fake_espp.txt").read_text()
 
     def _invoke(self, args, extract_text_return):
         """Invoke the CLI with extract_text mocked to a canned string."""
@@ -114,44 +113,6 @@ class TestImportIbiCapitalCLI(TestCase):
             self.assertIn("BUY", csv_text)
             self.assertIn("SELL", csv_text)
             self.assertIn("ACME", csv_text)
-
-    def test_rsu_info_message_shown(self):
-        with CliRunner().isolated_filesystem():
-            pathlib.Path("order.pdf").write_bytes(b"%PDF-1.4\n%%EOF\n")
-
-            result = self._invoke(
-                [
-                    "import", "ibi-capital",
-                    "-i", "order.pdf",
-                    "-o", "out.csv",
-                    "--ticker", "ACME",
-                    "-ll", "ERROR",
-                ],
-                extract_text_return=self.RSU_TEXT,
-            )
-
-            self.assertEqual(result.exit_code, 0, msg=result.output)
-            # Informational RSU note appears only when any order has
-            # Price For Tax = 0 (the RSU fixture does).
-            self.assertIn("RSU", result.output)
-
-    def test_espp_does_not_trigger_rsu_message(self):
-        with CliRunner().isolated_filesystem():
-            pathlib.Path("order.pdf").write_bytes(b"%PDF-1.4\n%%EOF\n")
-
-            result = self._invoke(
-                [
-                    "import", "ibi-capital",
-                    "-i", "order.pdf",
-                    "-o", "out.csv",
-                    "--ticker", "ACME",
-                    "-ll", "ERROR",
-                ],
-                extract_text_return=self.ESPP_TEXT,
-            )
-
-            self.assertEqual(result.exit_code, 0, msg=result.output)
-            self.assertNotIn("RSU", result.output)
 
     def test_directory_input_scans_pdfs(self):
         with CliRunner().isolated_filesystem():
