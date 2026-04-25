@@ -169,8 +169,11 @@ architecture overview (PL/EN).
 
 **Reference implementations** (read these first):
 
-- **Stocks** — `pit38/plugins/stock/revolut/` (most complete, handles
-  BOM, unknown operations, dividends, fees, stock splits)
+- **Stocks, CSV input** — `pit38/plugins/stock/revolut/` (most complete,
+  handles BOM, unknown operations, dividends, fees, stock splits)
+- **Stocks, PDF input** — `pit38/plugins/stock/ibi_capital/` (regex-based
+  PDF text parsing via pdfplumber, synthetic BUY emitted from order
+  confirmation)
 - **Crypto** — `pit38/plugins/crypto/binance/`
 
 **High-level recipe:**

@@ -1,0 +1,41 @@
+April 25, 2026
+Sale Of Stock Activity Statement Order Number: 9000001
+ .00
+Test User ID / SS # Company: acme.com
+General Details
+Order Details
+Grant Date: January 10, 2023 Grant No.: 1111 Plan: Acme 2022 RSU
+Order Date: February 20, 2025 Execution Date: February 20, 2025 Price For Tax: USD 0.00
+Total Amount Due to Order 20 USD 100.0000 USD 2,000.00
+Total Amount Due to Order Shares X Sale Price = Value
+= Value
+USD
+USD 0.00
+ 4.00
+USD 2.00
+USD 0.00
+Total Fees (THE ABOVE FEES DO NOT INCLUDE TRANSFER FEES) USD 6.00
+Other Fees
+Service Fee
+Foreign Fee
+Trustee Fee
+Fees
+Capital Tax USD 0.00
+Tax Rate X = Value
+ - %
+Total Cost USD 6.00
+ 6.00
+USD
+USD
+Total Tax
+Total Fees
+Total Cost = Value
+ 0.00
+Net Gain Due to Order
+Total Cost
+Amount Due to Order USD
+USD
+USD 1,994.00
+ 6.00
+ 2,000.00
+Net Gain Due to Order = Value

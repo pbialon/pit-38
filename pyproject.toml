@@ -19,6 +19,7 @@ dependencies = [
     "pandas~=2.2.2",
     "openpyxl~=3.1.2",
     "babel~=2.14",
+    "pdfplumber~=0.11.0",
 ]
 
 [project.optional-dependencies]
@@ -30,6 +31,9 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.setuptools.package-data]
+"pit38.plugins.stock.ibi_capital" = ["companies.json"]
 
 [project.scripts]
 pit38 = "pit38.cli:main"

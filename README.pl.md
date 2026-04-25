@@ -12,12 +12,15 @@ Narzędzie wiersza poleceń do obliczania polskiego podatku dochodowego od **akc
 
 ## Obsługiwani brokerzy
 
-| Broker   | Akcje  | Krypto |
-|----------|--------|--------|
-| Revolut  | Tak    | Tak    |
-| E*Trade  | Tak    | —      |
-| Binance  | —      | Tak    |
-| Ręczny CSV | Tak  | Tak    |
+| Broker       | Akcje                         | Krypto |
+|--------------|-------------------------------|--------|
+| Revolut      | Tak                           | Tak    |
+| E*Trade      | Tak                           | —      |
+| IBI Capital  | Tak (tylko sprzedaże, input PDF) | —   |
+| Binance      | —                             | Tak    |
+| Ręczny CSV   | Tak                           | Tak    |
+
+Specyfika poszczególnych brokerów — zob. [`docs/BROKERS.md`](docs/BROKERS.md).
 
 ## Szybki start
 
@@ -54,6 +57,7 @@ pit38 import revolut-stock  -i eksport_revolut.csv -o transakcje.csv
 pit38 import revolut-crypto -i eksport_revolut.csv -o transakcje.csv
 pit38 import etrade         -i eksport_etrade.csv  -o transakcje.csv
 pit38 import binance        -i eksport_binance.csv -o transakcje.csv
+pit38 import ibi-capital    -i ~/ibi_orders/       -o transakcje.csv   # input: PDF (plik lub katalog)
 ```
 
 Możesz łączyć pliki z różnych brokerów:
