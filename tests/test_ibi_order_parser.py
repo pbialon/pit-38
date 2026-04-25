@@ -87,3 +87,46 @@ class TestParseOrderReport(TestCase):
         parsed = parse_order_report(text)
 
         self.assertEqual(parsed.total_fees, 6.0)
+
+    def test_raises_on_missing_total_amount_line(self):
+        text = (FIXTURES / "ibi_order_fake_rsu.txt").read_text()
+        stripped = text.replace(
+            "Total Amount Due to Order 20 USD 100.0000 USD 2,000.00",
+            "",
+        )
+
+        with self.assertRaises(OrderParseError) as ctx:
+            parse_order_report(stripped)
+        self.assertIn("Total Amount Due to Order", str(ctx.exception))
+
+    def test_raises_on_missing_price_for_tax(self):
+        text = (FIXTURES / "ibi_order_fake_rsu.txt").read_text()
+        stripped = text.replace("Price For Tax: USD 0.00", "")
+
+        with self.assertRaises(OrderParseError) as ctx:
+            parse_order_report(stripped)
+        self.assertIn("Price For Tax", str(ctx.exception))
+
+    def test_raises_on_missing_order_number(self):
+        text = (FIXTURES / "ibi_order_fake_rsu.txt").read_text()
+        stripped = text.replace("Order Number: 9000001", "Order Number:")
+
+        with self.assertRaises(OrderParseError) as ctx:
+            parse_order_report(stripped)
+        self.assertIn("Order Number", str(ctx.exception))
+
+    def test_raises_on_invalid_date_format(self):
+        # Defensive: regex is permissive enough to catch "Febxxx 04, 2024"
+        # (pendulum then rejects the bogus month). We bubble up a clear
+        # parse error rather than leaking pendulum's internals.
+        text = (FIXTURES / "ibi_order_fake_rsu.txt").read_text()
+        text = text.replace(
+            "Grant Date: January 10, 2023",
+            "Grant Date: Februari 10, 2023",
+        )
+
+        with self.assertRaises(OrderParseError) as ctx:
+            parse_order_report(text)
+        msg = str(ctx.exception)
+        self.assertIn("Grant Date", msg)
+        self.assertIn("Februari 10, 2023", msg)

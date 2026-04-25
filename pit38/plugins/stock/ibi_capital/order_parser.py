@@ -46,15 +46,16 @@ _DATE_FORMAT = "MMMM DD, YYYY"
 
 def parse_order_report(text: str) -> ParsedOrder:
     """Parse the full text of one IBI order confirmation PDF."""
+    shares, sale_price, total_amount = _order_line(text)
     return ParsedOrder(
-        order_number=_required(r"Order Number:\s+(\S+)", text, "Order Number"),
+        order_number=_required(r"Order Number:[ \t]+(\S+)", text, "Order Number"),
         company=_required(r"Company:\s*(.+?)\s*$", text, "Company", flags=re.MULTILINE),
         plan=_required(r"Plan:\s*(.+?)\s*$", text, "Plan", flags=re.MULTILINE),
         grant_date=_date(r"Grant Date:\s+(\w+\s+\d{1,2},\s+\d{4})", text, "Grant Date"),
         execution_date=_date(r"Execution Date:\s+(\w+\s+\d{1,2},\s+\d{4})", text, "Execution Date"),
-        shares=_shares(text),
-        sale_price=_sale_price(text),
-        total_amount=_total_amount(text),
+        shares=shares,
+        sale_price=sale_price,
+        total_amount=total_amount,
         total_fees=_total_fees(text),
         price_for_tax=_price_for_tax(text),
     )
@@ -68,25 +69,16 @@ _ORDER_LINE = re.compile(
 )
 
 
-def _shares(text: str) -> int:
+def _order_line(text: str) -> tuple[int, float, float]:
+    """Return (shares, sale_price_per_share, total_amount) from the order line."""
     m = _ORDER_LINE.search(text)
     if not m:
         raise OrderParseError("Could not locate 'Total Amount Due to Order' line")
-    return int(m.group("shares"))
-
-
-def _sale_price(text: str) -> float:
-    m = _ORDER_LINE.search(text)
-    if not m:
-        raise OrderParseError("Could not locate 'Total Amount Due to Order' line")
-    return parse_amount(m.group("price"))
-
-
-def _total_amount(text: str) -> float:
-    m = _ORDER_LINE.search(text)
-    if not m:
-        raise OrderParseError("Could not locate 'Total Amount Due to Order' line")
-    return parse_amount(m.group("total"))
+    return (
+        int(m.group("shares")),
+        parse_amount(m.group("price")),
+        parse_amount(m.group("total")),
+    )
 
 
 # The parenthetical note may drift; make it optional so a minor format
