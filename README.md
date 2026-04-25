@@ -84,7 +84,11 @@ For a detailed description of the rules, see:
 3. **Calculate** — stock profits use the FIFO method; crypto uses yearly cost/income aggregation
 4. **Tax** — 19% flat tax rate is applied, with automatic deduction of losses from previous years
 
-## Development
+## Contributing
+
+Contributions are welcome — including first-time open-source PRs and new broker plugins. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for dev setup, test conventions, PR guidelines, and a walkthrough for adding a new broker plugin.
+
+Quick dev setup:
 
 ```bash
 python3 -m venv .venv
@@ -92,6 +96,8 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 pytest tests/
 ```
+
+This project follows the [Contributor Covenant v2.1](CODE_OF_CONDUCT.md).
 
 ## Disclaimer
 

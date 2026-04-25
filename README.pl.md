@@ -84,7 +84,11 @@ Szczegółowy opis zasad:
 3. **Kalkulacja** — zyski z akcji obliczane metodą FIFO; kryptowaluty wg rocznej sumy kosztów i przychodów
 4. **Podatek** — stawka 19% z automatycznym odliczeniem strat z lat poprzednich
 
-## Rozwój projektu
+## Współtworzenie
+
+Zapraszamy do kontrybucji — również osoby, dla których to pierwsza przygoda z open source, oraz chętnych do dodania wsparcia nowego brokera. Pełny przewodnik znajdziesz w **[CONTRIBUTING.md](CONTRIBUTING.md)** (konfiguracja środowiska, testy, wytyczne do PR i instrukcja dodawania pluginu brokera). Issues i PR-y po polsku są mile widziane.
+
+Szybka konfiguracja środowiska:
 
 ```bash
 python3 -m venv .venv
@@ -92,6 +96,8 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 pytest tests/
 ```
+
+Projekt przestrzega [Contributor Covenant v2.1](CODE_OF_CONDUCT.md).
 
 ## Zastrzeżenie
 

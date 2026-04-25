@@ -8,3 +8,6 @@ resources/*
 *.egg-info/
 dist/
 build/
+.coverage
+htmlcov/
+.pytest_cache/
