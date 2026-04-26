@@ -1,0 +1,7 @@
+User ID,Time,Account,Operation,Coin,Change,Remark
+999999999,24-01-10 10:00:00,Spot,Deposit,PLN,1000,
+999999999,24-01-15 12:00:00,Spot,Binance Convert,BTC,0.002,
+999999999,24-01-15 12:00:00,Spot,Binance Convert,PLN,-500,
+999999999,24-01-20 14:30:00,Spot,Transaction Buy,BTC,0.001,
+999999999,24-01-20 14:30:00,Spot,Transaction Fee,BTC,-0.000001,
+999999999,24-01-20 14:30:00,Spot,Transaction Spend,PLN,-200.0,

@@ -69,6 +69,21 @@ class TestImportCLI(TestCase):
             self.assertIn("Saved", result.output)
             self.assertTrue(pathlib.Path("output.csv").exists())
 
+    def test_import_binance(self):
+        runner = CliRunner()
+        csv_path = str(FIXTURES / "binance_transaction_history.csv")
+
+        with runner.isolated_filesystem():
+            result = runner.invoke(main, [
+                "import", "binance",
+                "-i", csv_path,
+                "-o", "output.csv",
+                "-ll", "ERROR",
+            ])
+            self.assertEqual(result.exit_code, 0, msg=result.output)
+            self.assertIn("Saved 2 transactions", result.output)
+            self.assertTrue(pathlib.Path("output.csv").exists())
+
 
 class TestImportIbiCapitalCLI(TestCase):
     """CLI integration for ``pit38 import ibi-capital``.
