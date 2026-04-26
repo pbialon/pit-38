@@ -18,8 +18,14 @@ class BinanceOperationType(Enum):
 
 
 class BinanceTransaction:
+    # Binance Spot export switched headers in 2025 ("UTC_Time" → "Time"), added a
+    # leading "User ID" column, and shortened the year in timestamps (2024 → 24).
+    # We parse the current format; legacy exports need regeneration from the
+    # Binance portal rather than client-side back-compat here.
+    _TIME_FORMAT = "%y-%m-%d %H:%M:%S"
+
     def __init__(self, row: dict):
-        self.utc_time = datetime.strptime(row["utc_time"], "%Y-%m-%d %H:%M:%S")
+        self.utc_time = datetime.strptime(row["time"], self._TIME_FORMAT)
         self.operation = row["operation"]
         self.coin = row["coin"]
         self.change = float(row["change"])
