@@ -1,4 +1,4 @@
-from pit38.domain.currency_exchange_service.currencies import FiatValue
+from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue
 from pit38.domain.tax_service.loss_deduction import StockLossDeductionStrategy
 from pit38.domain.tax_service.profit_per_year import ProfitPerYear
 from pit38.domain.tax_service.tax_year_result import TaxYearResult
@@ -16,14 +16,14 @@ class StockTaxCalculator:
         deductible_loss: float = -1,
     ) -> TaxYearResult:
         if deductible_loss != -1:
-            loss = FiatValue(deductible_loss)
+            loss = FiatValue(deductible_loss, Currency.ZLOTY)
         else:
             loss = self._loss_strategy.calculate_deductible_loss(
                 profit_per_year, tax_year
             )
 
         profit_in_tax_year = profit_per_year.get_profit(tax_year)
-        if loss > FiatValue(0):
+        if loss > FiatValue.zero(Currency.ZLOTY):
             profit_in_tax_year = profit_in_tax_year - loss
 
         return TaxYearResult(
@@ -36,5 +36,5 @@ class StockTaxCalculator:
         )
 
     def _calculate_tax(self, profit: FiatValue) -> FiatValue:
-        zero = FiatValue(0)
+        zero = FiatValue.zero(Currency.ZLOTY)
         return profit * self.tax_rate if profit > zero else zero

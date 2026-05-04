@@ -29,6 +29,9 @@ class TestFiatValue(TestCase):
         with self.assertRaises(ValueError):
             a * "a"
 
+    def test_zero(self):
+        self.assertEqual(FiatValue.zero(Currency.DOLLAR), FiatValue(0, Currency.DOLLAR))
+
     def test_gt(self):
         a = usd(100)
         b = usd(200)

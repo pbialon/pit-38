@@ -30,9 +30,13 @@ def parse_currency(currency: str) -> Currency:
 
 
 class FiatValue:
-    def __init__(self, amount: float = 0, currency: Currency = Currency.ZLOTY):
+    def __init__(self, amount: float, currency: Currency):
         self.amount = amount
         self.currency = currency
+
+    @classmethod
+    def zero(cls, currency: Currency):
+        return cls(0, currency)
 
     def __add__(self, other):
         if self.currency != other.currency:
