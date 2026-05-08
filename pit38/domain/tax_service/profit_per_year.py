@@ -1,12 +1,12 @@
 from collections import defaultdict
 
-from pit38.domain.currency_exchange_service.currencies import FiatValue
+from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue
 
 
 class ProfitPerYear:
     def __init__(self, income: defaultdict[int, FiatValue] = None, cost: defaultdict[int, FiatValue] = None):
-        self.income = income if income is not None else defaultdict(FiatValue)
-        self.cost = cost if cost is not None else defaultdict(FiatValue)
+        self.income = income if income is not None else defaultdict(lambda: FiatValue.zero(Currency.ZLOTY))
+        self.cost = cost if cost is not None else defaultdict(lambda: FiatValue.zero(Currency.ZLOTY))
 
     def add_income(self, year: int, value: FiatValue):
         self.income[year] += value

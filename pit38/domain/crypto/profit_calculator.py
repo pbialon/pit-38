@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import List
 from loguru import logger
 
-from pit38.domain.currency_exchange_service.currencies import FiatValue
+from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue
 from pit38.domain.currency_exchange_service.exchanger import Exchanger
 from pit38.domain.tax_service.profit_per_year import ProfitPerYear
 from pit38.domain.transactions import Transaction, Action
@@ -22,7 +22,7 @@ class YearlyProfitCalculator:
 
     def _sum_transactions_per_year(self, transactions: List[Transaction], transaction_type: Action) \
             -> defaultdict[int, FiatValue]:
-        transactions_sum_per_year: defaultdict[int, FiatValue] = defaultdict(lambda: FiatValue(0))
+        transactions_sum_per_year: defaultdict[int, FiatValue] = defaultdict(lambda: FiatValue.zero(Currency.ZLOTY))
         for transaction in transactions:
             if transaction.action != transaction_type:
                 continue

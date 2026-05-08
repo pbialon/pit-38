@@ -2,7 +2,7 @@ from typing import List
 
 from loguru import logger
 
-from pit38.domain.currency_exchange_service.currencies import FiatValue
+from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue
 from pit38.domain.currency_exchange_service.exchanger import Exchanger
 from pit38.domain.tax_service.profit_per_year import ProfitPerYear
 from pit38.domain.stock.queue import Queue
@@ -51,7 +51,7 @@ class PerStockProfitCalculator:
 
     def _calculate_cost_for_sell(self, buy_queue: Queue, transaction: Transaction) -> FiatValue:
         stock_amount_to_account = transaction.asset.amount
-        cost = FiatValue(0)
+        cost = FiatValue.zero(Currency.ZLOTY)
 
         while stock_amount_to_account > self.EPSILON:
             try:

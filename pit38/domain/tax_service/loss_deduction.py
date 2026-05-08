@@ -1,18 +1,18 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from pit38.domain.currency_exchange_service.currencies import FiatValue
+from pit38.domain.currency_exchange_service.currencies import Currency, FiatValue
 from pit38.domain.tax_service.profit_per_year import ProfitPerYear
 
-FIVE_MILLION = FiatValue(5_000_000)
-ZERO = FiatValue(0)
+FIVE_MILLION = FiatValue(5_000_000, Currency.ZLOTY)
+ZERO = FiatValue.zero(Currency.ZLOTY)
 
 
 @dataclass
 class LossRecord:
     year: int
     original_amount: FiatValue
-    already_deducted: FiatValue = field(default_factory=FiatValue)
+    already_deducted: FiatValue = field(default_factory=lambda: FiatValue.zero(Currency.ZLOTY))
 
     @property
     def remaining(self) -> FiatValue:
@@ -44,7 +44,7 @@ class StockLossDeductionStrategy:
         if profit <= ZERO:
             return ZERO
 
-        total_deducted = FiatValue(0)
+        total_deducted = FiatValue.zero(Currency.ZLOTY)
         remaining_profit = profit
 
         for loss in losses:
