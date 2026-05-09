@@ -21,6 +21,9 @@ A command-line tool for calculating Polish income tax on **stocks** and **crypto
 | Manual CSV   | Yes             | Yes    |
 
 For broker-specific quirks see [`docs/BROKERS.md`](docs/BROKERS.md).
+For plugin development see:
+- [`docs/DEVELOPING_PLUGINS.md`](docs/DEVELOPING_PLUGINS.md) (English)
+- [`docs/DEVELOPING_PLUGINS.pl.md`](docs/DEVELOPING_PLUGINS.pl.md) (Polish)
 
 ## Quick Start
 
@@ -90,7 +93,10 @@ For a detailed description of the rules, see:
 
 ## Contributing
 
-Contributions are welcome — including first-time open-source PRs and new broker plugins. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for dev setup, test conventions, PR guidelines, and a walkthrough for adding a new broker plugin.
+Contributions are welcome — including first-time open-source PRs and new broker plugins. See **[CONTRIBUTING.md](CONTRIBUTING.md)** for dev setup, test conventions, and PR guidelines.
+For plugin implementation details, use:
+- [`docs/DEVELOPING_PLUGINS.md`](docs/DEVELOPING_PLUGINS.md)
+- [`docs/DEVELOPING_PLUGINS.pl.md`](docs/DEVELOPING_PLUGINS.pl.md)
 
 Quick dev setup:
 
