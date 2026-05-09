@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/).
 Versioning follows [CalVer](https://calver.org/) (`YYYY.M.DD`).
 
+## [Unreleased]
+
+### Added
+- `docs/DEVELOPING_PLUGINS.md` and `docs/DEVELOPING_PLUGINS.pl.md` with a full
+  broker-plugin development guide, cookiecutter flow, tax checklist, and
+  worked Revolut/Binance examples.
+
+### Changed
+- Linked the new plugin-development guides from `README.md`,
+  `CONTRIBUTING.md`, and `pit38/plugins/README.md`.
+
 ## [2026.4.20] — 2026-04-20
 
 ### Added

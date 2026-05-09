@@ -163,9 +163,12 @@ General code style:
 
 Broker plugins live under `pit38/plugins/` and transform a broker-specific
 CSV export into the standardized format that `pit38` consumes. Each
-plugin is self-contained. See
-[`pit38/plugins/README.md`](pit38/plugins/README.md) for the plugin
-architecture overview (PL/EN).
+plugin is self-contained.
+
+Primary plugin guides:
+- [`docs/DEVELOPING_PLUGINS.md`](docs/DEVELOPING_PLUGINS.md) (English)
+- [`docs/DEVELOPING_PLUGINS.pl.md`](docs/DEVELOPING_PLUGINS.pl.md) (Polish)
+- [`pit38/plugins/README.md`](pit38/plugins/README.md) (quick index)
 
 **Reference implementations** (read these first):
 
