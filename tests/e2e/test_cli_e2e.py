@@ -23,7 +23,7 @@ class FakeExchangeRatesProvider:
 
 class TestStockCLI(TestCase):
 
-    @patch("pit38.exchanger.create_exchanger")
+    @patch("pit38.stock.create_exchanger")
     def test_stock_command_runs(self, mock_exchanger):
         from pit38.domain.currency_exchange_service.exchanger import Exchanger
         from pit38.domain.calendar_service.calendar import Calendar
@@ -39,7 +39,7 @@ class TestStockCLI(TestCase):
 
 class TestCryptoCLI(TestCase):
 
-    @patch("pit38.exchanger.create_exchanger")
+    @patch("pit38.crypto.create_exchanger")
     def test_crypto_command_runs(self, mock_exchanger):
         from pit38.domain.currency_exchange_service.exchanger import Exchanger
         from pit38.domain.calendar_service.calendar import Calendar

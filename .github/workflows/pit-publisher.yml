@@ -1,0 +1,66 @@
+name: PR z kolejki PIT
+
+on:
+  push:
+    branches:
+      - 'agent/M*'
+
+permissions: {}
+
+jobs:
+  open-pr:
+    if: github.repository == 'pbialon/pit-premium' || github.repository == 'pbialon/pit-38'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    outputs:
+      number: ${{ steps.open.outputs.number }}
+    steps:
+      - id: open
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          HEAD_BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ "$HEAD_BRANCH" =~ ^agent/M[0-9]+-[0-9a-f]+-[0-9a-f]+$ ]]
+          ticket="${HEAD_BRANCH%%-*}"
+          ticket="${ticket#agent/M}"
+          number=$(gh api --method GET "repos/$GH_REPO/pulls" -f state=all \
+            -f "head=${GH_REPO%/*}:$HEAD_BRANCH" -f base=main --jq '.[0].number // empty')
+          if [[ -z "$number" ]]; then
+            number=$(gh api "repos/$GH_REPO/pulls" -f "head=$HEAD_BRANCH" -f base=main \
+              -f "title=monday.com #$ticket · zadanie Codexa" \
+              -f "body=Zmiany z osobnego katalogu roboczego na Raspberry Pi. Identyfikator karty monday.com: $ticket." \
+              --jq .number)
+          fi
+          printf 'number=%s\n' "$number" >> "$GITHUB_OUTPUT"
+
+  merge:
+    if: github.repository == 'pbialon/pit-premium'
+    needs: open-pr
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      PR_NUMBER: ${{ needs.open-pr.outputs.number }}
+      HEAD_SHA: ${{ github.sha }}
+    steps:
+      - run: |
+          set -euo pipefail
+          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]
+          for i in 1 2 3 4 5; do
+            merged=$(gh api "repos/$GH_REPO/pulls/$PR_NUMBER" --jq .merged)
+            if [[ "$merged" == true ]]; then exit 0; fi
+            if result=$(gh api --method PUT "repos/$GH_REPO/pulls/$PR_NUMBER/merge" \
+              -f "sha=$HEAD_SHA" -f merge_method=merge --jq .merged); then
+              if [[ "$result" == true ]]; then exit 0; fi
+            fi
+            sleep 5
+          done
+          echo "PR #$PR_NUMBER pozostał otwarty" >&2
+          exit 1

@@ -73,6 +73,13 @@ Możesz też przygotować pliki transakcji ręcznie. Przykładowe formaty:
 - Akcje: [`pit38/data_sources/stock_loader/example_format.csv`](pit38/data_sources/stock_loader/example_format.csv)
 - Krypto: [`pit38/data_sources/crypto_loader/example_format.csv`](pit38/data_sources/crypto_loader/example_format.csv)
 
+## API importu i gotowości
+
+Publiczne typy są dostępne w module `pit38.api`. [Kontrakt i przykład
+integracji](README.md#document-import-and-readiness-api) opisują schemat JSON
+w wersji 1, kwoty jako tekst dziesiętny oraz pustą listę pól w stanie
+`blocked`.
+
 ## Zasady podatkowe
 
 Kalkulator implementuje polskie prawo podatkowe dot. zysków kapitałowych (PIT-38).
