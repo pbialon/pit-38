@@ -73,6 +73,64 @@ You can also prepare transaction files manually. See the example formats:
 - Stocks: [`pit38/data_sources/stock_loader/example_format.csv`](pit38/data_sources/stock_loader/example_format.csv)
 - Crypto: [`pit38/data_sources/crypto_loader/example_format.csv`](pit38/data_sources/crypto_loader/example_format.csv)
 
+## Document import and readiness API
+
+Import the public data types from `pit38.api`. Schema version 1 defines the
+payloads exchanged with a caller. These types describe the contract for future
+importers and calculators. Existing CLI commands use their current interfaces.
+
+- `InputDocument(document_id, content, tax_year, account_alias, declared_scope=None)`
+  accepts raw `bytes`. Use local identifiers for the document and account. The
+  optional scope records the caller's declaration. Keep the input on the caller
+  side and use the result payloads for JSON.
+- `ImportResult` identifies the document and detected variant (`None` if
+  undetermined) and carries date ranges, row decisions and issues. Date ranges
+  use ISO dates and mark their origin as `document`, `observed_rows` or
+  `caller`. Dates observed in rows alone cannot establish full coverage.
+  Producers supply one decision per data row using one-based source row
+  numbers. Decisions have a classification and reason code, and can share a
+  local `event_id` when rows belong to the same event.
+- `Issue` includes a stable machine-readable `code`, `severity` (`error` or
+  `warning`), optional source and related source references, and an optional
+  `next` action identifier. Localize the display text in the caller. For
+  example, `MISSING_BUY` identifies a missing purchase and
+  `add_earlier_statement` requests an earlier statement. Treat codes as
+  extensible.
+- `ReadinessResult` carries the tax year, status, issues and form fields. A
+  `blocked` result always serializes with `"form_fields": []`. A `ready`
+  result requires form fields and allows warnings. The core producer is
+  responsible for confirming scope and mapping before constructing a ready
+  result. Form mapping and readiness evaluation are outside this schema change.
+
+Call `to_dict()` on either result to obtain a JSON-compatible dictionary.
+Collections serialize as arrays and missing optional values as `null`.
+A form field's `amount` takes a finite `Decimal` and serializes as decimal
+text, preserving fractional digits without exponent notation or rounding
+(for example, `Decimal("620.00")` becomes `"620.00"`).
+
+Synthetic blocked-result example:
+
+```python
+import json
+
+from pit38.api import Issue, ReadinessResult, SourceRef
+
+result = ReadinessResult(
+    tax_year=2026,
+    status="blocked",
+    issues=(
+        Issue(
+            code="MISSING_BUY",
+            severity="error",
+            source=SourceRef(document="A", row=8),
+            next="add_earlier_statement",
+        ),
+    ),
+)
+
+print(json.dumps(result.to_dict(), indent=2))
+```
+
 ## Tax Rules
 
 This calculator implements Polish tax law for capital gains (PIT-38).
